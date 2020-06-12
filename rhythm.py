@@ -15,8 +15,17 @@ class Rhythm:
 
         self._expected_bells [expected_bell] = (expected_time, expected_stroke)
 
-    def on_bell_ring (self, bell, stroke):
-        print (f"Heard bell {bell} on stroke {stroke}")
+    def on_bell_ring (self, bell, stroke, real_time):
+        if (bell, stroke) in self._expected_bells:
+            expected_blow_time = self._expected_bells [(bell, stroke)]
+
+            diff = self.real_time_to_blow_time (real_time) - expected_blow_time
+
+            print (f"Off by {diff} places")
+
+            del self._expected_bells [(bell, stroke)]
+        else:
+            print (f"Bell {bell} unexpectedly rang at stroke {'H' if stroke else 'B'}")
 
     def initialise_line (self, start_real_time):
         self._start_time = start_real_time
@@ -38,3 +47,6 @@ class Rhythm:
 
     def index_to_real_time (self, row_number, place):
         return self.blow_time_to_real_time (self.index_to_blow_time (row_number, place))
+
+    def real_time_to_blow_time (self, real_time):
+        return (real_time - self._start_time) / self._blow_interval

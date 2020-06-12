@@ -133,8 +133,6 @@ class RingingRoomTower:
             if self.on_reset is not None:
                 self.on_reset()
 
-            self.number_of_bells = new_size
-
     def _on_assign_user(self, data):
         bell = data["bell"] - 1
         user = data["user"]

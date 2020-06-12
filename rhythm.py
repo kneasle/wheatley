@@ -15,6 +15,9 @@ class Rhythm:
 
         self._expected_bells [expected_bell] = (expected_time, expected_stroke)
 
+    def on_bell_ring (self, bell, stroke):
+        print (f"Heard bell {bell} on stroke {stroke}")
+
     def initialise_line (self, start_real_time):
         self._start_time = start_real_time
         self._blow_interval = {
@@ -26,7 +29,7 @@ class Rhythm:
         } [self._bot.stage]
 
 
-    # LINEAR ALGEBRA-STYLE CONVERSIONS BETWEEN DIFFERENT TIME MEASUREMENTS
+    # Linear algebra-style conversions between different time measurements
     def index_to_blow_time (self, row_number, place):
         return row_number * self._bot.stage + place + (row_number // 2) * self._handstroke_gap
 

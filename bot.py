@@ -32,7 +32,7 @@ class Bot:
 
    
 
-    # CONVENIENT PROPERTIES THAT ARE FREQUENTLY USED
+    # Convenient properties that are frequently used
     @property
     def is_handstroke (self):
         return self._row_number % 2 == 0
@@ -43,7 +43,7 @@ class Bot:
 
 
 
-    # CALLBACKS
+    # Callbacks
     def _on_look_to (self):
         self._rhythm.initialise_line (time.time () + 3)
 
@@ -73,7 +73,7 @@ class Bot:
         if self._tower.user_controlled (bell):
             print (f"Bell {bell} ringing on {'H' if stroke else 'B'}")
 
-    # MAINLOOP AND HELPER METHODS
+    # Mainloop and helper methods
     def start_next_row (self):
         self._row = [x - 1 for x in self.row_generator.next_row (self.is_handstroke)]
 

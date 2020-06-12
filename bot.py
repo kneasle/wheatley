@@ -47,6 +47,8 @@ class Bot:
     def _on_look_to (self):
         self._rhythm.initialise_line (time.time () + 3)
 
+        print (self._rhythm._start_time, self._rhythm._blow_interval)
+
         self._should_stand = False
         self._should_start_method = False
         self._should_start_ringing_rounds = False
@@ -57,7 +59,6 @@ class Bot:
         self._row_number = 0
         self._place = 0
 
-        print (self._rhythm._start_time, self._rhythm._blow_interval)
 
     def _on_go (self):
         if self._is_ringing_rounds:

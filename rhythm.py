@@ -16,7 +16,7 @@ class Rhythm:
 
     def add_data_point (self, blow_time, real_time):
         self.data_set.append ((blow_time, real_time))
-        
+
         print (f"Dataset: {self.data_set}")
 
     def on_bell_ring (self, bell, stroke, real_time):

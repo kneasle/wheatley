@@ -117,11 +117,11 @@ class RingingRoomTower:
         bell_state = data["global_bell_state"]
         self._bell_state = bell_state
 
-        if self._log_bells:
-            if "who_rang" in data and self.on_bell_ring is not None:
-                who_rang = data ["who_rang"] - 1
-                self.on_bell_ring (who_rang, bell_state [who_rang])
+        if "who_rang" in data and self.on_bell_ring is not None:
+            who_rang = data ["who_rang"] - 1
+            self.on_bell_ring (who_rang, bell_state [who_rang])
 
+        if self._log_bells:
             self.logger.info(f"RECEIVED: Bells '{['H' if x else 'B' for x in bell_state]}'")
 
     def _on_size_change(self, data):

@@ -59,6 +59,9 @@ class Bot:
         self._row_number = 0
         self._place = 0
 
+        # Expect the bells in rounds
+        for b in range (self.stage):
+            self.expect_bell (b, b)
 
     def _on_go (self):
         if self._is_ringing_rounds:
@@ -77,16 +80,19 @@ class Bot:
             self._rhythm.on_bell_ring (bell, not stroke, time.time ())
 
     # Mainloop and helper methods
+    def expect_bell (self, index, bell):
+        if self._tower.user_controlled (bell):
+            self._rhythm.expect_bell (
+                bell,
+                self._rhythm.index_to_blow_time (self._row_number, index),
+                self.is_handstroke
+            )
+
     def start_next_row (self):
         self._row = [x - 1 for x in self.row_generator.next_row (self.is_handstroke)]
 
-        for (i, b) in enumerate (self._row):
-            if self._tower.user_controlled (b):
-                self._rhythm.expect_bell (
-                    b,
-                    self._rhythm.index_to_blow_time (self._row_number, i),
-                    self.is_handstroke
-                )
+        for (index, bell) in enumerate (self._row):
+            self.expect_bell (index, bell)
 
     def start_method (self):
         self.row_generator.reset ()
@@ -111,6 +117,9 @@ class Bot:
 
                         if not self._is_ringing_rounds:
                             self.start_next_row ()
+                        else:
+                            for b in range (self.stage):
+                                self.expect_bell (b, b)
 
                         if self._is_ringing_rounds:
                             if self._row_number == 2 and self.do_up_down_in:

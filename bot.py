@@ -73,7 +73,7 @@ class Bot:
 
     def _on_bell_ring (self, bell, stroke):
         if self._tower.user_controlled (bell):
-            # Because this will give us the stroke _after_ the bell rings, we have to invert it, because 
+            # This will give us the stroke _after_ the bell rings, we have to invert it, because 
             # otherwise this will always expect the bells on the wrong stroke
             self._rhythm.on_bell_ring (bell, not stroke, time.time ())
 

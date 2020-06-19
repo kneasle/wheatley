@@ -1,0 +1,10 @@
+certifi==2020.4.5.2
+chardet==3.0.4
+idna==2.9
+numpy==1.18.5
+python-engineio==3.13.0
+python-socketio==4.6.0
+requests==2.24.0
+six==1.15.0
+urllib3==1.25.9
+websocket-client==0.57.0

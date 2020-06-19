@@ -2,8 +2,8 @@ from random import random
 from typing import List
 
 from Calls import Calls
-from RingingRoomTower import RingingRoomTower
 from RowGeneration.RowGenerator import RowGenerator
+from tower import RingingRoomTower
 
 
 class GoAndStopCallingGenerator(RowGenerator):

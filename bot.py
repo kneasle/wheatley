@@ -93,9 +93,9 @@ class Bot:
             self.expect_bell (index, bell)
 
     def start_method (self):
+        assert self.row_generator.number_of_bells == self._tower.number_of_bells, \
+            f"{self.row_generator.number_of_bells} != {self._tower.number_of_bells}"
         self.row_generator.reset ()
-        self.row_generator.set_go ()
-
         self.start_next_row ()
 
     def main_loop (self):

@@ -12,11 +12,10 @@ class GoAndStopCallingGenerator(RowGenerator):
         super().__init__(generator.stage)
         self.tower = tower
         self.generator = generator
+        self.called_go = False
 
     def next_row(self, is_handstroke: bool):
-        if self._index == -1 and self.auto_start:
-            self.tower.make_call(Calls.Go)
-        if not self.auto_start and not self._has_go and not is_handstroke and random.choices([True, False], [1, 3]):
+        if not self.called_go and not is_handstroke and random.choices([True, False], [1, 3]):
             self.tower.make_call(Calls.Go)
         return super(GoAndStopCallingGenerator, self).next_row(is_handstroke)
 

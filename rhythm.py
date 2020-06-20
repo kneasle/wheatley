@@ -6,10 +6,8 @@ from regression import calculate_regression
 
 
 class Rhythm(metaclass=ABCMeta):
-    logger_name = "RHYTHM"
-
     @abstractmethod
-    def wait_for_bell_time(self, current_time, row_number, place, user_controlled):
+    def wait_for_bell_time(self, current_time, bell, row_number, place, user_controlled, stroke):
         pass
 
     @abstractmethod
@@ -25,7 +23,40 @@ class Rhythm(metaclass=ABCMeta):
         pass
 
 
+class WaitForUserRhythm(Rhythm):
+    logger_name = "RHYTHM:WaitForUser"
+
+    def __init__(self, rhythm: Rhythm):
+        self._innerRhythm = rhythm
+        self._expected_bells = set()
+        self.delay = 0
+        self.logger = logging.getLogger(self.logger_name)
+
+    def wait_for_bell_time(self, current_time, bell, row_number, place, user_controlled, stroke):
+        self._innerRhythm.wait_for_bell_time(current_time - self.delay, bell, row_number, place, user_controlled, stroke)
+        if user_controlled:
+            while (bell, stroke) in self._expected_bells:
+                sleep(0.01)
+                self.delay += 0.01
+                self.logger.info(f"Waiting for {bell}")
+
+    def expect_bell(self, expected_bell, row_number, index, expected_stroke):
+        self._innerRhythm.expect_bell(expected_bell, row_number, index, expected_stroke)
+        self._expected_bells.add((expected_bell, expected_stroke))
+
+    def on_bell_ring(self, bell, stroke, real_time):
+        self._innerRhythm.on_bell_ring(bell, stroke, real_time - self.delay)
+        try:
+            self._expected_bells.remove((bell, stroke))
+        except KeyError:
+            pass
+
+    def initialise_line(self, stage, user_controls_treble, start_time):
+        self._innerRhythm.initialise_line(stage, user_controls_treble, start_time - self.delay)
+
+
 class RegressionRhythm(Rhythm):
+    logger_name = "RHYTHM:Regression"
 
     def __init__ (self, handstroke_gap=1):
         self._handstroke_gap = handstroke_gap
@@ -50,6 +81,7 @@ class RegressionRhythm(Rhythm):
         # just store the datapoint
         if len (self.data_set) >= 2:
             (self._start_time, self._blow_interval) = calculate_regression (self.data_set)
+            self.logger.info(f"Bell interval: {self._blow_interval}")
 
     def on_bell_ring (self, bell, stroke, real_time):
         # If this bell was expected at this stroke (i.e. is being rung by someone else)
@@ -58,7 +90,7 @@ class RegressionRhythm(Rhythm):
             expected_blow_time = self._expected_bells [(bell, stroke)]
             diff = self.real_time_to_blow_time (real_time) - expected_blow_time
 
-            self.logger.debug (f"Off by {diff} places")
+            self.logger.debug (f"{bell} off by {diff} places")
 
             # If this was the first bell, then overwrite the start_time to update the regression line
             if expected_blow_time == 0:
@@ -108,7 +140,7 @@ class RegressionRhythm(Rhythm):
             # extrapolate from that time
             self._start_time = float ('inf')
 
-    def wait_for_bell_time(self, current_time, row_number, place, user_controlled):
+    def wait_for_bell_time(self, current_time, bell, row_number, place, user_controlled, stroke):
         bell_time = self.index_to_real_time (row_number, place)
         if bell_time > current_time:
             sleep(bell_time - current_time)

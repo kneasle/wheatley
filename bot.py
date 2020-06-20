@@ -118,7 +118,7 @@ class Bot:
                 bell = self._place if self._is_ringing_rounds else self._row [self._place]
 
                 user_controlled = self._tower.user_controlled(bell)
-                self._rhythm.wait_for_bell_time(time.time(), self._row_number, self._place, user_controlled)
+                self._rhythm.wait_for_bell_time(time.time(), bell, self._row_number, self._place, user_controlled, self.is_handstroke)
                 if not user_controlled:
                     self._tower.ring_bell (bell, self.is_handstroke)
 

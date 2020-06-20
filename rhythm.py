@@ -1,10 +1,31 @@
 import logging
+from abc import ABCMeta, abstractmethod
+from time import sleep
 
 from regression import calculate_regression
 
 
-class Rhythm:
+class Rhythm(metaclass=ABCMeta):
     logger_name = "RHYTHM"
+
+    @abstractmethod
+    def wait_for_bell_time(self, current_time, row_number, place, user_controlled):
+        pass
+
+    @abstractmethod
+    def expect_bell(self, expected_bell, row_number, index, expected_stroke):
+        pass
+
+    @abstractmethod
+    def on_bell_ring(self, bell, stroke, real_time):
+        pass
+
+    @abstractmethod
+    def initialise_line(self, stage, user_controls_treble, start_time):
+        pass
+
+
+class RegressionRhythm(Rhythm):
 
     def __init__ (self, handstroke_gap=1):
         self._handstroke_gap = handstroke_gap
@@ -87,6 +108,12 @@ class Rhythm:
             # extrapolate from that time
             self._start_time = float ('inf')
 
+    def wait_for_bell_time(self, current_time, row_number, place, user_controlled):
+        bell_time = self.index_to_real_time (row_number, place)
+        if bell_time > current_time:
+            sleep(bell_time - current_time)
+        else:
+            sleep(0.01)
 
     # Linear conversions between different time measurements
     def index_to_blow_time (self, row_number, place):

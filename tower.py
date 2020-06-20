@@ -8,10 +8,9 @@ import socketio
 class RingingRoomTower:
     logger_name = "TOWER"
 
-    def __init__(self, tower_id: int, url: str, log_bells=False):
+    def __init__(self, tower_id: int, url: str):
         self.tower_id = tower_id
         self.logger = logging.getLogger(self.logger_name)
-        self._log_bells = log_bells
         self._bell_state = []
         self._assigned_users = {}
 
@@ -118,8 +117,7 @@ class RingingRoomTower:
         bell_state = data["global_bell_state"]
         self._bell_state = bell_state
 
-        if self._log_bells:
-            self.logger.info(f"RECEIVED: Bells '{['H' if x else 'B' for x in bell_state]}'")
+        self.logger.debug(f"RECEIVED: Bells '{['H' if x else 'B' for x in bell_state]}'")
 
     def _on_size_change(self, data):
         new_size = data["size"]

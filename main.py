@@ -31,7 +31,7 @@ def configure_logging():
 def main ():
     configure_logging ()
 
-    tower = RingingRoomTower (763451928, "https://ringingroom.com", log_bells = False)
+    tower = RingingRoomTower (763451928, "https://ringingroom.com")
     bot = Bot (tower, row_generator ())
 
     with tower:

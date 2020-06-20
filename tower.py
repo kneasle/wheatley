@@ -1,6 +1,7 @@
+import collections
 import logging
 from time import sleep
-from typing import Optional
+from typing import Optional, Callable, Dict, List, Any
 
 import socketio
 
@@ -14,15 +15,9 @@ class RingingRoomTower:
         self._bell_state = []
         self._assigned_users = {}
 
-        self.on_bob = None
-        self.on_single = None
-        self.on_look_to = None
-        self.on_go = None
-        self.on_stand_next = None
-        self.on_thats_all = None
-
-        self.on_reset = None
-        self.on_bell_ring = None
+        self.invoke_on_call: Dict[str, List[Callable[[], Any]]] = collections.defaultdict(list)
+        self.invoke_on_reset: List[Callable[[], Any]] = []
+        self.invoke_on_bell_rung: List[Callable[[int, bool], Any]] = []
 
         self._url = url
         self._socket_io_client: Optional[socketio.Client] = None
@@ -89,8 +84,7 @@ class RingingRoomTower:
         self.logger.info(f"Connected to {self._url}")
         self._join_tower()
 
-        # Currently just care about global state when a bell in rung
-        self._socket_io_client.on("s_bell_rung", self._on_global_bell_state)
+        self._socket_io_client.on("s_bell_rung", self._on_bell_rung)
         self._socket_io_client.on("s_global_state", self._on_global_bell_state)
         self._socket_io_client.on("s_size_change", self._on_size_change)
         self._socket_io_client.on("s_assign_user", self._on_assign_user)
@@ -113,13 +107,16 @@ class RingingRoomTower:
         if message:
             self.logger.info(f"EMIT: {message}")
 
+    def _on_bell_rung (self, data):
+        self._on_global_bell_state(data)
+
+        who_rang = data ["who_rang"] - 1
+        for bell_ring_callback in self.invoke_on_bell_rung:
+            bell_ring_callback(who_rang, self._bell_state [who_rang])
+
     def _on_global_bell_state (self, data):
         bell_state = data["global_bell_state"]
         self._bell_state = bell_state
-
-        if "who_rang" in data and self.on_bell_ring is not None:
-            who_rang = data ["who_rang"] - 1
-            self.on_bell_ring (who_rang, bell_state [who_rang])
 
         if self._log_bells:
             self.logger.info(f"RECEIVED: Bells '{['H' if x else 'B' for x in bell_state]}'")
@@ -130,8 +127,8 @@ class RingingRoomTower:
             self._assigned_users = {}
             self._bell_state = self._bells_set_at_hand(new_size)
             self.logger.info(f"RECEIVED: New tower size '{new_size}'")
-            if self.on_reset is not None:
-                self.on_reset()
+            for invoke_callback in self.invoke_on_reset:
+                invoke_callback()
 
     def _on_assign_user(self, data):
         bell = data["bell"] - 1
@@ -143,25 +140,12 @@ class RingingRoomTower:
         call = data["call"]
         self.logger.info (f"RECEIVED: Call '{call}'")
 
-        call_funcs = {
-            "Bob": self.on_bob,
-            "Single": self.on_single,
-            "Look to": self.on_look_to,
-            "Go": self.on_go,
-            "That's all": self.on_thats_all,
-            "Stand next": self.on_stand_next
-        }
-
-        if call in call_funcs:
-            call_func = call_funcs [call]
-
-            if call_func is not None:
-                call_func ()
-            else:
-                self.logger.warning (f"No callback found for '{call}'")
-        else:
-            self.logger.error (f"Call not found: '{call}'")
-
+        found_callback = False
+        for call_callback in self.invoke_on_call.get(call, []):
+            call_callback()
+            found_callback = True
+        if not found_callback:
+            self.logger.warning (f"No callback found for '{call}'")
 
     @staticmethod
     def _bells_set_at_hand(number: int):

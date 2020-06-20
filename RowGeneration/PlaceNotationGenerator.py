@@ -5,12 +5,13 @@ from RowGeneration.RowGenerator import RowGenerator
 
 
 class PlaceNotationGenerator(RowGenerator):
+    # Dict Lead Index: String PlaceNotation
+    # -1 for end of the lead
     DefaultBob = {-1: '14'}
     DefaultSingle = {-1: '1234'}
 
-    def __init__(self, stage: int, method: str, bob: Dict[int, str] = None, single: Dict[int, str] = None,
-                 auto_start=True):
-        super(PlaceNotationGenerator, self).__init__(stage, auto_start)
+    def __init__(self, stage: int, method: str, bob: Dict[int, str] = None, single: Dict[int, str] = None):
+        super(PlaceNotationGenerator, self).__init__(stage)
         if bob is None:
             bob = PlaceNotationGenerator.DefaultBob
         if single is None:
@@ -26,6 +27,7 @@ class PlaceNotationGenerator(RowGenerator):
 
     def _gen_row(self, previous_row: List[int], is_handstroke: bool, index: int) -> List[int]:
         lead_index = index % self.lead_len
+        assert lead_index % 2 != is_handstroke
 
         if self._has_bob and self.bobs_pn.get(lead_index):
             self._generating_call_pn = list(self.bobs_pn[lead_index])

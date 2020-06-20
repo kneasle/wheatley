@@ -24,6 +24,7 @@ def configure_logging():
     logging.basicConfig(level=logging.WARNING)
 
     logging.getLogger(RingingRoomTower.logger_name).setLevel(logging.INFO)
+    logging.getLogger(RowGenerator.logger_name).setLevel(logging.INFO)
 
 def main ():
     configure_logging ()

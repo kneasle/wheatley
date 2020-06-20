@@ -94,8 +94,6 @@ class Bot:
 
     def start_method (self):
         self.row_generator.reset ()
-        self.row_generator.set_go ()
-
         self.start_next_row ()
 
     def main_loop (self):

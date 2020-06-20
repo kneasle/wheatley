@@ -9,7 +9,7 @@ from RowGeneration.RowGenerator import RowGenerator
 class ComplibCompositionReader(RowGenerator):
     complib_url = "https://complib.org/composition/"
 
-    def __init__(self, id: int, auto_start=True):
+    def __init__(self, id: int):
         url = self.complib_url + str(id) + "/rows"
         request_rows = requests.get(url)
         request_rows.raise_for_status()
@@ -19,7 +19,7 @@ class ComplibCompositionReader(RowGenerator):
         self.loaded_rows = [[convert_bell_string(bell) for bell in row] for row in split_rows]
 
         stage = len(self.loaded_rows[0])
-        super().__init__(stage, auto_start)
+        super().__init__(stage)
 
     def _gen_row(self, previous_row: List[int], is_handstroke: bool, index: int) -> List[int]:
         if index < len(self.loaded_rows):

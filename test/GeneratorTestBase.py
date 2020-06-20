@@ -19,7 +19,3 @@ class GeneratorTestBase(TestCase):
         for _ in range(count):
             yield generator.next_row(is_handstroke)
             is_handstroke = not is_handstroke
-
-    def initial_rounds(self, generator: RowGenerator, stage: int):
-        self.assertEqual(generator.next_row(True), self.rounds(stage))
-        self.assertEqual(generator.next_row(False), self.rounds(stage))

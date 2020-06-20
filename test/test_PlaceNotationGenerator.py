@@ -11,9 +11,8 @@ class PlaceNotationGeneratorTests(GeneratorTestBase):
     def test_plain_bob_minimus(self):
         stage = 4
 
-        generator = PlaceNotationGenerator(stage, "&x1x1,2", auto_start=True)
+        generator = PlaceNotationGenerator(stage, "&x1x1,2")
 
-        self.initial_rounds(generator, stage)
         rows = self.gen_rows(generator, 8)
         self.assertEqual([[2, 1, 4, 3],
                           [2, 4, 1, 3],
@@ -28,9 +27,8 @@ class PlaceNotationGeneratorTests(GeneratorTestBase):
     def test_plain_bob_minimus_bob(self):
         stage = 4
 
-        generator = PlaceNotationGenerator(stage, "&x1x1,2", auto_start=True)
+        generator = PlaceNotationGenerator(stage, "&x1x1,2")
 
-        self.initial_rounds(generator, stage)
         rows = self.gen_rows(generator, 6)
         generator.set_bob()
         for row in self.gen_rows(generator, 2):
@@ -49,9 +47,8 @@ class PlaceNotationGeneratorTests(GeneratorTestBase):
     def test_plain_bob_minimus_single(self):
         stage = 4
 
-        generator = PlaceNotationGenerator(stage, "&x1x1,2", auto_start=True)
+        generator = PlaceNotationGenerator(stage, "&x1x1,2")
 
-        self.initial_rounds(generator, stage)
         rows = self.gen_rows(generator, 6)
         generator.set_single()
         for row in self.gen_rows(generator, 2):
@@ -70,9 +67,8 @@ class PlaceNotationGeneratorTests(GeneratorTestBase):
     def test_plain_bob_doubles_plain(self):
         stage = 5
 
-        generator = PlaceNotationGenerator(stage, "&5.1.5.1.5,2", auto_start=True)
+        generator = PlaceNotationGenerator(stage, "&5.1.5.1.5,2")
 
-        self.initial_rounds(generator, stage)
         rows = self.gen_rows(generator, 10)
 
         self.assertEqual([[2, 1, 4, 3, 5, 6],
@@ -90,9 +86,8 @@ class PlaceNotationGeneratorTests(GeneratorTestBase):
     def test_plain_bob_doubles_two_bobs(self):
         stage = 5
 
-        generator = PlaceNotationGenerator(stage, "&5.1.5.1.5,2", auto_start=True)
+        generator = PlaceNotationGenerator(stage, "&5.1.5.1.5,2")
 
-        self.initial_rounds(generator, stage)
         self.gen_rows(generator, 8)
         generator.set_bob()
         first_lead_end = self.gen_rows(generator, 2)
@@ -108,9 +103,8 @@ class PlaceNotationGeneratorTests(GeneratorTestBase):
     def test_resets_call_after_bob(self):
         stage = 5
 
-        generator = PlaceNotationGenerator(stage, "&5.1.5.1.5,2", auto_start=True)
+        generator = PlaceNotationGenerator(stage, "&5.1.5.1.5,2")
 
-        self.initial_rounds(generator, stage)
         self.gen_rows(generator, 8)
         generator.set_bob()
         first_lead_end = self.gen_rows(generator, 2)
@@ -123,11 +117,8 @@ class PlaceNotationGeneratorTests(GeneratorTestBase):
         self.assertEqual([[1, 3, 2, 4, 5, 6], [1, 3, 4, 2, 5, 6]], second_lead_end)
 
     def test_stedman_doubles_plain(self):
-        stage = 5
-
         generator = PlaceNotationGenerator.stedman_doubles()
 
-        self.initial_rounds(generator, stage)
         rows = self.gen_rows(generator, 12)
 
         self.assertEqual([[2, 1, 3, 5, 4, 6],
@@ -145,11 +136,8 @@ class PlaceNotationGeneratorTests(GeneratorTestBase):
                          rows)
 
     def test_stedman_doubles_first_single(self):
-        stage = 5
-
         generator = PlaceNotationGenerator.stedman_doubles()
 
-        self.initial_rounds(generator, stage)
         initial_rows = self.gen_rows(generator, 4)
         generator.set_single()
         single_rows = self.gen_rows(generator, 2)
@@ -173,11 +161,8 @@ class PlaceNotationGeneratorTests(GeneratorTestBase):
                          after_rows)
 
     def test_stedman_doubles_second_single(self):
-        stage = 5
-
         generator = PlaceNotationGenerator.stedman_doubles()
 
-        self.initial_rounds(generator, stage)
         self.gen_rows(generator, 10)
         generator.set_single()
         single_rows = self.gen_rows(generator, 2)

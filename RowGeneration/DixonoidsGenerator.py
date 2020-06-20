@@ -15,7 +15,7 @@ class DixonoidsGenerator(RowGenerator):
     DefaultSingle = {1: ["x", "1234"]}
 
     def __init__(self, stage: int, plain_rules: Dict[int, List[str]], bob_rules: Dict[int, List[str]] = None,
-                 single_rules: Dict[int, List[str]] = None, auto_start=True):
+                 single_rules: Dict[int, List[str]] = None):
         """
         :param plain_rules: Dictionary of leading bell: [handstroke pn, backstroke pn]
                             0: Matches any other bell
@@ -24,7 +24,7 @@ class DixonoidsGenerator(RowGenerator):
         :param single_rules: Dictionary of leading bell: [handstroke pn, backstroke pn]
                           Only include bells which lead when a single is rung
         """
-        super(DixonoidsGenerator, self).__init__(stage, auto_start)
+        super(DixonoidsGenerator, self).__init__(stage)
         if bob_rules is None:
             bob_rules = self.DefaultBob
         if single_rules is None:

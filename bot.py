@@ -52,7 +52,7 @@ class Bot:
 
     # Callbacks
     def _on_look_to (self):
-        self._rhythm.initialise_line (time.time () + 3)
+        self._rhythm.initialise_line (self.stage, self._tower.user_controlled(0), time.time() + 3)
 
         self._should_stand = False
         self._should_start_method = False
@@ -95,7 +95,8 @@ class Bot:
         if self._tower.user_controlled (bell):
             self._rhythm.expect_bell (
                 bell,
-                self._rhythm.index_to_blow_time (self._row_number, index),
+                self._row_number,
+                index,
                 self.is_handstroke
             )
 

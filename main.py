@@ -2,6 +2,7 @@
 
 import logging, time
 
+from rhythm import Rhythm
 from tower import RingingRoomTower
 from bot import Bot
 
@@ -27,6 +28,7 @@ def configure_logging():
 
     logging.getLogger(RingingRoomTower.logger_name).setLevel(logging.INFO)
     logging.getLogger(RowGenerator.logger_name).setLevel(logging.INFO)
+    logging.getLogger(Rhythm.logger_name).setLevel(logging.INFO)
 
 def main ():
     configure_logging ()

@@ -24,6 +24,8 @@ class Rhythm:
     def add_data_point (self, blow_time, real_time, weight):
         self.data_set.append ((blow_time, real_time, weight))
 
+        # Only calculate the regression line if there are at least two datapoints, otherwise
+        # just store the datapoint
         if len (self.data_set) >= 2:
             (self._start_time, self._blow_interval) = calculate_regression (self.data_set)
 

@@ -10,6 +10,14 @@ from regression import calculate_regression
 
 MAX_CHANGES_IN_DATASET = 3.0
 WEIGHT_REJECTION_THRESHOLD = 0.001
+# An inertia-like coefficient designed to allow the regression finder to slowly adjust to a new rhythm
+# 0.0 means that a new regression line will take effect instantly
+# 1.0 means that no effect is made at all
+REGRESSION_INERTIA_COEFFICIENT = 0.2
+
+
+def lerp(a, b, t):
+    return (1 - t) * a + t * b
 
 
 class Rhythm(metaclass=ABCMeta):
@@ -101,7 +109,13 @@ class RegressionRhythm(Rhythm):
         # Only calculate the regression line if there are at least two datapoints, otherwise
         # just store the datapoint
         if len(self.data_set) >= 2:
-            (self._start_time, self._blow_interval) = calculate_regression(self.data_set)
+            (new_start_time, new_blow_interval) = calculate_regression(self.data_set)
+
+            # Lerp between the new times and the old times, according to the desired inertia
+            self._start_time = lerp (new_start_time, self._start_time, REGRESSION_INERTIA_COEFFICIENT)
+            self._blow_interval = lerp (new_blow_interval, self._blow_interval, REGRESSION_INERTIA_COEFFICIENT) 
+
+
             self.logger.debug(f"Bell interval: {self._blow_interval}")
 
             # Filter out datapoints with extremely low weights

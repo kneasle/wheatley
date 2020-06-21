@@ -106,15 +106,18 @@ class RegressionRhythm(Rhythm):
         for (blow_time, real_time, weight) in self.data_set:
             self.logger.debug(f"  {blow_time}\t{real_time}\t{weight}")
 
+        max_dataset_length = MAX_CHANGES_IN_DATASET * self._number_of_user_controlled_bells
+
         # Only calculate the regression line if there are at least two datapoints, otherwise
         # just store the datapoint
         if len(self.data_set) >= 2:
             (new_start_time, new_blow_interval) = calculate_regression(self.data_set)
 
             # Lerp between the new times and the old times, according to the desired inertia
-            self._start_time = lerp (new_start_time, self._start_time, REGRESSION_INERTIA_COEFFICIENT)
-            self._blow_interval = lerp (new_blow_interval, self._blow_interval, REGRESSION_INERTIA_COEFFICIENT) 
+            regression_inertia = REGRESSION_INERTIA_COEFFICIENT
 
+            self._start_time = lerp(new_start_time, self._start_time, regression_inertia)
+            self._blow_interval = lerp(new_blow_interval, self._blow_interval, regression_inertia) 
 
             self.logger.debug(f"Bell interval: {self._blow_interval}")
 
@@ -122,7 +125,7 @@ class RegressionRhythm(Rhythm):
             self.data_set = list(filter(lambda d: d[2] > WEIGHT_REJECTION_THRESHOLD, self.data_set))
 
             # Eventually forget about datapoints
-            if len(self.data_set) >= MAX_CHANGES_IN_DATASET * self._number_of_user_controlled_bells:
+            if len(self.data_set) >= max_dataset_length:
                 del self.data_set[0]
 
     def on_bell_ring(self, bell, stroke, real_time):

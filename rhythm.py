@@ -28,32 +28,42 @@ class Rhythm:
             (self._start_time, self._blow_interval) = calculate_regression (self.data_set)
 
     def on_bell_ring (self, bell, stroke, real_time):
+        # If this bell was expected at this stroke (i.e. is being rung by someone else)
         if (bell, stroke) in self._expected_bells:
+            # Figure out where the bell was expected in ringing space
             expected_blow_time = self._expected_bells [(bell, stroke)]
-
             diff = self.real_time_to_blow_time (real_time) - expected_blow_time
 
             self.logger.debug (f"Off by {diff} places")
 
+            # If this was the first bell, then overwrite the start_time to update the regression line
+            if expected_blow_time == 0:
+                self._start_time = real_time
+            
+            # Calculate the weight (which will be 1 if it is either of the first two bells to be rung
+            # to not skew the data from the start)
+            weight = 1 # math.exp (- expected_blow_time * expected_blow_time)
             if len (self.data_set) <= 1:
-                self.add_data_point (expected_blow_time, real_time, 1)
-                
-                if expected_blow_time == 0:
-                    self._start_time = real_time
-            else:
-                # if abs (diff) <= 0.5:
-                self.add_data_point (
-                    expected_blow_time,
-                    real_time,
-                    1 # math.exp (- expected_blow_time * expected_blow_time)
-                )
+                weight = 1
+            
+            # Add the bell as a datapoint with the calculated weight
+            self.add_data_point (
+                expected_blow_time,
+                real_time,
+                weight
+            )
 
             del self._expected_bells [(bell, stroke)]
         else:
+            # If this bell wasn't expected, then log that
             self.logger.info (f"Bell {bell} unexpectedly rang at stroke {'H' if stroke else 'B'}")
 
     def initialise_line (self, start_real_time):
-        self._start_time = start_real_time
+        # Remove any data that's left over in the dataset
+        self.data_set = []
+
+        # Find the default blow interval for the given stage (used when the bot isn't ringing 
+        # both trebles)
         self._blow_interval = {
             4: 0.3,
             6: 0.3,
@@ -62,15 +72,19 @@ class Rhythm:
             12: 0.2
         } [self._bot.stage]
 
-        self.data_set = []
-
         if not self._bot._tower.user_controlled (0):
+            # If the bot is ringing the first bell, then add it as a datapoint anyway, so that after the
+            # 2nd bell is rung, a regression line can be made
             self.add_data_point (0, start_real_time, 1)
+            self._start_time = start_real_time
         else:
+            # If the bot isn't ringing the first bell, then set the expected time of the first bell to 
+            # infinity so that the bot will wait indefinitely for the first bell to ring, and then it will
+            # extrapolate from that time
             self._start_time = float ('inf')
 
 
-    # Linear algebra-style conversions between different time measurements
+    # Linear conversions between different time measurements
     def index_to_blow_time (self, row_number, place):
         return row_number * self._bot.stage + place + (row_number // 2) * self._handstroke_gap
 

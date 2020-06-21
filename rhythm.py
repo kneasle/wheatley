@@ -1,9 +1,15 @@
 import logging
+import math
+
 from abc import ABCMeta, abstractmethod
 from time import sleep
 
 from bell import Bell
 from regression import calculate_regression
+
+
+MAX_DATASET_SIZE = 6
+WEIGHT_REJECTION_THRESHOLD = 0.001
 
 
 class Rhythm(metaclass=ABCMeta):
@@ -78,17 +84,28 @@ class RegressionRhythm(Rhythm):
         self.data_set = []
 
     def expect_bell(self, expected_bell, row_number, index, expected_stroke):
+        self.logger.debug(f"Expected bell {expected_bell} at index {row_number}:{index} at stroke {expected_stroke}")
         expected_blow_time = self.index_to_blow_time(row_number, index)
         self._expected_bells[(expected_bell, expected_stroke)] = expected_blow_time
 
     def add_data_point(self, blow_time, real_time, weight):
         self.data_set.append((blow_time, real_time, weight))
 
+        for (blow_time, real_time, weight) in self.data_set:
+            self.logger.debug(f"  {blow_time}\t{real_time}\t{weight}")
+
         # Only calculate the regression line if there are at least two datapoints, otherwise
         # just store the datapoint
         if len(self.data_set) >= 2:
             (self._start_time, self._blow_interval) = calculate_regression(self.data_set)
-            self.logger.info(f"Bell interval: {self._blow_interval}")
+            self.logger.debug(f"Bell interval: {self._blow_interval}")
+
+            # Filter out datapoints with extremely low weights
+            self.data_set = list(filter(lambda d: d[2] > WEIGHT_REJECTION_THRESHOLD, self.data_set))
+
+            # Eventually forget about datapoints
+            if len(self.data_set) >= MAX_DATASET_SIZE:
+                del self.data_set[0]
 
     def on_bell_ring(self, bell, stroke, real_time):
         # If this bell was expected at this stroke (i.e. is being rung by someone else)
@@ -97,7 +114,7 @@ class RegressionRhythm(Rhythm):
             expected_blow_time = self._expected_bells[(bell, stroke)]
             diff = self.real_time_to_blow_time(real_time) - expected_blow_time
 
-            self.logger.debug(f"{bell} off by {diff} places")
+            self.logger.info(f"{bell} off by {diff} places")
 
             # If this was the first bell, then overwrite the start_time to update the regression line
             if expected_blow_time == 0:
@@ -105,7 +122,7 @@ class RegressionRhythm(Rhythm):
 
             # Calculate the weight (which will be 1 if it is either of the first two bells to be rung
             # to not skew the data from the start)
-            weight = 1  # math.exp (- expected_blow_time * expected_blow_time)
+            weight = math.exp(- diff ** 2)
             if len(self.data_set) <= 1:
                 weight = 1
 

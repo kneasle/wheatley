@@ -4,7 +4,11 @@ import math
 HANDSTROKE_GAP = 1
 
 class Rhythm:
+    logger_name = "RHYTHM"
+
     def __init__ (self, bot):
+        self.logger = logging.getLogger(self.logger_name)
+        
         self._handstroke_gap = HANDSTROKE_GAP
         self._bot = bot
 
@@ -29,7 +33,7 @@ class Rhythm:
 
             diff = self.real_time_to_blow_time (real_time) - expected_blow_time
 
-            print (f"Off by {diff} places")
+            self.logger.debug (f"Off by {diff} places")
 
             if len (self.data_set) <= 1:
                 self.add_data_point (expected_blow_time, real_time, 1)
@@ -46,7 +50,7 @@ class Rhythm:
 
             del self._expected_bells [(bell, stroke)]
         else:
-            print (f"Bell {bell} unexpectedly rang at stroke {'H' if stroke else 'B'}")
+            self.logger.info (f"Bell {bell} unexpectedly rang at stroke {'H' if stroke else 'B'}")
 
     def initialise_line (self, start_real_time):
         self._start_time = start_real_time

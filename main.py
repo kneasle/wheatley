@@ -2,6 +2,7 @@
 
 import logging, time
 
+from rhythm import RegressionRhythm, WaitForUserRhythm
 from tower import RingingRoomTower
 from bot import Bot
 
@@ -14,7 +15,7 @@ from RowGeneration.PlaceNotationGenerator import PlaceNotationGenerator
 from RowGeneration.RowGenerator import RowGenerator
 
 def row_generator():
-    # row_gen = PlainHuntGenerator(8)
+    row_gen = PlainHuntGenerator(8)
     # row_gen = PlaceNotationGenerator(8, "x1", bob={1: "6"})
     # row_gen = ComplibCompositionReader(65034)
     # row_gen = MethodPlaceNotationGenerator("Single Oxford Bob Triples")
@@ -22,17 +23,25 @@ def row_generator():
     row_gen = PlaceNotationGenerator.stedman(11)
     return row_gen
 
+def rhythm():
+    regression = RegressionRhythm()
+    wait = WaitForUserRhythm(regression)
+    return regression
+    # return wait
+
 def configure_logging():
     logging.basicConfig(level=logging.WARNING)
 
     logging.getLogger(RingingRoomTower.logger_name).setLevel(logging.INFO)
     logging.getLogger(RowGenerator.logger_name).setLevel(logging.INFO)
+    logging.getLogger(RegressionRhythm.logger_name).setLevel(logging.INFO)
+    logging.getLogger(WaitForUserRhythm.logger_name).setLevel(logging.INFO)
 
 def main ():
     configure_logging ()
 
-    tower = RingingRoomTower (763451928, "https://ringingroom.com", log_bells = False)
-    bot = Bot (tower, row_generator ())
+    tower = RingingRoomTower (763451928, "https://ringingroom.com")
+    bot = Bot (tower, row_generator (), rhythm = rhythm ())
 
     with tower:
         tower.wait_loaded ()

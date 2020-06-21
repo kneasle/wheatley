@@ -1,11 +1,11 @@
 import logging
-from abc import ABC, abstractmethod
+from abc import ABCMeta, abstractmethod
 from typing import List
 
 from RowGeneration.Helpers import convert_to_bell_string
 
 
-class RowGenerator(ABC):
+class RowGenerator(metaclass=ABCMeta):
     logger_name = "ROWGEN"
 
     def __init__(self, stage: int):

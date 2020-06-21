@@ -1,14 +1,14 @@
 import time
+from typing import Optional
 
 from Calls import Calls
 from RowGeneration.RowGenerator import RowGenerator
-from rhythm import Rhythm
+from rhythm import RegressionRhythm, Rhythm
 from tower import RingingRoomTower
 
-
 class Bot:
-    def __init__ (self, tower: RingingRoomTower, row_generator: RowGenerator, do_up_down_in = True):
-        self._rhythm = Rhythm (self)
+    def __init__ (self, tower: RingingRoomTower, row_generator: RowGenerator, do_up_down_in = True, rhythm: Optional[Rhythm] = None):
+        self._rhythm = rhythm or  RegressionRhythm ()
 
         self.do_up_down_in = do_up_down_in
 
@@ -52,7 +52,7 @@ class Bot:
 
     # Callbacks
     def _on_look_to (self):
-        self._rhythm.initialise_line (time.time () + 3)
+        self._rhythm.initialise_line (self.stage, self._tower.user_controlled(0), time.time() + 3)
 
         self._should_stand = False
         self._should_start_method = False
@@ -95,7 +95,8 @@ class Bot:
         if self._tower.user_controlled (bell):
             self._rhythm.expect_bell (
                 bell,
-                self._rhythm.index_to_blow_time (self._row_number, index),
+                self._row_number,
+                index,
                 self.is_handstroke
             )
 
@@ -114,42 +115,43 @@ class Bot:
     def main_loop (self):
         while True:
             if self._is_ringing:
-                if time.time () > self._rhythm.index_to_real_time (self._row_number, self._place):
-                    bell = self._place if self._is_ringing_rounds else self._row [self._place]
+                bell = self._place if self._is_ringing_rounds else self._row [self._place]
 
-                    if not self._tower.user_controlled (bell):
-                        self._tower.ring_bell (bell, self.is_handstroke)
+                user_controlled = self._tower.user_controlled(bell)
+                self._rhythm.wait_for_bell_time(time.time(), bell, self._row_number, self._place, user_controlled, self.is_handstroke)
+                if not user_controlled:
+                    self._tower.ring_bell (bell, self.is_handstroke)
 
-                    self._place += 1
+                self._place += 1
 
-                    if self._place == self.stage:
-                        self._row_number += 1
-                        self._place = 0
+                if self._place == self.stage:
+                    self._row_number += 1
+                    self._place = 0
 
-                        if not self._is_ringing_rounds:
-                            self.start_next_row ()
-                        else:
-                            for b in range (self.stage):
-                                self.expect_bell (b, b)
+                    if not self._is_ringing_rounds:
+                        self.start_next_row ()
+                    else:
+                        for b in range (self.stage):
+                            self.expect_bell (b, b)
 
-                        if self._is_ringing_rounds:
-                            if self._row_number == 2 and self.do_up_down_in:
-                                self._should_start_method = True
-                        
-                        if self._row_number % 2 == 0:
-                            # We're just starting a handstroke
-                            if self._should_stand:
-                                self._should_stand = False
-                                self._is_ringing = False
+                    if self._is_ringing_rounds:
+                        if self._row_number == 2 and self.do_up_down_in:
+                            self._should_start_method = True
 
-                            if self._should_start_method and self._is_ringing_rounds:
-                                self._should_start_method = False
-                                self._is_ringing_rounds = False
+                    if self._row_number % 2 == 0:
+                        # We're just starting a handstroke
+                        if self._should_stand:
+                            self._should_stand = False
+                            self._is_ringing = False
 
-                                self.start_method ()
+                        if self._should_start_method and self._is_ringing_rounds:
+                            self._should_start_method = False
+                            self._is_ringing_rounds = False
 
-                            if self._should_start_ringing_rounds and not self._is_ringing_rounds:
-                                self._should_start_ringing_rounds = False
-                                self._is_ringing_rounds = True
+                            self.start_method ()
+
+                        if self._should_start_ringing_rounds and not self._is_ringing_rounds:
+                            self._should_start_ringing_rounds = False
+                            self._is_ringing_rounds = True
 
             time.sleep (0.01)

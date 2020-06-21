@@ -16,6 +16,11 @@ WEIGHT_REJECTION_THRESHOLD = 0.001
 REGRESSION_INERTIA_COEFFICIENT = 0.5
 
 
+# Calculates t such that lerp(a, b, t) = c (will divide by zero if a = b)
+def inverse_lerp(a, b, c):
+    return (c - a) / (b - a)
+
+
 def lerp(a, b, t):
     return (1 - t) * a + t * b
 

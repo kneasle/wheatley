@@ -14,10 +14,10 @@ from RowGeneration.RowGenerator import RowGenerator
 def row_generator():
     # row_gen = PlainHuntGenerator(8)
     # row_gen = PlaceNotationGenerator(8, "x1", bob={1: "6"})
-    row_gen = ComplibCompositionReader(65034)
+    # row_gen = ComplibCompositionReader(65034)
     # row_gen = MethodPlaceNotationGenerator("Single Oxford Bob Triples")
     # row_gen = DixonoidsGenerator(6, DixonoidsGenerator.DixonsRules)
-    # row_gen = PlaceNotationGenerator.stedman(11)
+    row_gen = PlaceNotationGenerator.stedman(11)
     return row_gen
 
 def configure_logging():

@@ -1,9 +1,13 @@
 import time
 
+from Calls import Calls
+from RowGeneration.RowGenerator import RowGenerator
 from rhythm import Rhythm
+from tower import RingingRoomTower
+
 
 class Bot:
-    def __init__ (self, tower, row_generator, do_up_down_in = True):
+    def __init__ (self, tower: RingingRoomTower, row_generator: RowGenerator, do_up_down_in = True):
         self._rhythm = Rhythm (self)
 
         self.do_up_down_in = do_up_down_in
@@ -12,11 +16,14 @@ class Bot:
 
         self._tower = tower
 
-        self._tower.on_thats_all = self._on_thats_all
-        self._tower.on_go = self._on_go
-        self._tower.on_stand_next = self._on_stand_next
-        self._tower.on_look_to = self._on_look_to
-        self._tower.on_bell_ring = self._on_bell_ring
+        self._tower.invoke_on_call[Calls.LookTo].append(self._on_look_to)
+        self._tower.invoke_on_call[Calls.Go].append(self._on_go)
+        self._tower.invoke_on_call[Calls.Bob].append(self._on_bob)
+        self._tower.invoke_on_call[Calls.Single].append(self._on_single)
+        self._tower.invoke_on_call[Calls.ThatsAll].append(self._on_thats_all)
+        self._tower.invoke_on_call[Calls.Stand].append(self._on_stand_next)
+
+        self._tower.invoke_on_bell_rung.append(self._on_bell_ring)
 
         self._is_ringing = False
         self._is_ringing_rounds = True
@@ -64,6 +71,12 @@ class Bot:
     def _on_go (self):
         if self._is_ringing_rounds:
             self._should_start_method = True
+
+    def _on_bob (self):
+        self.row_generator.set_bob()
+
+    def _on_single (self):
+        self.row_generator.set_single()
 
     def _on_thats_all (self):
         self._should_start_ringing_rounds = True

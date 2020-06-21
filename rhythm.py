@@ -13,7 +13,7 @@ WEIGHT_REJECTION_THRESHOLD = 0.001
 # An inertia-like coefficient designed to allow the regression finder to slowly adjust to a new rhythm
 # 0.0 means that a new regression line will take effect instantly
 # 1.0 means that no effect is made at all
-REGRESSION_INERTIA_COEFFICIENT = 0.2
+REGRESSION_INERTIA_COEFFICIENT = 0.5
 
 
 def lerp(a, b, t):

@@ -147,9 +147,10 @@ class RegressionRhythm(Rhythm):
 
     def wait_for_bell_time(self, current_time, bell, row_number, place, user_controlled, stroke):
         if user_controlled and self._start_time == float('inf'):
+            self.logger.debug(f"Waiting for pull off")
             while self._start_time == float('inf'):
-                self.logger.debug(f"Waiting for pull off")
                 sleep(0.01)
+            self.logger.debug(f"Pulled off")
             return
 
         bell_time = self.index_to_real_time (row_number, place)

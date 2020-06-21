@@ -2,7 +2,7 @@ import logging
 from abc import ABCMeta, abstractmethod
 from typing import List
 
-from RowGeneration.Helpers import convert_to_bell_string
+from bell import Bell
 
 
 class RowGenerator(metaclass=ABCMeta):
@@ -32,13 +32,13 @@ class RowGenerator(metaclass=ABCMeta):
         self._has_bob = False
         self._has_single = False
 
-    def next_row(self, is_handstroke: bool):
+    def next_row(self, is_handstroke: bool) -> List[Bell]:
         self._row = self._gen_row(self._row, is_handstroke, self._index)
         self._add_cover_if_required()
 
         self._index += 1
 
-        message = " ".join([convert_to_bell_string(bell) for bell in self._row])
+        message = " ".join([str(bell) for bell in self._row])
         self.logger.info(message)
 
         return self._row
@@ -49,18 +49,18 @@ class RowGenerator(metaclass=ABCMeta):
     def set_single(self):
         self._has_single = True
 
-    def rounds(self):
-        return [i for i in range(1, self.number_of_bells + 1)]
+    def rounds(self) -> List[Bell]:
+        return [Bell.from_number(i) for i in range(1, self.number_of_bells + 1)]
 
     def _add_cover_if_required(self):
         if len(self._row) == self.number_of_bells - 1:
-            self._row.append(self.number_of_bells)
+            self._row.append(Bell.from_number(self.number_of_bells))
 
     @abstractmethod
-    def _gen_row(self, previous_row: List[int], is_handstroke: bool, index: int) -> List[int]:
+    def _gen_row(self, previous_row: List[Bell], is_handstroke: bool, index: int) -> List[Bell]:
         pass
 
-    def permute(self, row: List[int], places: List[int]) -> List[int]:
+    def permute(self, row: List[Bell], places: List[int]) -> List[Bell]:
         new_row = list(row)
         i = 1
         if places and places[0] % 2 == 0:

@@ -17,5 +17,5 @@ class GeneratorTestBase(TestCase):
     def yield_rows(generator, count, start_at_hand=True):
         is_handstroke = start_at_hand
         for _ in range(count):
-            yield generator.next_row(is_handstroke)
+            yield [bell.number for bell in generator.next_row(is_handstroke)]
             is_handstroke = not is_handstroke

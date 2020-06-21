@@ -3,6 +3,7 @@ from typing import Optional
 
 from Calls import Calls
 from RowGeneration.RowGenerator import RowGenerator
+from bell import Bell
 from rhythm import RegressionRhythm, Rhythm
 from tower import RingingRoomTower
 
@@ -101,7 +102,7 @@ class Bot:
             )
 
     def start_next_row (self):
-        self._row = [x - 1 for x in self.row_generator.next_row (self.is_handstroke)]
+        self._row = self.row_generator.next_row (self.is_handstroke)
 
         for (index, bell) in enumerate (self._row):
             self.expect_bell (index, bell)
@@ -115,7 +116,7 @@ class Bot:
     def main_loop (self):
         while True:
             if self._is_ringing:
-                bell = self._place if self._is_ringing_rounds else self._row [self._place]
+                bell = Bell.from_index(self._place) if self._is_ringing_rounds else self._row [self._place]
 
                 user_controlled = self._tower.user_controlled(bell)
                 self._rhythm.wait_for_bell_time(time.time(), bell, self._row_number, self._place, user_controlled, self.is_handstroke)

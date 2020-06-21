@@ -5,6 +5,9 @@ from typing import Optional, Callable, Dict, List, Any
 
 import socketio
 
+from bell import Bell
+
+
 class RingingRoomTower:
     logger_name = "TOWER"
 
@@ -39,23 +42,26 @@ class RingingRoomTower:
     def number_of_bells(self):
         return len(self._bell_state)
 
-    def ring_bell(self, bell: int, handstroke: bool):
+    def ring_bell(self, bell: Bell, handstroke: bool):
         try:
-            if bell >= len(self._bell_state) or bell < 0:
-                self.logger.error(f"Bell {bell} not in tower")
-                return False
-            stroke = self._bell_state[bell]
+            stroke = self.get_stroke(bell)
             if stroke != handstroke:
                 self.logger.error(f"Bell {bell} on opposite stroke")
                 return False
-            self._emit("c_bell_rung", {"bell": bell + 1, "stroke": stroke, "tower_id": self.tower_id}, "")
+            self._emit("c_bell_rung", {"bell": bell.number, "stroke": stroke, "tower_id": self.tower_id}, "")
             return True
         except Exception as e:
             self.logger.error(e)
             return False
 
-    def user_controlled(self, bell: int):
+    def user_controlled(self, bell: Bell):
         return self._assigned_users.get(bell, "") != ""
+
+    def get_stroke(self, bell: Bell):
+        if bell.index >= len(self._bell_state) or bell.index < 0:
+            self.logger.error(f"Bell {bell} not in tower")
+            return None
+        return self._bell_state[bell.index]
 
     def make_call(self, call: str):
         self._emit("c_call", {"call": call, "tower_id": self.tower_id}, f"Call '{call}'")
@@ -109,9 +115,9 @@ class RingingRoomTower:
     def _on_bell_rung (self, data):
         self._on_global_bell_state(data)
 
-        who_rang = data ["who_rang"] - 1
+        who_rang = Bell.from_number(data ["who_rang"])
         for bell_ring_callback in self.invoke_on_bell_rung:
-            bell_ring_callback(who_rang, self._bell_state [who_rang])
+            bell_ring_callback(who_rang, self.get_stroke(who_rang))
 
     def _on_global_bell_state (self, data):
         bell_state = data["global_bell_state"]
@@ -129,7 +135,7 @@ class RingingRoomTower:
                 invoke_callback()
 
     def _on_assign_user(self, data):
-        bell = data["bell"] - 1
+        bell = Bell.from_number(data["bell"])
         user = data["user"]
         self._assigned_users[bell] = user
         self.logger.info(f"RECEIVED: Assigned bell '{bell}' to '{user or 'BOT'}'")

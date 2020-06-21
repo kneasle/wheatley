@@ -2,6 +2,7 @@ from typing import Dict, List
 
 from RowGeneration.Helpers import convert_pn
 from RowGeneration.RowGenerator import RowGenerator
+from bell import Bell
 
 
 class DixonoidsGenerator(RowGenerator):
@@ -34,8 +35,8 @@ class DixonoidsGenerator(RowGenerator):
         self.bob_rules = self._convert_pn_dict(bob_rules)
         self.single_rules = self._convert_pn_dict(single_rules)
 
-    def _gen_row(self, previous_row: List[int], is_handstroke: bool, index: int) -> List[int]:
-        leading_bell = previous_row[0]
+    def _gen_row(self, previous_row: List[Bell], is_handstroke: bool, index: int) -> List[Bell]:
+        leading_bell = previous_row[0].number
         pn_index = 0 if is_handstroke else 1
 
         if self._has_bob and self.bob_rules.get(leading_bell):

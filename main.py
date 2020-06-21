@@ -27,8 +27,8 @@ def row_generator():
 def rhythm():
     regression = RegressionRhythm()
     wait = WaitForUserRhythm(regression)
-    return regression
-    # return wait
+    # return regression
+    return wait
 
 def configure_logging():
     logging.basicConfig(level=logging.WARNING)

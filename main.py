@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import logging, time
 
 from tower import RingingRoomTower

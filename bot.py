@@ -66,7 +66,7 @@ class Bot:
 
         # Expect the bells in rounds
         for b in range(self.stage):
-            self.expect_bell(b, b)
+            self.expect_bell(b, Bell.from_index(b))
 
     def _on_go(self):
         if self._is_ringing_rounds:
@@ -131,7 +131,7 @@ class Bot:
 
                     if self._is_ringing_rounds:
                         for b in range(self.stage):
-                            self.expect_bell(b, b)
+                            self.expect_bell(b, Bell.from_index(b))
                     else:
                         self.start_next_row()
 

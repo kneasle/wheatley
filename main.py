@@ -2,6 +2,7 @@
 
 import logging
 import time
+import argparse
 
 from rhythm import RegressionRhythm, WaitForUserRhythm
 from tower import RingingRoomTower
@@ -45,7 +46,18 @@ def configure_logging():
 def main():
     configure_logging()
 
-    tower = RingingRoomTower(763451928, "https://ringingroom.com")
+    parser = argparse.ArgumentParser(description="A bot to fill in bells during ringingroom.com practices")
+
+    parser.add_argument(
+        "--id",
+        default=763451928,
+        type=int,
+        help="The ID of the tower to join (defaults to the ID of 'Bot Training Ground', 763451928)."
+    )
+
+    args = parser.parse_args()
+
+    tower = RingingRoomTower(args.id, "https://ringingroom.com")
     bot = Bot(tower, row_generator(), rhythm=rhythm())
 
     with tower:

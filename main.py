@@ -54,10 +54,16 @@ def main():
         type=int,
         help="The ID of the tower to join (defaults to the ID of 'Bot Training Ground', 763451928)."
     )
+    parser.add_argument(
+        "--url",
+        default="https://ringingroom.com",
+        type=str,
+        help="The URL of the server to join (defaults to 'https://ringingroom.com')"
+    )
 
     args = parser.parse_args()
 
-    tower = RingingRoomTower(args.id, "https://ringingroom.com")
+    tower = RingingRoomTower(args.id, args.url)
     bot = Bot(tower, row_generator(), rhythm=rhythm())
 
     with tower:

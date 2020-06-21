@@ -17,13 +17,17 @@ from RowGeneration.PlaceNotationGenerator import PlaceNotationGenerator
 from RowGeneration.RowGenerator import RowGenerator
 
 
-def row_generator():
-    row_gen = PlainHuntGenerator(8)
+def row_generator(args):
+    # row_gen = PlainHuntGenerator(8)
     # row_gen = PlaceNotationGenerator(8, "x1", bob={1: "6"})
-    # row_gen = ComplibCompositionReader(65034)
-    # row_gen = MethodPlaceNotationGenerator("Single Oxford Bob Triples")
+    if "comp" in args:
+        row_gen = ComplibCompositionReader(comp)
+    elif "method" in args:
+        row_gen = MethodPlaceNotationGenerator(args.method)
+    else:
+        row_gen = MethodPlaceNotationGenerator("Plain Bob Major")
     # row_gen = DixonoidsGenerator(6, DixonoidsGenerator.DixonsRules)
-    row_gen = PlaceNotationGenerator.stedman(11)
+    # row_gen = PlaceNotationGenerator.stedman(11)
     return row_gen
 
 
@@ -44,8 +48,7 @@ def configure_logging():
 
 
 def main():
-    configure_logging()
-
+    # Parse the arguments
     parser = argparse.ArgumentParser(description="A bot to fill in bells during ringingroom.com practices")
 
     parser.add_argument(
@@ -60,11 +63,28 @@ def main():
         type=str,
         help="The URL of the server to join (defaults to 'https://ringingroom.com')"
     )
+    # Row generator arguments
+    row_gen_group = parser.add_mutually_exclusive_group()
+    row_gen_group.add_argument(
+        "--comp",
+        default="65034",
+        type=int,
+        help="The ID of the complib composition you want to ring"
+    )
+    row_gen_group.add_argument(
+        "--method",
+        default="Plain Bob Minor",
+        type=str,
+        help="The title of the method you want to ring"
+    )
 
     args = parser.parse_args()
 
+    # Run the program
+    configure_logging()
+
     tower = RingingRoomTower(args.id, args.url)
-    bot = Bot(tower, row_generator(), rhythm=rhythm())
+    bot = Bot(tower, row_generator(args), rhythm=rhythm())
 
     with tower:
         tower.wait_loaded()

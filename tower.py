@@ -112,14 +112,14 @@ class RingingRoomTower:
         if message:
             self.logger.info(f"EMIT: {message}")
 
-    def _on_bell_rung (self, data):
+    def _on_bell_rung(self, data):
         self._on_global_bell_state(data)
 
-        who_rang = Bell.from_number(data ["who_rang"])
+        who_rang = Bell.from_number(data["who_rang"])
         for bell_ring_callback in self.invoke_on_bell_rung:
             bell_ring_callback(who_rang, self.get_stroke(who_rang))
 
-    def _on_global_bell_state (self, data):
+    def _on_global_bell_state(self, data):
         bell_state = data["global_bell_state"]
         self._bell_state = bell_state
 
@@ -142,14 +142,14 @@ class RingingRoomTower:
 
     def _on_call(self, data):
         call = data["call"]
-        self.logger.info (f"RECEIVED: Call '{call}'")
+        self.logger.info(f"RECEIVED: Call '{call}'")
 
         found_callback = False
         for call_callback in self.invoke_on_call.get(call, []):
             call_callback()
             found_callback = True
         if not found_callback:
-            self.logger.warning (f"No callback found for '{call}'")
+            self.logger.warning(f"No callback found for '{call}'")
 
     @staticmethod
     def _bells_set_at_hand(number: int):

@@ -3,6 +3,7 @@ from typing import List
 
 from Calls import Calls
 from RowGeneration.RowGenerator import RowGenerator
+from bell import Bell
 from tower import RingingRoomTower
 
 
@@ -19,7 +20,7 @@ class GoAndStopCallingGenerator(RowGenerator):
             self.tower.make_call(Calls.Go)
         return super(GoAndStopCallingGenerator, self).next_row(is_handstroke)
 
-    def _gen_row(self, previous_row: List[int], is_handstroke: bool, index: int) -> List[int]:
+    def _gen_row(self, previous_row: List[Bell], is_handstroke: bool, index: int) -> List[Bell]:
         next_row = self.generator._gen_row(previous_row, is_handstroke, index)
         if next_row == self.rounds():
             self.tower.make_call(Calls.ThatsAll)

@@ -2,6 +2,7 @@ from typing import List, Dict, Union, Tuple
 
 from RowGeneration.Helpers import convert_pn, convert_to_bell_string
 from RowGeneration.RowGenerator import RowGenerator
+from bell import Bell
 
 
 class PlaceNotationGenerator(RowGenerator):
@@ -25,7 +26,7 @@ class PlaceNotationGenerator(RowGenerator):
 
         self._generating_call_pn: List[List[int]] = []
 
-    def _gen_row(self, previous_row: List[int], is_handstroke: bool, index: int) -> List[int]:
+    def _gen_row(self, previous_row: List[Bell], is_handstroke: bool, index: int) -> List[Bell]:
         lead_index = index % self.lead_len
         assert lead_index % 2 != is_handstroke
 

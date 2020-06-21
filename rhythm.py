@@ -2,24 +2,25 @@ import logging
 from abc import ABCMeta, abstractmethod
 from time import sleep
 
+from bell import Bell
 from regression import calculate_regression
 
 
 class Rhythm(metaclass=ABCMeta):
     @abstractmethod
-    def wait_for_bell_time(self, current_time, bell, row_number, place, user_controlled, stroke):
+    def wait_for_bell_time(self, current_time: float, bell: Bell, row_number: int, place: int, user_controlled: bool, stroke: bool):
         pass
 
     @abstractmethod
-    def expect_bell(self, expected_bell, row_number, index, expected_stroke):
+    def expect_bell(self, expected_bell: Bell, row_number: int, index: int, expected_stroke: bool):
         pass
 
     @abstractmethod
-    def on_bell_ring(self, bell, stroke, real_time):
+    def on_bell_ring(self, bell: Bell, stroke: bool, real_time: float):
         pass
 
     @abstractmethod
-    def initialise_line(self, stage, user_controls_treble, start_time):
+    def initialise_line(self, stage: int, user_controls_treble: bool, start_time: float):
         pass
 
 

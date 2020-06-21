@@ -1,10 +1,11 @@
 from typing import List
 
 from RowGeneration.RowGenerator import RowGenerator
+from bell import Bell
 
 
 class PlainHuntGenerator(RowGenerator):
-    def _gen_row(self, previous_row: List[int], is_handstroke: bool, index: int) -> List[int]:
+    def _gen_row(self, previous_row: List[Bell], is_handstroke: bool, index: int) -> List[Bell]:
         if is_handstroke:
             return self.permute(previous_row, [])
         else:

@@ -129,11 +129,11 @@ class Bot:
                     self._row_number += 1
                     self._place = 0
 
-                    if not self._is_ringing_rounds:
-                        self.start_next_row()
-                    else:
+                    if self._is_ringing_rounds:
                         for b in range(self.stage):
                             self.expect_bell(b, b)
+                    else:
+                        self.start_next_row()
 
                     if self._is_ringing_rounds:
                         if self._row_number == 2 and self.do_up_down_in:

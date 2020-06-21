@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
-import logging, time
+import logging
+import time
 
 from rhythm import RegressionRhythm, WaitForUserRhythm
 from tower import RingingRoomTower

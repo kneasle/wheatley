@@ -8,7 +8,7 @@ from bell import Bell
 from regression import calculate_regression
 
 
-MAX_DATASET_SIZE = 6
+MAX_CHANGES_IN_DATASET = 3.0
 WEIGHT_REJECTION_THRESHOLD = 0.001
 
 
@@ -27,7 +27,8 @@ class Rhythm(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def initialise_line(self, stage: int, user_controls_treble: bool, start_time: float):
+    def initialise_line(self, stage: int, user_controls_treble: bool, start_time: float, 
+                        number_of_user_controlled_bells: int):
         pass
 
 
@@ -64,8 +65,9 @@ class WaitForUserRhythm(Rhythm):
         except KeyError:
             pass
 
-    def initialise_line(self, stage, user_controls_treble, start_time):
-        self._innerRhythm.initialise_line(stage, user_controls_treble, start_time - self.delay)
+    def initialise_line(self, stage, user_controls_treble, start_time, number_of_user_controlled_bells):
+        self._innerRhythm.initialise_line(stage, user_controls_treble, start_time - self.delay, 
+                                          number_of_user_controlled_bells)
 
 
 class RegressionRhythm(Rhythm):
@@ -79,6 +81,8 @@ class RegressionRhythm(Rhythm):
 
         self._start_time = 0
         self._blow_interval = 0
+
+        self._number_of_user_controlled_bells = 0
 
         self._expected_bells = {}
         self.data_set = []
@@ -104,7 +108,7 @@ class RegressionRhythm(Rhythm):
             self.data_set = list(filter(lambda d: d[2] > WEIGHT_REJECTION_THRESHOLD, self.data_set))
 
             # Eventually forget about datapoints
-            if len(self.data_set) >= MAX_DATASET_SIZE:
+            if len(self.data_set) >= MAX_CHANGES_IN_DATASET * self._number_of_user_controlled_bells:
                 del self.data_set[0]
 
     def on_bell_ring(self, bell, stroke, real_time):
@@ -138,8 +142,10 @@ class RegressionRhythm(Rhythm):
             # If this bell wasn't expected, then log that
             self.logger.warning(f"Bell {bell} unexpectedly rang at stroke {'H' if stroke else 'B'}")
 
-    def initialise_line(self, stage, user_controls_treble, start_real_time):
-        # Remove any data that's left over in the dataset
+    def initialise_line(self, stage, user_controls_treble, start_real_time, number_of_user_controlled_bells):
+        self._number_of_user_controlled_bells = number_of_user_controlled_bells
+
+        # Remove any data that's left over in the dataset from the last touch
         self.data_set = []
 
         # Find the default blow interval for the given stage (used when the bot isn't ringing

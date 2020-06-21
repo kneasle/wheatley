@@ -51,8 +51,14 @@ class Bot:
 
     # Callbacks
     def _on_look_to(self):
+        number_of_user_controlled_bells = 0
+        for i in range(self.stage):
+            if self._tower.user_controlled(Bell.from_index(i)):
+                number_of_user_controlled_bells += 1
+
         treble = Bell.from_number(1)
-        self._rhythm.initialise_line(self.stage, self._tower.user_controlled(treble), time.time() + 3)
+        self._rhythm.initialise_line(self.stage, self._tower.user_controlled(treble), time.time() + 3,
+                                     number_of_user_controlled_bells)
 
         self._should_stand = False
         self._should_start_method = False

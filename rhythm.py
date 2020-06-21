@@ -35,10 +35,14 @@ class WaitForUserRhythm(Rhythm):
     def wait_for_bell_time(self, current_time, bell, row_number, place, user_controlled, stroke):
         self._innerRhythm.wait_for_bell_time(current_time - self.delay, bell, row_number, place, user_controlled, stroke)
         if user_controlled:
+            delay_for_user = 0
             while (bell, stroke) in self._expected_bells:
                 sleep(0.01)
-                self.delay += 0.01
-                self.logger.info(f"Waiting for {bell}")
+                delay_for_user += 0.01
+                self.logger.debug(f"Waiting for {bell}")
+            if delay_for_user:
+                self.logger.info(f"Delayed for {delay_for_user}")
+                self.delay += delay_for_user
 
     def expect_bell(self, expected_bell, row_number, index, expected_stroke):
         self._innerRhythm.expect_bell(expected_bell, row_number, index, expected_stroke)
@@ -141,10 +145,20 @@ class RegressionRhythm(Rhythm):
             self._start_time = float ('inf')
 
     def wait_for_bell_time(self, current_time, bell, row_number, place, user_controlled, stroke):
+        if user_controlled and self._start_time == float('inf'):
+            while self._start_time == float('inf'):
+                self.logger.debug(f"Waiting for pull off")
+                sleep(0.01)
+            return
+
         bell_time = self.index_to_real_time (row_number, place)
-        if bell_time > current_time:
+        if bell_time == float('inf') or self._start_time == 0:
+            self.logger.error(f"Bell Time {bell_time}; Start Time {self._start_time}")
+            sleep(self._blow_interval or 0.2)
+        elif bell_time > current_time:
             sleep(bell_time - current_time)
         else:
+            # Slow the ticks slightly
             sleep(0.01)
 
     # Linear conversions between different time measurements

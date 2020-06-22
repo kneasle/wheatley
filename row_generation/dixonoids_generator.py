@@ -1,7 +1,7 @@
 from typing import Dict, List
 
-from RowGeneration.Helpers import convert_pn
-from RowGeneration.RowGenerator import RowGenerator
+from .helpers import convert_pn
+from .row_generator import RowGenerator
 from bell import Bell
 
 

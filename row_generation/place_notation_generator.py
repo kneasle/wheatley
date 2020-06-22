@@ -1,7 +1,7 @@
 from typing import List, Dict, Union, Tuple
 
-from RowGeneration.Helpers import convert_pn, convert_to_bell_string
-from RowGeneration.RowGenerator import RowGenerator
+from .helpers import convert_pn, convert_to_bell_string
+from .row_generator import RowGenerator
 from bell import Bell
 
 

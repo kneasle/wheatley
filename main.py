@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import logging
-import time
 import argparse
 
 from rhythm import RegressionRhythm, WaitForUserRhythm
@@ -25,7 +24,7 @@ def row_generator(args):
     elif "method" in args:
         row_gen = MethodPlaceNotationGenerator(args.method)
     else:
-        assert False, 
+        assert False, \
             "This shouldn't be possible because one of --method and --comp should always be defined"
     # row_gen = DixonoidsGenerator(6, DixonoidsGenerator.DixonsRules)
     # row_gen = PlaceNotationGenerator.stedman(11)
@@ -50,7 +49,9 @@ def configure_logging():
 
 def main():
     # Parse the arguments
-    parser = argparse.ArgumentParser(description="A bot to fill in bells during ringingroom.com practices")
+    parser = argparse.ArgumentParser(
+        description="A bot to fill in bells during ringingroom.com practices"
+    )
 
     parser.add_argument(
         "--id",

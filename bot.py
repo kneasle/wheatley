@@ -57,8 +57,8 @@ class Bot:
                 number_of_user_controlled_bells += 1
 
         treble = Bell.from_number(1)
-        self._rhythm.initialise_line(self.stage, self._tower.user_controlled(treble), time.time() + 3,
-                                     number_of_user_controlled_bells)
+        self._rhythm.initialise_line(self.stage, self._tower.user_controlled(treble),
+                                     time.time() + 3, number_of_user_controlled_bells)
 
         self._should_stand = False
         self._should_start_method = False
@@ -92,7 +92,7 @@ class Bot:
 
     def _on_bell_ring(self, bell, stroke):
         if self._tower.user_controlled(bell):
-            # This will give us the stroke _after_ the bell rings, we have to invert it, because 
+            # This will give us the stroke _after_ the bell rings, we have to invert it, because
             # otherwise this will always expect the bells on the wrong stroke
             self._rhythm.on_bell_ring(bell, not stroke, time.time())
 
@@ -124,8 +124,8 @@ class Bot:
                 bell = Bell.from_index(self._place) if self._is_ringing_rounds else self._row[self._place]
 
                 user_controlled = self._tower.user_controlled(bell)
-                self._rhythm.wait_for_bell_time(time.time(), bell, self._row_number, self._place, user_controlled,
-                                                self.is_handstroke)
+                self._rhythm.wait_for_bell_time(time.time(), bell, self._row_number, self._place,
+                                                user_controlled, self.is_handstroke)
                 if not user_controlled:
                     self._tower.ring_bell(bell, self.is_handstroke)
 

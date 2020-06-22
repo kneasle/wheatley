@@ -91,9 +91,7 @@ class Bot:
         self._row_number = 0
         self._place = 0
 
-        # Expect the bells in rounds
-        for bell in range(self.stage):
-            self.expect_bell(bell, Bell.from_index(bell))
+        self.start_next_row()
 
     def _on_go(self):
         """ Callback called when a user calls 'Go'. """
@@ -126,7 +124,7 @@ class Bot:
 
     # Mainloop and helper methods
     def expect_bell(self, index, bell):
-        """ Called to let the rhythm know that a bell will be rung at a certain time and stroke. """
+        """ Called to let the rhythm expect a user-controlled bell at a certain time and stroke. """
         if self._tower.user_controlled(bell):
             self._rhythm.expect_bell(
                 bell,
@@ -139,10 +137,14 @@ class Bot:
         """
         Creates a new row from the row generator and tells the rhythm to expect the new bells.
         """
-        self._row = self.row_generator.next_row(self.is_handstroke)
+        if self._is_ringing_rounds:
+            for index in range(self.stage):
+                self.expect_bell(index, Bell.from_index(index))
+        else:
+            self._row = self.row_generator.next_row(self.is_handstroke)
 
-        for (index, bell) in enumerate(self._row):
-            self.expect_bell(index, bell)
+            for (index, bell) in enumerate(self._row):
+                self.expect_bell(index, bell)
 
     def start_method(self):
         """
@@ -170,11 +172,7 @@ class Bot:
             self._row_number += 1
             self._place = 0
 
-            if self._is_ringing_rounds:
-                for bell in range(self.stage):
-                    self.expect_bell(bell, Bell.from_index(bell))
-            else:
-                self.start_next_row()
+            self.start_next_row()
 
             if self._is_ringing_rounds:
                 if self._row_number == 2 and self.do_up_down_in:

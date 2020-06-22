@@ -1,3 +1,5 @@
+""" File to contain string constants representing names used by Ringing Room to represent calls. """
+
 LOOK_TO = "Look to"
 GO = "Go"
 BOB = "Bob"

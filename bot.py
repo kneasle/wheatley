@@ -171,7 +171,7 @@ class Bot:
         self.start_next_row()
 
     def tick(self):
-        """ Called every time the main loop is executed when the bot is ringing """
+        """ Called every time the main loop is executed when the bot is ringing. """
 
         bell = Bell.from_index(self._place) if self._is_ringing_rounds else self._row[self._place]
 

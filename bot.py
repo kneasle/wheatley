@@ -1,3 +1,9 @@
+"""
+Module to contain the Bot class, which acts as 'glue' to combine the rhythm, row generation and
+socket-io communication provided by the Rhythm, RowGenerator and Tower objects into a useful
+program.
+"""
+
 import time
 from typing import Optional
 
@@ -9,8 +15,13 @@ from tower import RingingRoomTower
 
 
 class Bot:
+    """
+    A class to hold all the information that the bot will use to glue together the rhythm,
+    row_gen and socket-io parts together into a useful program.
+    """
     def __init__(self, tower: RingingRoomTower, row_generator: RowGenerator, do_up_down_in=True,
                  rhythm: Optional[Rhythm] = None):
+        """ Initialise a Bot with all the parts it needs to run. """
         self._rhythm = rhythm or RegressionRhythm()
 
         self.do_up_down_in = do_up_down_in
@@ -43,61 +54,79 @@ class Bot:
     # Convenient properties that are frequently used
     @property
     def is_handstroke(self):
+        """
+        Returns true if the current row (determined by self._row_number) represents a handstroke.
+        """
         return self._row_number % 2 == 0
 
     @property
     def stage(self):
+        """ Convenient property to find the number of bells in the current tower. """
         return self._tower.number_of_bells
 
     # Callbacks
     def _on_look_to(self):
+        """ Callback called when a user calls 'Look To'. """
+        treble = Bell.from_number(1)
+
+        # Count number of user controlled bells
         number_of_user_controlled_bells = 0
         for i in range(self.stage):
             if self._tower.user_controlled(Bell.from_index(i)):
                 number_of_user_controlled_bells += 1
 
-        treble = Bell.from_number(1)
         self._rhythm.initialise_line(self.stage, self._tower.user_controlled(treble),
                                      time.time() + 3, number_of_user_controlled_bells)
 
+        # Clear all the flags
         self._should_stand = False
         self._should_start_method = False
         self._should_start_ringing_rounds = False
 
+        # Reset the state, so that the bot starts by ringing rounds
         self._is_ringing = True
         self._is_ringing_rounds = True
 
+        # Start at the first place of the first row
         self._row_number = 0
         self._place = 0
 
         # Expect the bells in rounds
-        for b in range(self.stage):
-            self.expect_bell(b, Bell.from_index(b))
+        for bell in range(self.stage):
+            self.expect_bell(bell, Bell.from_index(bell))
 
     def _on_go(self):
+        """ Callback called when a user calls 'Go'. """
         if self._is_ringing_rounds:
             self._should_start_method = True
 
     def _on_bob(self):
+        """ Callback called when a user calls 'Bob'. """
         self.row_generator.set_bob()
 
     def _on_single(self):
+        """ Callback called when a user calls 'Single'. """
         self.row_generator.set_single()
 
     def _on_thats_all(self):
+        """ Callback called when a user calls 'That`s All'. """
         self._should_start_ringing_rounds = True
 
     def _on_stand_next(self):
+        """ Callback called when a user calls 'Stand Next'. """
         self._should_stand = True
 
     def _on_bell_ring(self, bell, stroke):
+        """ Callback called when the Tower recieves a signal that a bell has been rung. """
         if self._tower.user_controlled(bell):
             # This will give us the stroke _after_ the bell rings, we have to invert it, because
-            # otherwise this will always expect the bells on the wrong stroke
+            # otherwise this will always expect the bells on the wrong stroke and no ringing will
+            # ever happen
             self._rhythm.on_bell_ring(bell, not stroke, time.time())
 
     # Mainloop and helper methods
     def expect_bell(self, index, bell):
+        """ Called to let the rhythm know that a bell will be rung at a certain time and stroke. """
         if self._tower.user_controlled(bell):
             self._rhythm.expect_bell(
                 bell,
@@ -107,58 +136,73 @@ class Bot:
             )
 
     def start_next_row(self):
+        """
+        Creates a new row from the row generator and tells the rhythm to expect the new bells.
+        """
         self._row = self.row_generator.next_row(self.is_handstroke)
 
         for (index, bell) in enumerate(self._row):
             self.expect_bell(index, bell)
 
     def start_method(self):
+        """
+        Called when the ringing is about to go into changes.
+        Resets the row_generator and starts the next row.
+        """
         assert self.row_generator.number_of_bells == self._tower.number_of_bells, \
             f"{self.row_generator.number_of_bells} != {self._tower.number_of_bells}"
         self.row_generator.reset()
         self.start_next_row()
 
+    def tick(self):
+        """ Called every time the main loop is executed when the bot is ringing """
+        bell = Bell.from_index(self._place) if self._is_ringing_rounds else self._row[self._place]
+
+        user_controlled = self._tower.user_controlled(bell)
+        self._rhythm.wait_for_bell_time(time.time(), bell, self._row_number, self._place,
+                                        user_controlled, self.is_handstroke)
+        if not user_controlled:
+            self._tower.ring_bell(bell, self.is_handstroke)
+
+        self._place += 1
+
+        if self._place == self.stage:
+            self._row_number += 1
+            self._place = 0
+
+            if self._is_ringing_rounds:
+                for bell in range(self.stage):
+                    self.expect_bell(bell, Bell.from_index(bell))
+            else:
+                self.start_next_row()
+
+            if self._is_ringing_rounds:
+                if self._row_number == 2 and self.do_up_down_in:
+                    self._should_start_method = True
+
+            if self._row_number % 2 == 0:
+                # We're just starting a handstroke
+                if self._should_stand:
+                    self._should_stand = False
+                    self._is_ringing = False
+
+                if self._should_start_method and self._is_ringing_rounds:
+                    self._should_start_method = False
+                    self._is_ringing_rounds = False
+
+                    self.start_method()
+
+                if self._should_start_ringing_rounds and not self._is_ringing_rounds:
+                    self._should_start_ringing_rounds = False
+                    self._is_ringing_rounds = True
+
     def main_loop(self):
+        """
+        The main_loop of the bot.
+        The main thread will get stuck forever in this function whilst the bot rings.
+        """
         while True:
             if self._is_ringing:
-                bell = Bell.from_index(self._place) if self._is_ringing_rounds else self._row[self._place]
-
-                user_controlled = self._tower.user_controlled(bell)
-                self._rhythm.wait_for_bell_time(time.time(), bell, self._row_number, self._place,
-                                                user_controlled, self.is_handstroke)
-                if not user_controlled:
-                    self._tower.ring_bell(bell, self.is_handstroke)
-
-                self._place += 1
-
-                if self._place == self.stage:
-                    self._row_number += 1
-                    self._place = 0
-
-                    if self._is_ringing_rounds:
-                        for b in range(self.stage):
-                            self.expect_bell(b, Bell.from_index(b))
-                    else:
-                        self.start_next_row()
-
-                    if self._is_ringing_rounds:
-                        if self._row_number == 2 and self.do_up_down_in:
-                            self._should_start_method = True
-
-                    if self._row_number % 2 == 0:
-                        # We're just starting a handstroke
-                        if self._should_stand:
-                            self._should_stand = False
-                            self._is_ringing = False
-
-                        if self._should_start_method and self._is_ringing_rounds:
-                            self._should_start_method = False
-                            self._is_ringing_rounds = False
-
-                            self.start_method()
-
-                        if self._should_start_ringing_rounds and not self._is_ringing_rounds:
-                            self._should_start_ringing_rounds = False
-                            self._is_ringing_rounds = True
+                self.tick()
 
             time.sleep(0.01)

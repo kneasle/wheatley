@@ -50,14 +50,14 @@ class WaitForUserRhythm(Rhythm):
     logger_name = "RHYTHM:WaitForUser"
 
     def __init__(self, rhythm: Rhythm):
-        self._innerRhythm = rhythm
+        self._inner_rhythm = rhythm
         self._expected_bells = set()
         self.delay = 0
         self.logger = logging.getLogger(self.logger_name)
 
     def wait_for_bell_time(self, current_time, bell, row_number, place, user_controlled, stroke):
-        self._innerRhythm.wait_for_bell_time(current_time - self.delay, bell, row_number, place,
-                                             user_controlled, stroke)
+        self._inner_rhythm.wait_for_bell_time(current_time - self.delay, bell, row_number, place,
+                                              user_controlled, stroke)
         if user_controlled:
             delay_for_user = 0
             while (bell, stroke) in self._expected_bells:
@@ -69,11 +69,11 @@ class WaitForUserRhythm(Rhythm):
                 self.delay += delay_for_user
 
     def expect_bell(self, expected_bell, row_number, index, expected_stroke):
-        self._innerRhythm.expect_bell(expected_bell, row_number, index, expected_stroke)
+        self._inner_rhythm.expect_bell(expected_bell, row_number, index, expected_stroke)
         self._expected_bells.add((expected_bell, expected_stroke))
 
     def on_bell_ring(self, bell, stroke, real_time):
-        self._innerRhythm.on_bell_ring(bell, stroke, real_time - self.delay)
+        self._inner_rhythm.on_bell_ring(bell, stroke, real_time - self.delay)
         try:
             self._expected_bells.remove((bell, stroke))
         except KeyError:
@@ -81,8 +81,8 @@ class WaitForUserRhythm(Rhythm):
 
     def initialise_line(self, stage, user_controls_treble, start_time,
                         number_of_user_controlled_bells):
-        self._innerRhythm.initialise_line(stage, user_controls_treble, start_time - self.delay,
-                                          number_of_user_controlled_bells)
+        self._inner_rhythm.initialise_line(stage, user_controls_treble, start_time - self.delay,
+                                           number_of_user_controlled_bells)
 
 
 class RegressionRhythm(Rhythm):
@@ -104,15 +104,15 @@ class RegressionRhythm(Rhythm):
 
     def expect_bell(self, expected_bell, row_number, index, expected_stroke):
         self.logger.debug(f"Expected bell {expected_bell} at index {row_number}:{index} at stroke" \
-                            + "{expected_stroke}")
+                            + f"{expected_stroke}")
         expected_blow_time = self.index_to_blow_time(row_number, index)
         self._expected_bells[(expected_bell, expected_stroke)] = expected_blow_time
 
     def add_data_point(self, blow_time, real_time, weight):
         self.data_set.append((blow_time, real_time, weight))
 
-        for (blow_time, real_time, weight) in self.data_set:
-            self.logger.debug(f"  {blow_time}\t{real_time}\t{weight}")
+        for (b, r, w) in self.data_set:
+            self.logger.debug(f"  {b}\t{r}\t{w}")
 
         max_dataset_length = MAX_CHANGES_IN_DATASET * self._number_of_user_controlled_bells
 
@@ -168,7 +168,7 @@ class RegressionRhythm(Rhythm):
             # If this bell wasn't expected, then log that
             self.logger.warning(f"Bell {bell} unexpectedly rang at stroke {'H' if stroke else 'B'}")
 
-    def initialise_line(self, stage, user_controls_treble, start_real_time,
+    def initialise_line(self, stage, user_controls_treble, start_time,
                         number_of_user_controlled_bells):
         self._number_of_user_controlled_bells = number_of_user_controlled_bells
 
@@ -189,8 +189,8 @@ class RegressionRhythm(Rhythm):
         if not user_controls_treble:
             # If the bot is ringing the first bell, then add it as a datapoint anyway, so that after
             # the 2nd bell is rung, a regression line can be made
-            self.add_data_point(0, start_real_time, 1)
-            self._start_time = start_real_time
+            self.add_data_point(0, start_time, 1)
+            self._start_time = start_time
         else:
             # If the bot isn't ringing the first bell, then set the expected time of the first bell
             # to infinity so that the bot will wait indefinitely for the first bell to ring, and

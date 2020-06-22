@@ -1,7 +1,7 @@
 import time
 from typing import Optional
 
-from Calls import Calls
+import calls
 from RowGeneration.RowGenerator import RowGenerator
 from bell import Bell
 from rhythm import RegressionRhythm, Rhythm
@@ -19,12 +19,12 @@ class Bot:
 
         self._tower = tower
 
-        self._tower.invoke_on_call[Calls.LookTo].append(self._on_look_to)
-        self._tower.invoke_on_call[Calls.Go].append(self._on_go)
-        self._tower.invoke_on_call[Calls.Bob].append(self._on_bob)
-        self._tower.invoke_on_call[Calls.Single].append(self._on_single)
-        self._tower.invoke_on_call[Calls.ThatsAll].append(self._on_thats_all)
-        self._tower.invoke_on_call[Calls.Stand].append(self._on_stand_next)
+        self._tower.invoke_on_call[calls.LOOK_TO].append(self._on_look_to)
+        self._tower.invoke_on_call[calls.GO].append(self._on_go)
+        self._tower.invoke_on_call[calls.BOB].append(self._on_bob)
+        self._tower.invoke_on_call[calls.SINGLE].append(self._on_single)
+        self._tower.invoke_on_call[calls.THATS_ALL].append(self._on_thats_all)
+        self._tower.invoke_on_call[calls.STAND].append(self._on_stand_next)
 
         self._tower.invoke_on_bell_rung.append(self._on_bell_ring)
 

@@ -273,10 +273,10 @@ class RegressionRhythm(Rhythm):
         # both trebles)
         self.stage = stage
         self._blow_interval = {
-            4: 0.3,
+            4: 0.4,
             6: 0.3,
             8: 0.3,
-            10: 0.3,
+            10: 0.2,
             12: 0.2
         }[self.stage]
 

@@ -48,7 +48,11 @@ class RingingRoomTower:
             if stroke != handstroke:
                 self.logger.error(f"Bell {bell} on opposite stroke")
                 return False
-            self._emit("c_bell_rung", {"bell": bell.number, "stroke": stroke, "tower_id": self.tower_id}, "")
+            self._emit(
+                "c_bell_rung",
+                {"bell": bell.number, "stroke": stroke, "tower_id": self.tower_id},
+                ""
+            )
             return True
         except Exception as e:
             self.logger.error(e)
@@ -70,7 +74,11 @@ class RingingRoomTower:
         self._emit("c_set_bells", {"tower_id": self.tower_id}, f"Set at hand")
 
     def set_number_of_bells(self, number: int):
-        self._emit("c_size_change", {"new_size": number, "tower_id": self.tower_id}, f"Set number of bells '{number}'")
+        self._emit(
+            "c_size_change",
+            {"new_size": number, "tower_id": self.tower_id},
+            f"Set number of bells '{number}'"
+        )
 
     def wait_loaded(self):
         if self._socket_io_client is None:
@@ -98,7 +106,11 @@ class RingingRoomTower:
         self._request_global_state()
 
     def _join_tower(self):
-        self._emit("c_join", {"anonymous_user": True, "tower_id": self.tower_id}, f"Joining tower {self.tower_id}")
+        self._emit(
+            "c_join",
+            {"anonymous_user": True, "tower_id": self.tower_id},
+            f"Joining tower {self.tower_id}"
+        )
 
     def _request_global_state(self):
         self._emit('c_request_global_state', {"tower_id": self.tower_id}, "Request state")

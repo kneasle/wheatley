@@ -8,7 +8,7 @@ import time
 from typing import Optional
 
 import calls
-from RowGeneration.RowGenerator import RowGenerator
+from row_generation import RowGenerator
 from bell import Bell
 from rhythm import RegressionRhythm, Rhythm
 from tower import RingingRoomTower

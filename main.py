@@ -12,13 +12,7 @@ from rhythm import RegressionRhythm, WaitForUserRhythm
 from tower import RingingRoomTower
 from bot import Bot
 
-from RowGeneration.ComplibCompositionReader import ComplibCompositionReader
-# from RowGeneration.GoAndStopCallingGenerator import GoAndStopCallingGenerator
-# from RowGeneration.DixonoidsGenerator import DixonoidsGenerator
-from RowGeneration.MethodPlaceNotationGenerator import MethodPlaceNotationGenerator
-# from RowGeneration.PlainHuntGenerator import PlainHuntGenerator
-# from RowGeneration.PlaceNotationGenerator import PlaceNotationGenerator
-from RowGeneration.RowGenerator import RowGenerator
+from row_generation import RowGenerator, ComplibCompositionReader, MethodPlaceNotationGenerator
 
 
 def row_generator(args):

@@ -1,6 +1,6 @@
 from typing import List
 
-from RowGeneration.RowGenerator import RowGenerator
+from .row_generator import RowGenerator
 from bell import Bell
 
 

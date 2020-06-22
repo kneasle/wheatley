@@ -2,7 +2,7 @@ import requests
 
 import xml.etree.ElementTree as ET
 
-from RowGeneration.PlaceNotationGenerator import PlaceNotationGenerator
+from .place_notation_generator import PlaceNotationGenerator
 
 
 class MethodPlaceNotationGenerator(PlaceNotationGenerator):

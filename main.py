@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
 
+"""
+The file containing the main function for the bot, as well as all the command line argument parsing
+required to make the bot easily configurable.
+"""
+
 import logging
 import argparse
 
@@ -17,6 +22,8 @@ from RowGeneration.RowGenerator import RowGenerator
 
 
 def row_generator(args):
+    """ Generates a row generator according to the given CLI arguments. """
+
     if "comp" in args and args.comp is not None:
         row_gen = ComplibCompositionReader(args.comp)
     elif "method" in args:
@@ -34,6 +41,8 @@ def row_generator(args):
 
 
 def rhythm(args):
+    """ Generates a rhythm object according to the given CLI arguments. """
+
     regression = RegressionRhythm()
 
     if args.wait:
@@ -43,6 +52,8 @@ def rhythm(args):
 
 
 def configure_logging():
+    """ Sets up the logging for the bot. """
+
     logging.basicConfig(level=logging.WARNING)
 
     logging.getLogger(RingingRoomTower.logger_name).setLevel(logging.INFO)
@@ -52,6 +63,12 @@ def configure_logging():
 
 
 def main():
+    """
+    The main function of the bot.
+    This parses the CLI arguments, creates the Rhythm, RowGenerator and Bot objects, then starts
+    the bot's mainloop.
+    """
+
     # Parse the arguments
     parser = argparse.ArgumentParser(
         description="A bot to fill in bells during ringingroom.com practices"

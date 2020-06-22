@@ -9,16 +9,14 @@ from bot import Bot
 
 from RowGeneration.ComplibCompositionReader import ComplibCompositionReader
 # from RowGeneration.GoAndStopCallingGenerator import GoAndStopCallingGenerator
-from RowGeneration.DixonoidsGenerator import DixonoidsGenerator
+# from RowGeneration.DixonoidsGenerator import DixonoidsGenerator
 from RowGeneration.MethodPlaceNotationGenerator import MethodPlaceNotationGenerator
-from RowGeneration.PlainHuntGenerator import PlainHuntGenerator
-from RowGeneration.PlaceNotationGenerator import PlaceNotationGenerator
+# from RowGeneration.PlainHuntGenerator import PlainHuntGenerator
+# from RowGeneration.PlaceNotationGenerator import PlaceNotationGenerator
 from RowGeneration.RowGenerator import RowGenerator
 
 
 def row_generator(args):
-    # row_gen = PlainHuntGenerator(8)
-    # row_gen = PlaceNotationGenerator(8, "x1", bob={1: "6"})
     if "comp" in args and args.comp is not None:
         row_gen = ComplibCompositionReader(args.comp)
     elif "method" in args:
@@ -26,8 +24,12 @@ def row_generator(args):
     else:
         assert False, \
             "This shouldn't be possible because one of --method and --comp should always be defined"
+
+    # row_gen = PlainHuntGenerator(8)
+    # row_gen = PlaceNotationGenerator(8, "x1", bob={1: "6"})
     # row_gen = DixonoidsGenerator(6, DixonoidsGenerator.DixonsRules)
     # row_gen = PlaceNotationGenerator.stedman(11)
+
     return row_gen
 
 

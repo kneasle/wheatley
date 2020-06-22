@@ -19,9 +19,11 @@ class Bot:
     A class to hold all the information that the bot will use to glue together the rhythm,
     row_gen and socket-io parts together into a useful program.
     """
+
     def __init__(self, tower: RingingRoomTower, row_generator: RowGenerator, do_up_down_in=True,
                  rhythm: Optional[Rhythm] = None):
         """ Initialise a Bot with all the parts it needs to run. """
+
         self._rhythm = rhythm or RegressionRhythm()
 
         self.do_up_down_in = do_up_down_in
@@ -57,16 +59,19 @@ class Bot:
         """
         Returns true if the current row (determined by self._row_number) represents a handstroke.
         """
+
         return self._row_number % 2 == 0
 
     @property
     def stage(self):
         """ Convenient property to find the number of bells in the current tower. """
+
         return self._tower.number_of_bells
 
     # Callbacks
     def _on_look_to(self):
         """ Callback called when a user calls 'Look To'. """
+
         treble = Bell.from_number(1)
 
         # Count number of user controlled bells
@@ -95,27 +100,33 @@ class Bot:
 
     def _on_go(self):
         """ Callback called when a user calls 'Go'. """
+
         if self._is_ringing_rounds:
             self._should_start_method = True
 
     def _on_bob(self):
         """ Callback called when a user calls 'Bob'. """
+
         self.row_generator.set_bob()
 
     def _on_single(self):
         """ Callback called when a user calls 'Single'. """
+
         self.row_generator.set_single()
 
     def _on_thats_all(self):
         """ Callback called when a user calls 'That`s All'. """
+
         self._should_start_ringing_rounds = True
 
     def _on_stand_next(self):
         """ Callback called when a user calls 'Stand Next'. """
+
         self._should_stand = True
 
     def _on_bell_ring(self, bell, stroke):
         """ Callback called when the Tower recieves a signal that a bell has been rung. """
+
         if self._tower.user_controlled(bell):
             # This will give us the stroke _after_ the bell rings, we have to invert it, because
             # otherwise this will always expect the bells on the wrong stroke and no ringing will
@@ -125,6 +136,7 @@ class Bot:
     # Mainloop and helper methods
     def expect_bell(self, index, bell):
         """ Called to let the rhythm expect a user-controlled bell at a certain time and stroke. """
+
         if self._tower.user_controlled(bell):
             self._rhythm.expect_bell(
                 bell,
@@ -137,6 +149,7 @@ class Bot:
         """
         Creates a new row from the row generator and tells the rhythm to expect the new bells.
         """
+
         if self._is_ringing_rounds:
             for index in range(self.stage):
                 self.expect_bell(index, Bell.from_index(index))
@@ -151,6 +164,7 @@ class Bot:
         Called when the ringing is about to go into changes.
         Resets the row_generator and starts the next row.
         """
+
         assert self.row_generator.number_of_bells == self._tower.number_of_bells, \
             f"{self.row_generator.number_of_bells} != {self._tower.number_of_bells}"
         self.row_generator.reset()
@@ -158,6 +172,7 @@ class Bot:
 
     def tick(self):
         """ Called every time the main loop is executed when the bot is ringing """
+
         bell = Bell.from_index(self._place) if self._is_ringing_rounds else self._row[self._place]
 
         user_controlled = self._tower.user_controlled(bell)
@@ -199,6 +214,7 @@ class Bot:
         The main_loop of the bot.
         The main thread will get stuck forever in this function whilst the bot rings.
         """
+
         while True:
             if self._is_ringing:
                 self.tick()

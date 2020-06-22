@@ -7,7 +7,7 @@ from .row_generator import RowGenerator
 from bell import Bell
 
 
-class ComplibCompositionReader(RowGenerator):
+class ComplibCompositionGenerator(RowGenerator):
     complib_url = "https://complib.org/composition/"
 
     def __init__(self, id: int):

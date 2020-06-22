@@ -20,12 +20,12 @@ from RowGeneration.RowGenerator import RowGenerator
 def row_generator(args):
     # row_gen = PlainHuntGenerator(8)
     # row_gen = PlaceNotationGenerator(8, "x1", bob={1: "6"})
-    if "comp" in args:
-        row_gen = ComplibCompositionReader(comp)
+    if "comp" in args and args.comp is not None:
+        row_gen = ComplibCompositionReader(args.comp)
     elif "method" in args:
         row_gen = MethodPlaceNotationGenerator(args.method)
     else:
-        row_gen = MethodPlaceNotationGenerator("Plain Bob Major")
+        assert False, "This shouldn't be possible because one of --method and --comp should always be defined"
     # row_gen = DixonoidsGenerator(6, DixonoidsGenerator.DixonsRules)
     # row_gen = PlaceNotationGenerator.stedman(11)
     return row_gen
@@ -67,7 +67,6 @@ def main():
     row_gen_group = parser.add_mutually_exclusive_group()
     row_gen_group.add_argument(
         "--comp",
-        default="65034",
         type=int,
         help="The ID of the complib composition you want to ring"
     )

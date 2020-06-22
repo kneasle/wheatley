@@ -193,7 +193,7 @@ class RegressionRhythm(Rhythm):
             self._start_time = start_real_time
         else:
             # If the bot isn't ringing the first bell, then set the expected time of the first bell
-            # to infinity so that the bot will wait indefinitely for the first bell to ring, and 
+            # to infinity so that the bot will wait indefinitely for the first bell to ring, and
             # then it will extrapolate from that time
             self._start_time = float('inf')
 

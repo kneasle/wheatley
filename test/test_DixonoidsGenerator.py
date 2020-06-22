@@ -8,7 +8,7 @@ from test.GeneratorTestBase import GeneratorTestBase
 class DixonoidsGeneratorTests(GeneratorTestBase):
     def row(self, nums: List[int]) -> List[Bell]:
         return [Bell.from_number(x) for x in nums]
-    
+
     def test_dixons_treble_leading_handstroke(self):
         generator = DixonoidsGenerator(6, DixonoidsGenerator.DixonsRules)
         # Backstroke previous

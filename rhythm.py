@@ -102,12 +102,6 @@ class RegressionRhythm(Rhythm):
         self._expected_bells = {}
         self.data_set = []
 
-    def expect_bell(self, expected_bell, row_number, index, expected_stroke):
-        self.logger.debug(f"Expected bell {expected_bell} at index {row_number}:{index} at stroke" \
-                            + f"{expected_stroke}")
-        expected_blow_time = self.index_to_blow_time(row_number, index)
-        self._expected_bells[(expected_bell, expected_stroke)] = expected_blow_time
-
     def add_data_point(self, blow_time, real_time, weight):
         self.data_set.append((blow_time, real_time, weight))
 
@@ -135,6 +129,30 @@ class RegressionRhythm(Rhythm):
             # Eventually forget about datapoints
             if len(self.data_set) >= max_dataset_length:
                 del self.data_set[0]
+
+    def wait_for_bell_time(self, current_time, bell, row_number, place, user_controlled, stroke):
+        if user_controlled and self._start_time == float('inf'):
+            self.logger.debug(f"Waiting for pull off")
+            while self._start_time == float('inf'):
+                sleep(0.01)
+            self.logger.debug(f"Pulled off")
+            return
+
+        bell_time = self.index_to_real_time(row_number, place)
+        if bell_time == float('inf') or self._start_time == 0:
+            self.logger.error(f"Bell Time {bell_time}; Start Time {self._start_time}")
+            sleep(self._blow_interval or 0.2)
+        elif bell_time > current_time:
+            sleep(bell_time - current_time)
+        else:
+            # Slow the ticks slightly
+            sleep(0.01)
+
+    def expect_bell(self, expected_bell, row_number, index, expected_stroke):
+        self.logger.debug(f"Expected bell {expected_bell} at index {row_number}:{index} at stroke" \
+                            + f"{expected_stroke}")
+        expected_blow_time = self.index_to_blow_time(row_number, index)
+        self._expected_bells[(expected_bell, expected_stroke)] = expected_blow_time
 
     def on_bell_ring(self, bell, stroke, real_time):
         # If this bell was expected at this stroke (i.e. is being rung by someone else)
@@ -196,24 +214,6 @@ class RegressionRhythm(Rhythm):
             # to infinity so that the bot will wait indefinitely for the first bell to ring, and
             # then it will extrapolate from that time
             self._start_time = float('inf')
-
-    def wait_for_bell_time(self, current_time, bell, row_number, place, user_controlled, stroke):
-        if user_controlled and self._start_time == float('inf'):
-            self.logger.debug(f"Waiting for pull off")
-            while self._start_time == float('inf'):
-                sleep(0.01)
-            self.logger.debug(f"Pulled off")
-            return
-
-        bell_time = self.index_to_real_time(row_number, place)
-        if bell_time == float('inf') or self._start_time == 0:
-            self.logger.error(f"Bell Time {bell_time}; Start Time {self._start_time}")
-            sleep(self._blow_interval or 0.2)
-        elif bell_time > current_time:
-            sleep(bell_time - current_time)
-        else:
-            # Slow the ticks slightly
-            sleep(0.01)
 
     # Linear conversions between different time measurements
     def index_to_blow_time(self, row_number, place):

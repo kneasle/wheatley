@@ -25,7 +25,8 @@ def row_generator(args):
     elif "method" in args:
         row_gen = MethodPlaceNotationGenerator(args.method)
     else:
-        assert False, "This shouldn't be possible because one of --method and --comp should always be defined"
+        assert False, 
+            "This shouldn't be possible because one of --method and --comp should always be defined"
     # row_gen = DixonoidsGenerator(6, DixonoidsGenerator.DixonsRules)
     # row_gen = PlaceNotationGenerator.stedman(11)
     return row_gen

@@ -102,7 +102,7 @@ class RegressionRhythm(Rhythm):
         self._expected_bells = {}
         self.data_set = []
 
-    def add_data_point(self, blow_time, real_time, weight):
+    def _add_data_point(self, blow_time, real_time, weight):
         self.data_set.append((blow_time, real_time, weight))
 
         for (b, r, w) in self.data_set:
@@ -175,7 +175,7 @@ class RegressionRhythm(Rhythm):
                 weight = 1
 
             # Add the bell as a datapoint with the calculated weight
-            self.add_data_point(
+            self._add_data_point(
                 expected_blow_time,
                 real_time,
                 weight
@@ -207,7 +207,7 @@ class RegressionRhythm(Rhythm):
         if not user_controls_treble:
             # If the bot is ringing the first bell, then add it as a datapoint anyway, so that after
             # the 2nd bell is rung, a regression line can be made
-            self.add_data_point(0, start_time, 1)
+            self._add_data_point(0, start_time, 1)
             self._start_time = start_time
         else:
             # If the bot isn't ringing the first bell, then set the expected time of the first bell

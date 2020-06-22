@@ -31,11 +31,13 @@ def row_generator(args):
     return row_gen
 
 
-def rhythm():
+def rhythm(args):
     regression = RegressionRhythm()
-    wait = WaitForUserRhythm(regression)
+
+    if args.wait:
+        return WaitForUserRhythm(regression)
+
     return regression
-    # return wait
 
 
 def configure_logging():
@@ -65,6 +67,12 @@ def main():
         type=str,
         help="The URL of the server to join (defaults to 'https://ringingroom.com')"
     )
+    parser.add_argument(
+        "-w", "--wait",
+        action="store_true",
+        help="If set, the bot will wait for users to ring rather than pushing on with the rhythm."
+    )
+
     # Row generator arguments
     row_gen_group = parser.add_mutually_exclusive_group()
     row_gen_group.add_argument(
@@ -85,7 +93,7 @@ def main():
     configure_logging()
 
     tower = RingingRoomTower(args.id, args.url)
-    bot = Bot(tower, row_generator(args), rhythm=rhythm())
+    bot = Bot(tower, row_generator(args), rhythm=rhythm(args))
 
     with tower:
         tower.wait_loaded()

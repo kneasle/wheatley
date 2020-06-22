@@ -19,8 +19,8 @@ def convert_pn(pn_str: str) -> List[List[int]]:
                  for place in cleaned]
     if symmetric:
         return converted + list(reversed(converted[:-1]))
-    else:
-        return converted
+
+    return converted
 
 
 def convert_bell_string(bell: str) -> int:

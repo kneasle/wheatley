@@ -12,7 +12,8 @@ class PlaceNotationGenerator(RowGenerator):
     DefaultBob = {-1: '14'}
     DefaultSingle = {-1: '1234'}
 
-    def __init__(self, stage: int, method: str, bob: Dict[int, str] = None, single: Dict[int, str] = None):
+    def __init__(self, stage: int, method: str, bob: Dict[int, str] = None,
+                 single: Dict[int, str] = None):
         super(PlaceNotationGenerator, self).__init__(stage)
         if bob is None:
             bob = PlaceNotationGenerator.DefaultBob

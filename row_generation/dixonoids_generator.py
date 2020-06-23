@@ -16,8 +16,8 @@ class DixonoidsGenerator(RowGenerator):
     DefaultBob = {1: ["x", "4"]}
     DefaultSingle = {1: ["x", "1234"]}
 
-    def __init__(self, stage: int, plain_rules: Dict[int, List[str]], bob_rules: Dict[int, List[str]] = None,
-                 single_rules: Dict[int, List[str]] = None):
+    def __init__(self, stage: int, plain_rules: Dict[int, List[str]],
+                 bob_rules: Dict[int, List[str]] = None, single_rules: Dict[int, List[str]] = None):
         """
         :param plain_rules: Dictionary of leading bell: [handstroke pn, backstroke pn]
                             0: Matches any other bell

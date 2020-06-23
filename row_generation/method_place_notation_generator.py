@@ -1,11 +1,15 @@
-import requests
+""" Module to hold a RowGenerator to generate rows from a method title. """
 
 import xml.etree.ElementTree as ET
+
+import requests
 
 from .place_notation_generator import PlaceNotationGenerator
 
 
 class MethodPlaceNotationGenerator(PlaceNotationGenerator):
+    """ A class to generate rows given a method title. """
+
     def __init__(self, method_title: str):
         method_xml = self._fetch_method(method_title)
         method_pn, stage = self._parse_xml(method_xml)
@@ -23,8 +27,8 @@ class MethodPlaceNotationGenerator(PlaceNotationGenerator):
 
         if len(symblock) != 0:
             notation = symblock[0].text
-            le = symblock[1].text
-            return f"&{notation},&{le}", stage
+            lead_end = symblock[1].text
+            return f"&{notation},&{lead_end}", stage
         elif len(block) != 0:
             notation = block[0].text
             return notation, stage

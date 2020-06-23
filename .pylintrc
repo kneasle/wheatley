@@ -1,6 +1,6 @@
 [MESSAGES CONTROL]
 
-disable=broad-except
+disable=broad-except,len-as-condition
 
 [FORMAT]
 

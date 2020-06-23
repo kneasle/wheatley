@@ -1,17 +1,20 @@
+""" Contains the RowGenerator subclass for generating rows from a CompLib composition. """
+
 from typing import List
 
 import requests
 
-from .helpers import convert_bell_string
-from .row_generator import RowGenerator
 from bell import Bell
+from .row_generator import RowGenerator
 
 
 class ComplibCompositionGenerator(RowGenerator):
+    """ The RowGenerator subclass for generating rows from a CompLib composition. """
+
     complib_url = "https://complib.org/composition/"
 
-    def __init__(self, id: int):
-        url = self.complib_url + str(id) + "/rows"
+    def __init__(self, comp_id: int):
+        url = self.complib_url + str(comp_id) + "/rows"
         request_rows = requests.get(url)
         request_rows.raise_for_status()
 

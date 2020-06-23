@@ -1,3 +1,5 @@
+""" Module to handle generation of rows for the bot to ring. """
+
 from .complib_composition_generator import ComplibCompositionGenerator
 from .dixonoids_generator import DixonoidsGenerator
 from .go_and_stop_calling_generator import GoAndStopCallingGenerator

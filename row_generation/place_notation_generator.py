@@ -1,17 +1,23 @@
-from typing import List, Dict, Union, Tuple
+""" A module to hold the row generator that generates rows given some place notations. """
+
+from typing import List, Dict
+
+from bell import Bell
 
 from .helpers import convert_pn, convert_to_bell_string
 from .row_generator import RowGenerator
-from bell import Bell
 
 
 class PlaceNotationGenerator(RowGenerator):
+    """ A row generator to generate rows given a place notation. """
+
     # Dict Lead Index: String PlaceNotation
     # -1 for end of the lead
     DefaultBob = {-1: '14'}
     DefaultSingle = {-1: '1234'}
 
-    def __init__(self, stage: int, method: str, bob: Dict[int, str] = None, single: Dict[int, str] = None):
+    def __init__(self, stage: int, method: str, bob: Dict[int, str] = None,
+                 single: Dict[int, str] = None):
         super(PlaceNotationGenerator, self).__init__(stage)
         if bob is None:
             bob = PlaceNotationGenerator.DefaultBob
@@ -48,7 +54,9 @@ class PlaceNotationGenerator(RowGenerator):
 
     @staticmethod
     def grandsire(stage: int):
-        assert stage % 2
+        """ Generates Grandsire on a given stage (even bell Grandsire will cause an exception). """
+
+        assert stage % 2 == 1
 
         stage_bell = convert_to_bell_string(stage)
 
@@ -59,7 +67,9 @@ class PlaceNotationGenerator(RowGenerator):
 
     @staticmethod
     def stedman(stage: int):
-        assert stage % 2
+        """ Generates Stedman on a given stage (even bell Stedman will cause an exception). """
+
+        assert stage % 2 == 1
 
         if stage == 5:
             return PlaceNotationGenerator.stedman_doubles()
@@ -75,5 +85,7 @@ class PlaceNotationGenerator(RowGenerator):
 
     @staticmethod
     def stedman_doubles():
+        """ Generates Stedman on a given stage (even bell Stedman will cause an exception). """
+
         notation = "3.1.5.3.1.3.1.3.5.1.3.1"
         return PlaceNotationGenerator(5, notation, bob={}, single={5: "345", 11: "145"})

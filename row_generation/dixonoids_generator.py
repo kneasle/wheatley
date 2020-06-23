@@ -1,11 +1,16 @@
+""" Module to hold DixonoidsGenerator, a class for generating dixonoids. """
+
 from typing import Dict, List
+
+from bell import Bell
 
 from .helpers import convert_pn
 from .row_generator import RowGenerator
-from bell import Bell
 
 
 class DixonoidsGenerator(RowGenerator):
+    """ A class to generate rows of dixonoids. """
+
     DixonsRules = {
         0: ["x", "1"],
         1: ["x", "2"],
@@ -15,9 +20,11 @@ class DixonoidsGenerator(RowGenerator):
     DefaultBob = {1: ["x", "4"]}
     DefaultSingle = {1: ["x", "1234"]}
 
-    def __init__(self, stage: int, plain_rules: Dict[int, List[str]], bob_rules: Dict[int, List[str]] = None,
-                 single_rules: Dict[int, List[str]] = None):
+    def __init__(self, stage: int, plain_rules: Dict[int, List[str]],
+                 bob_rules: Dict[int, List[str]] = None, single_rules: Dict[int, List[str]] = None):
         """
+        Initialises a dixonoid generator.
+
         :param plain_rules: Dictionary of leading bell: [handstroke pn, backstroke pn]
                             0: Matches any other bell
         :param bob_rules: Dictionary of leading bell: [handstroke pn, backstroke pn]
@@ -25,7 +32,9 @@ class DixonoidsGenerator(RowGenerator):
         :param single_rules: Dictionary of leading bell: [handstroke pn, backstroke pn]
                           Only include bells which lead when a single is rung
         """
+
         super(DixonoidsGenerator, self).__init__(stage)
+
         if bob_rules is None:
             bob_rules = self.DefaultBob
         if single_rules is None:

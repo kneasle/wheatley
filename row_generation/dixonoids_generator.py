@@ -1,8 +1,9 @@
 from typing import Dict, List
 
+from bell import Bell
+
 from .helpers import convert_pn
 from .row_generator import RowGenerator
-from bell import Bell
 
 
 class DixonoidsGenerator(RowGenerator):

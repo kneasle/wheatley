@@ -2,9 +2,8 @@ from typing import List
 
 import requests
 
-from .helpers import convert_bell_string
-from .row_generator import RowGenerator
 from bell import Bell
+from .row_generator import RowGenerator
 
 
 class ComplibCompositionGenerator(RowGenerator):

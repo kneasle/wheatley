@@ -1,7 +1,8 @@
 from typing import List
 
-from .row_generator import RowGenerator
 from bell import Bell
+
+from .row_generator import RowGenerator
 
 
 class PlainHuntGenerator(RowGenerator):

@@ -2,9 +2,10 @@ from random import random
 from typing import List
 
 import calls
-from .row_generator import RowGenerator
 from bell import Bell
 from tower import RingingRoomTower
+
+from .row_generator import RowGenerator
 
 
 class GoAndStopCallingGenerator(RowGenerator):

@@ -1,6 +1,7 @@
-import requests
 
 import xml.etree.ElementTree as ET
+
+import requests
 
 from .place_notation_generator import PlaceNotationGenerator
 

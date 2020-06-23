@@ -19,6 +19,8 @@ class DixonoidsGenerator(RowGenerator):
     def __init__(self, stage: int, plain_rules: Dict[int, List[str]],
                  bob_rules: Dict[int, List[str]] = None, single_rules: Dict[int, List[str]] = None):
         """
+        Initialises a dixonoid generator.
+
         :param plain_rules: Dictionary of leading bell: [handstroke pn, backstroke pn]
                             0: Matches any other bell
         :param bob_rules: Dictionary of leading bell: [handstroke pn, backstroke pn]

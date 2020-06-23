@@ -50,7 +50,6 @@ class PlaceNotationGenerator(RowGenerator):
 
     @staticmethod
     def grandsire(stage: int):
-        assert stage % 2
 
         stage_bell = convert_to_bell_string(stage)
 

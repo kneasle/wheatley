@@ -10,7 +10,7 @@ _LOOKUP_NAME = "!1234567890ET"
 
 
 def convert_pn(pn_str: str) -> List[List[int]]:
-    """ Convert some place notations into a list of rows. """
+    """ Convert a place notation string into a list of places. """
 
     if "," in pn_str:
         return list(itertools.chain.from_iterable(convert_pn(part) for part in pn_str.split(",")))

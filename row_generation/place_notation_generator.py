@@ -1,3 +1,5 @@
+""" A module to hold the row generator that generates rows given some place notations. """
+
 from typing import List, Dict
 
 from bell import Bell
@@ -7,6 +9,8 @@ from .row_generator import RowGenerator
 
 
 class PlaceNotationGenerator(RowGenerator):
+    """ A row generator to generate rows given a place notation. """
+
     # Dict Lead Index: String PlaceNotation
     # -1 for end of the lead
     DefaultBob = {-1: '14'}
@@ -50,6 +54,8 @@ class PlaceNotationGenerator(RowGenerator):
 
     @staticmethod
     def grandsire(stage: int):
+        """ Generates Grandsire on a given stage (even bell Grandsire will cause an exception). """
+
         assert stage % 2 == 1
 
         stage_bell = convert_to_bell_string(stage)
@@ -61,6 +67,8 @@ class PlaceNotationGenerator(RowGenerator):
 
     @staticmethod
     def stedman(stage: int):
+        """ Generates Stedman on a given stage (even bell Stedman will cause an exception). """
+
         assert stage % 2 == 1
 
         if stage == 5:
@@ -77,5 +85,7 @@ class PlaceNotationGenerator(RowGenerator):
 
     @staticmethod
     def stedman_doubles():
+        """ Generates Stedman on a given stage (even bell Stedman will cause an exception). """
+
         notation = "3.1.5.3.1.3.1.3.5.1.3.1"
         return PlaceNotationGenerator(5, notation, bob={}, single={5: "345", 11: "145"})

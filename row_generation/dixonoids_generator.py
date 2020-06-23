@@ -1,3 +1,5 @@
+""" Module to hold DixonoidsGenerator, a class for generating dixonoids. """
+
 from typing import Dict, List
 
 from bell import Bell
@@ -7,6 +9,8 @@ from .row_generator import RowGenerator
 
 
 class DixonoidsGenerator(RowGenerator):
+    """ A class to generate rows of dixonoids. """
+
     DixonsRules = {
         0: ["x", "1"],
         1: ["x", "2"],

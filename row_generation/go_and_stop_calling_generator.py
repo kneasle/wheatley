@@ -1,3 +1,5 @@
+""" A module to hold a decorator class to add calling go and stop to a RowGenerator. """
+
 from random import random
 from typing import List
 
@@ -9,6 +11,7 @@ from .row_generator import RowGenerator
 
 
 class GoAndStopCallingGenerator(RowGenerator):
+    """ A decorator to add calling go and stop to an existing RowGenerator. """
 
     def __init__(self, generator: RowGenerator, tower: RingingRoomTower):
         super().__init__(generator.stage)

@@ -1,3 +1,5 @@
+""" A module to contain the abstract base class that all row generators inherit from. """
+
 import logging
 from abc import ABCMeta, abstractmethod
 from typing import List
@@ -6,6 +8,8 @@ from bell import Bell
 
 
 class RowGenerator(metaclass=ABCMeta):
+    """ Abstract base class for behaviours common to all row generators. """
+
     logger_name = "ROWGEN"
 
     def __init__(self, stage: int):
@@ -21,6 +25,8 @@ class RowGenerator(metaclass=ABCMeta):
         self._row = self.rounds()
 
     def reset(self):
+        """ Reset the row generator. """
+
         self.logger.info("Reset")
         self._has_bob = False
         self._has_single = False
@@ -28,11 +34,15 @@ class RowGenerator(metaclass=ABCMeta):
         self._row = self.rounds()
 
     def reset_calls(self):
+        """ Clear the pending call flags. """
+
         self.logger.info("Reset calls")
         self._has_bob = False
         self._has_single = False
 
     def next_row(self, is_handstroke: bool) -> List[Bell]:
+        """ Generate the next row, and mutate state accordingly. """
+
         self._row = self._gen_row(self._row, is_handstroke, self._index)
         self._add_cover_if_required()
 
@@ -44,12 +54,18 @@ class RowGenerator(metaclass=ABCMeta):
         return self._row
 
     def set_bob(self):
+        """ Set the flag that a bob has been made. """
+
         self._has_bob = True
 
     def set_single(self):
+        """ Set the flag that a single has been made. """
+
         self._has_single = True
 
     def rounds(self) -> List[Bell]:
+        """ Generate rounds of the stage given by this RowGenerator. """
+
         return [Bell.from_number(i) for i in range(1, self.number_of_bells + 1)]
 
     def _add_cover_if_required(self):
@@ -61,6 +77,8 @@ class RowGenerator(metaclass=ABCMeta):
         pass
 
     def permute(self, row: List[Bell], places: List[int]) -> List[Bell]:
+        """ Permute a row by a place notation given by `places`. """
+
         new_row = list(row)
         i = 1
         if places and places[0] % 2 == 0:

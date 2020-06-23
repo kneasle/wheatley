@@ -1,3 +1,5 @@
+""" Contains the RowGenerator subclass for generating rows from a CompLib composition. """
+
 from typing import List
 
 import requests
@@ -7,6 +9,8 @@ from .row_generator import RowGenerator
 
 
 class ComplibCompositionGenerator(RowGenerator):
+    """ The RowGenerator subclass for generating rows from a CompLib composition. """
+
     complib_url = "https://complib.org/composition/"
 
     def __init__(self, comp_id: int):

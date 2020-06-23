@@ -50,6 +50,7 @@ class PlaceNotationGenerator(RowGenerator):
 
     @staticmethod
     def grandsire(stage: int):
+        assert stage % 2 == 1
 
         stage_bell = convert_to_bell_string(stage)
 
@@ -60,7 +61,7 @@ class PlaceNotationGenerator(RowGenerator):
 
     @staticmethod
     def stedman(stage: int):
-        assert stage % 2
+        assert stage % 2 == 1
 
         if stage == 5:
             return PlaceNotationGenerator.stedman_doubles()

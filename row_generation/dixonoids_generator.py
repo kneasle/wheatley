@@ -28,7 +28,9 @@ class DixonoidsGenerator(RowGenerator):
         :param single_rules: Dictionary of leading bell: [handstroke pn, backstroke pn]
                           Only include bells which lead when a single is rung
         """
+
         super(DixonoidsGenerator, self).__init__(stage)
+
         if bob_rules is None:
             bob_rules = self.DefaultBob
         if single_rules is None:

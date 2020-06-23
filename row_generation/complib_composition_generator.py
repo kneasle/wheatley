@@ -9,8 +9,8 @@ from .row_generator import RowGenerator
 class ComplibCompositionGenerator(RowGenerator):
     complib_url = "https://complib.org/composition/"
 
-    def __init__(self, id: int):
-        url = self.complib_url + str(id) + "/rows"
+    def __init__(self, comp_id: int):
+        url = self.complib_url + str(comp_id) + "/rows"
         request_rows = requests.get(url)
         request_rows.raise_for_status()
 

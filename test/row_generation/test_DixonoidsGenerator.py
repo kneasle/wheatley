@@ -2,7 +2,7 @@ from typing import List
 
 from bell import Bell
 from row_generation import DixonoidsGenerator
-from test.GeneratorTestBase import GeneratorTestBase
+from test.row_generation import GeneratorTestBase
 
 
 class DixonoidsGeneratorTests(GeneratorTestBase):

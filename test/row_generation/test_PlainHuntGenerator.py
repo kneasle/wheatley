@@ -1,7 +1,7 @@
 import unittest
 
 from row_generation import PlainHuntGenerator
-from test.GeneratorTestBase import GeneratorTestBase
+from test.row_generation import GeneratorTestBase
 
 
 class PlainHuntGeneratorTests(GeneratorTestBase):

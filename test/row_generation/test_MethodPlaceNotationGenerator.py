@@ -1,7 +1,7 @@
 import unittest
 
 from row_generation import MethodPlaceNotationGenerator
-from test.GeneratorTestBase import GeneratorTestBase
+from test.row_generation import GeneratorTestBase
 
 plain_bob_minimus = """<?xml version="1.0"?>
 <methods xmlns="http://methods.ringing.org/NS/method" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:db="http://methods.ringing.org/NS/database" xmlns:ns_1="http://methods.ringing.org/NS/database" version="0.1" ns_1:page="0" ns_1:pagesize="100" ns_1:rows="1">

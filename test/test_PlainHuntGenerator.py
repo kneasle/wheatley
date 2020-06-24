@@ -1,6 +1,6 @@
 import unittest
 
-from RowGeneration.PlainHuntGenerator import PlainHuntGenerator
+from row_generation import PlainHuntGenerator
 from test.GeneratorTestBase import GeneratorTestBase
 
 
@@ -8,7 +8,6 @@ class PlainHuntGeneratorTests(GeneratorTestBase):
 
     def test_reset_handstroke(self):
         stage = 3
-        rounds = self.rounds(stage)
         generator = PlainHuntGenerator(stage)
 
         initial_rows = self.gen_rows(generator, 4)

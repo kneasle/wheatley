@@ -1,8 +1,7 @@
 import unittest
 from unittest import TestCase
 
-from RowGeneration.PlaceNotationGenerator import PlaceNotationGenerator
-from RowGeneration.PlainHuntGenerator import PlainHuntGenerator
+from row_generation import PlaceNotationGenerator
 from test.GeneratorTestBase import GeneratorTestBase
 
 

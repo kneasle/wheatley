@@ -1,7 +1,5 @@
 from unittest.case import TestCase
 
-from RowGeneration.RowGenerator import RowGenerator
-
 
 class GeneratorTestBase(TestCase):
     @staticmethod

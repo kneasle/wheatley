@@ -1,6 +1,6 @@
 import unittest
 
-from RowGeneration.MethodPlaceNotationGenerator import MethodPlaceNotationGenerator
+from row_generation import MethodPlaceNotationGenerator
 from test.GeneratorTestBase import GeneratorTestBase
 
 plain_bob_minimus = """<?xml version="1.0"?>

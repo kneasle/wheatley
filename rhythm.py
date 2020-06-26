@@ -11,15 +11,10 @@ from time import sleep
 
 from bell import Bell
 from regression import calculate_regression
+from config import HANDSTROKE_GAP, REGRESSION_INERTIA_COEFFICIENT, MAX_CHANGES_IN_DATASET
 
 
-MAX_CHANGES_IN_DATASET = 3.0
 WEIGHT_REJECTION_THRESHOLD = 0.001
-# An inertia-like coefficient designed to allow the regression finder to slowly adjust to
-# a new rhythm
-# 0.0 means that a new regression line will take effect instantly
-# 1.0 means that no effect is made at all
-REGRESSION_INERTIA_COEFFICIENT = 0.5
 
 
 def inverse_lerp(a, b, c):
@@ -147,10 +142,8 @@ class RegressionRhythm(Rhythm):
 
     logger_name = "RHYTHM:Regression"
 
-    def __init__(self, handstroke_gap=1):
+    def __init__(self):
         """ Initialises a new RegressionRhythm with a given handstroke gap. """
-
-        self._handstroke_gap = handstroke_gap
 
         self.stage = 0
         self.logger = logging.getLogger(self.logger_name)
@@ -295,7 +288,7 @@ class RegressionRhythm(Rhythm):
     def index_to_blow_time(self, row_number, place):
         """ Convert a row number and place into a blow_time, taking hanstroke gaps into account. """
 
-        return row_number * self.stage + place + (row_number // 2) * self._handstroke_gap
+        return row_number * self.stage + place + (row_number // 2) * HANDSTROKE_GAP
 
     def blow_time_to_real_time(self, blow_time):
         """ Convert from blow_time into real_time using the regression line. """

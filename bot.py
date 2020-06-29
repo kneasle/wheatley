@@ -20,13 +20,13 @@ class Bot:
     row_gen and socket-io parts together into a useful program.
     """
 
-    def __init__(self, tower: RingingRoomTower, row_generator: RowGenerator, do_up_down_in=True,
+    def __init__(self, tower: RingingRoomTower, row_generator: RowGenerator, handbell_style,
                  rhythm: Optional[Rhythm] = None):
         """ Initialise a Bot with all the parts it needs to run. """
 
         self._rhythm = rhythm or RegressionRhythm()
 
-        self.do_up_down_in = do_up_down_in
+        self.handbell_style = handbell_style
 
         self.row_generator = row_generator
 
@@ -184,17 +184,32 @@ class Bot:
         self._place += 1
 
         if self._place == self.stage:
+            # Determine if we're finishing a handstroke
+            has_just_rung_rounds = True
+
+            if self._row == None:
+                has_just_rung_rounds = False
+            else:
+                for i, bell in enumerate(self._row):
+                    if bell.index != i:
+                        has_just_rung_rounds = False
+
+            # Generate the next row and update row indices
             self._row_number += 1
             self._place = 0
-
             self.start_next_row()
 
-            if self._is_ringing_rounds:
-                if self._row_number == 2 and self.do_up_down_in:
+            # Implement handbell-style starting after two blows
+            if self.handbell_style:
+                if self._is_ringing_rounds and self._row_number == 2:
                     self._should_start_method = True
 
+                if has_just_rung_rounds:
+                    self._should_stand = False
+                    self._is_ringing = False
+
+            # If we're starting a handstroke, we should convert all the flags into actions
             if self._row_number % 2 == 0:
-                # We're just starting a handstroke
                 if self._should_stand:
                     self._should_stand = False
                     self._is_ringing = False

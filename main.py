@@ -85,6 +85,13 @@ def main():
         action="store_true",
         help="If set, the bot will wait for users to ring rather than pushing on with the rhythm."
     )
+    parser.add_argument(
+        "-t", "--tower-style",
+        action="store_true",
+        help="If set, then the bot will ring 'towerbell style', i.e. only taking instructions from \
+the ringing-room calls. By default, it will ring 'handbell style', i.e. ringing two strokes of \
+rounds then straight into changes, and stopping at the first set of rounds."
+    )
 
     # Row generator arguments
     row_gen_group = parser.add_mutually_exclusive_group()
@@ -106,7 +113,7 @@ def main():
     configure_logging()
 
     tower = RingingRoomTower(args.id, args.url)
-    bot = Bot(tower, row_generator(args), rhythm=rhythm(args))
+    bot = Bot(tower, row_generator(args), not args.tower_style, rhythm=rhythm(args))
 
     with tower:
         tower.wait_loaded()

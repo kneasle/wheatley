@@ -15,11 +15,6 @@ from regression import calculate_regression
 
 MAX_CHANGES_IN_DATASET = 3.0
 WEIGHT_REJECTION_THRESHOLD = 0.001
-# An inertia-like coefficient designed to allow the regression finder to slowly adjust to
-# a new rhythm
-# 0.0 means that a new regression line will take effect instantly
-# 1.0 means that no effect is made at all
-REGRESSION_INERTIA_COEFFICIENT = 0.5
 
 
 def inverse_lerp(a, b, c):
@@ -147,8 +142,15 @@ class RegressionRhythm(Rhythm):
 
     logger_name = "RHYTHM:Regression"
 
-    def __init__(self, handstroke_gap=1):
+    def __init__(self, inertia, handstroke_gap=1):
         """ Initialises a new RegressionRhythm with a given handstroke gap. """
+
+        # An inertia-like coefficient designed to allow the regression finder to slowly adjust to
+        # a new rhythm
+        # 0.0 means that a new regression line will take effect instantly
+        # 1.0 means that no effect is made at all
+        self._inertia_set_by_user = inertia
+        self._inertia = 0.5
 
         self._handstroke_gap = handstroke_gap
 
@@ -177,7 +179,7 @@ class RegressionRhythm(Rhythm):
             (new_start_time, new_blow_interval) = calculate_regression(self.data_set)
 
             # Lerp between the new times and the old times, according to the desired inertia
-            regression_inertia = REGRESSION_INERTIA_COEFFICIENT
+            regression_inertia = self._inertia
 
             self._start_time = lerp(new_start_time, self._start_time, regression_inertia)
             self._blow_interval = lerp(new_blow_interval, self._blow_interval, regression_inertia)
@@ -279,6 +281,9 @@ class RegressionRhythm(Rhythm):
             10: 0.2,
             12: 0.2
         }[self.stage]
+
+        # Either set inertia to the inertia given by the user, or calculate a good value
+        self._inertia = self._inertia_set_by_user or 0.5
 
         if not user_controls_treble:
             # If the bot is ringing the first bell, then add it as a datapoint anyway, so that after

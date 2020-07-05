@@ -3,8 +3,8 @@ A module to store functions related to parsing the HTML of the Ringing Room towe
 things like the load-balanced URL of the socket-io server.
 """
 
-import requests
 import os
+import requests
 
 def get_load_balancing_url(tower_id, http_server_url):
     """

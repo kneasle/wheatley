@@ -16,7 +16,6 @@ jobs:
     steps:
     - name: Install dependencies
       run: |
-        pip3 install --upgrade pip setuptools wheel
-        pip3 install pylint
+        sudo apt-get install pylint3
     - name: Run linter
-      run: python3 -m pylint *.py
+      run: pylint3 *.py

@@ -1,0 +1,20 @@
+name: "Lint"
+
+on:
+  pull_request:
+    branches:
+      - '**'
+  push:
+    branches:
+      - master
+  
+
+jobs:
+  linter:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Install linter
+      run: pip3 install pylint
+    - name: Lint
+      run: python -m pylint *.py

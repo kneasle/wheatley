@@ -125,7 +125,7 @@ equivalent to using the '-us' flags."
     configure_logging()
 
     tower = RingingRoomTower(args.id, args.url)
-    bot = Bot(tower, row_generator(args), args.up_down_in or args.handbell_style,
+    bot = Bot(tower, row_generator(args), args.use_up_down_in or args.handbell_style,
               args.stop_at_rounds or args.handbell_style, rhythm=rhythm(args))
 
     with tower:

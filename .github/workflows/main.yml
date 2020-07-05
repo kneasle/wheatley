@@ -14,10 +14,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Install dependencies
-      run: |
-        sudo apt-get install pylint3
-    - name: Run linter
-      run: |
-        ls -al
-        pylint3 *.py
+      - uses: actions/checkout@v1
+      - name: Install dependencies
+        run: |
+          sudo apt-get install pylint3
+      - name: Run linter
+        run: |
+          ls -al
+          pylint3 *.py

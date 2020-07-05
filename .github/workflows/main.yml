@@ -14,7 +14,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Install linter
-      run: pip3 install pylint
-    - name: Lint
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip setuptools wheel
+        pip3 install pylint
+    - name: Run linter
       run: python -m pylint *.py

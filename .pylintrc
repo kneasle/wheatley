@@ -14,3 +14,4 @@ expected-line-ending-format=LF
 
 max-args=10
 max-attributes=20
+max-branches = 15

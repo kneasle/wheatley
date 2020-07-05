@@ -19,7 +19,7 @@ def row_generator(args):
     """ Generates a row generator according to the given CLI arguments. """
 
     if "comp" in args and args.comp is not None:
-        row_gen = ComplibCompositionReader(args.comp)
+        row_gen = ComplibCompositionGenerator(args.comp)
     elif "method" in args:
         row_gen = MethodPlaceNotationGenerator(args.method)
     else:

@@ -187,7 +187,7 @@ class Bot:
             # Determine if we're finishing a handstroke
             has_just_rung_rounds = True
 
-            if self._row == None:
+            if self._row is None:
                 has_just_rung_rounds = False
             else:
                 for i, bell in enumerate(self._row):

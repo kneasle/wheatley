@@ -11,6 +11,7 @@ import argparse
 from rhythm import RegressionRhythm, WaitForUserRhythm
 from tower import RingingRoomTower
 from bot import Bot
+from page_parser import get_load_balancing_url
 
 from row_generation import RowGenerator, ComplibCompositionGenerator, MethodPlaceNotationGenerator
 
@@ -105,7 +106,7 @@ def main():
     # Run the program
     configure_logging()
 
-    tower = RingingRoomTower(args.id, args.url)
+    tower = RingingRoomTower(args.id, get_load_balancing_url(args.id, args.url))
     bot = Bot(tower, row_generator(args), rhythm=rhythm(args))
 
     with tower:

@@ -20,13 +20,14 @@ class Bot:
     row_gen and socket-io parts together into a useful program.
     """
 
-    def __init__(self, tower: RingingRoomTower, row_generator: RowGenerator, handbell_style,
-                 rhythm: Optional[Rhythm] = None):
+    def __init__(self, tower: RingingRoomTower, row_generator: RowGenerator, do_up_down_in,
+                 stop_at_rounds, rhythm: Optional[Rhythm] = None):
         """ Initialise a Bot with all the parts it needs to run. """
 
         self._rhythm = rhythm or RegressionRhythm()
 
-        self.handbell_style = handbell_style
+        self._do_up_down_in = do_up_down_in
+        self._stop_at_rounds = stop_at_rounds
 
         self.row_generator = row_generator
 
@@ -199,11 +200,13 @@ class Bot:
             self._place = 0
             self.start_next_row()
 
-            # Implement handbell-style starting after two blows
-            if self.handbell_style:
+            # Implement handbell-style 'up down in'
+            if self._do_up_down_in:
                 if self._is_ringing_rounds and self._row_number == 2:
                     self._should_start_method = True
 
+            # Implement handbell-style stopping at rounds
+            if self._stop_at_rounds:
                 if has_just_rung_rounds:
                     self._should_stand = False
                     self._is_ringing = False

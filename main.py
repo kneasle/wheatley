@@ -86,11 +86,23 @@ def main():
         help="If set, the bot will wait for users to ring rather than pushing on with the rhythm."
     )
     parser.add_argument(
-        "-t", "--tower-style",
+        "-u", "--use-up-down-in",
         action="store_true",
-        help="If set, then the bot will ring 'towerbell style', i.e. only taking instructions from \
-the ringing-room calls. By default, it will ring 'handbell style', i.e. ringing two strokes of \
-rounds then straight into changes, and stopping at the first set of rounds."
+        help="If set, then the bot will automatically go into changes after two rounds have been \
+rung."
+    )
+    parser.add_argument(
+        "-s", "--stop-at-rounds",
+        action="store_true",
+        help="If set, then the bot will stand its bells after rounds is reached."
+    )
+    parser.add_argument(
+        "-H", "--handbell-style",
+        action="store_true",
+        help="If set, then the bot will ring 'handbell style', i.e. ringing two strokes of \
+rounds then straight into changes, and stopping at the first set of rounds. By default, it will \
+ring 'towerbell style', i.e. only taking instructions from the ringing-room calls. This is \
+equivalent to using the '-us' flags."
     )
 
     # Row generator arguments
@@ -113,7 +125,8 @@ rounds then straight into changes, and stopping at the first set of rounds."
     configure_logging()
 
     tower = RingingRoomTower(args.id, args.url)
-    bot = Bot(tower, row_generator(args), not args.tower_style, rhythm=rhythm(args))
+    bot = Bot(tower, row_generator(args), args.up_down_in or args.handbell_style,
+              args.stop_at_rounds or args.handbell_style, rhythm=rhythm(args))
 
     with tower:
         tower.wait_loaded()

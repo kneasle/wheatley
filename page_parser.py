@@ -8,8 +8,9 @@ import requests
 
 def get_load_balancing_url(tower_id, http_server_url):
     """
-    Get the URL of the socket server which (since the addition of load balancing) is not the same
-    as the URL of the http server that people will put into their browser URL bars.
+    Get the URL of the socket server which (since the addition of load balancing) is not
+    necessarily the same as the URL of the http server that people will put into their browser URL
+    bars.
     """
 
     html = requests.get(os.path.join(http_server_url, str(tower_id), 'x')).text

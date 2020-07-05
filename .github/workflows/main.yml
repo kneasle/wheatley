@@ -3,7 +3,7 @@ name: "Lint"
 on:
   pull_request:
     branches:
-      - '**'
+      - master
   push:
     branches:
       - master
@@ -14,8 +14,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Install dependencies
-      run: |
-        sudo apt-get install pylint3
-    - name: Run linter
-      run: pylint3 *.py
+      - uses: actions/checkout@v1
+      - name: Install dependencies
+        run: |
+          sudo apt-get install pylint3
+          pip3 install -r requirements.txt
+      - name: Run linter
+        run: |
+          pylint3 *.py

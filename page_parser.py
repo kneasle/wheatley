@@ -6,6 +6,7 @@ things like the load-balanced URL of the socket-io server.
 import os
 import requests
 
+
 def get_load_balancing_url(tower_id, http_server_url):
     """
     Get the URL of the socket server which (since the addition of load balancing) is not

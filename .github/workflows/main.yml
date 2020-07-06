@@ -1,4 +1,4 @@
-name: "Lint"
+name: "Lint & Testing"
 
 on:
   pull_request:
@@ -19,6 +19,8 @@ jobs:
         run: |
           sudo apt-get install pylint3
           pip3 install -r requirements.txt
+          pip3 install pytest
       - name: Run linter
-        run: |
-          pylint3 *.py
+        run: pylint3 *.py
+      - name: Run tests
+        run: python3 -m pytest

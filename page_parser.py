@@ -22,7 +22,8 @@ def get_load_balancing_url(tower_id, http_server_url):
     url = urllib.parse.urljoin(http_server_url, str(tower_id))
     html = requests.get(url).text
 
-    string_that_starts_with_url = html[html.index("server_ip") + len('server_ip: "'):]
+    url_start_index = html.index("server_ip") + len('server_ip: "')
+    string_that_starts_with_url = html[url_start_index:]
     load_balancing_url = string_that_starts_with_url[:string_that_starts_with_url.index('"')]
 
     return load_balancing_url

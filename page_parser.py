@@ -3,7 +3,8 @@ A module to store functions related to parsing the HTML of the Ringing Room towe
 things like the load-balanced URL of the socket-io server.
 """
 
-import os
+import urllib
+
 import requests
 
 
@@ -14,7 +15,8 @@ def get_load_balancing_url(tower_id, http_server_url):
     bars.
     """
 
-    html = requests.get(os.path.join(http_server_url, str(tower_id), 'x')).text
+    url = urllib.parse.urljoin(http_server_url, str(tower_id))
+    html = requests.get(url).text
 
     string_that_starts_with_url = html[html.index("server_ip") + len('server_ip: "'):]
     load_balancing_url = string_that_starts_with_url[:string_that_starts_with_url.index('"')]

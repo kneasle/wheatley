@@ -11,6 +11,7 @@ import argparse
 from rhythm import RegressionRhythm, WaitForUserRhythm
 from tower import RingingRoomTower
 from bot import Bot
+from page_parser import get_load_balancing_url
 
 from row_generation import RowGenerator, ComplibCompositionGenerator, MethodPlaceNotationGenerator
 
@@ -124,7 +125,7 @@ equivalent to using the '-us' flags."
     # Run the program
     configure_logging()
 
-    tower = RingingRoomTower(args.id, args.url)
+    tower = RingingRoomTower(args.id, get_load_balancing_url(args.id, args.url))
     bot = Bot(tower, row_generator(args), args.use_up_down_in or args.handbell_style,
               args.stop_at_rounds or args.handbell_style, rhythm=rhythm(args))
 

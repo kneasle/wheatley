@@ -15,6 +15,10 @@ def get_load_balancing_url(tower_id, http_server_url):
     bars.
     """
 
+    # Trying to extract the following line in the rendered html:
+    # server_ip: "{{server_ip}}"
+    # See https://github.com/lelandpaul/virtual-ringing-room/blob/
+    #     ec00927ca57ab94fa2ff6a978ffaff707ab23a57/app/templates/ringing_room.html#L46
     url = urllib.parse.urljoin(http_server_url, str(tower_id))
     html = requests.get(url).text
 

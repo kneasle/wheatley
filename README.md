@@ -8,8 +8,7 @@ A bot for Ringing Room that can fill in any set of bells to increase the scope o
 - Will respond to "Look to", "That's all", "Go", and "Stand" at the next handstroke after the call.
 
 ## Quickstart
-### Installation
-#### Linux
+### Installation (same for all platforms if using the command line)
 1. Clone and download this repository.
 
 2. Make sure you have Python 3.x installed with:
@@ -29,17 +28,11 @@ A bot for Ringing Room that can fill in any set of bells to increase the scope o
    ```
 5. Start the bot with the following command, replacing `Plain Bob Major` with the title of the method you want to ring:
    ```bash
-   ./main.py --id <ringing room tower id> --method "Plain Bob Major"
+   python3 main.py --id <ringing room tower id> --method "Plain Bob Major"
    ```
-
-### Starting the bot
-To run in a command line, open the root directory of the downloaded repository in a terminal, and run main.py:
-```bash
-python3 main.py --id <ringing room tower id> --method "Plain Bob Major"
-```
-Or on Unix you can just run main.py directly:
+On Unix you can run main.py directly:
 ```bash
 ./main.py --id <ringing room tower id> --method "Plain Bob Major"
 ```
 
-For a list of options, you can run ```python3 main.py --help```.
+For a list of options, you can run the bot with the `--help` or `-h` argument.

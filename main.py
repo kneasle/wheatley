@@ -11,6 +11,7 @@ import argparse
 from rhythm import RegressionRhythm, WaitForUserRhythm
 from tower import RingingRoomTower
 from bot import Bot
+from page_parser import get_load_balancing_url
 
 from row_generation import RowGenerator, ComplibCompositionGenerator, MethodPlaceNotationGenerator
 
@@ -19,7 +20,7 @@ def row_generator(args):
     """ Generates a row generator according to the given CLI arguments. """
 
     if "comp" in args and args.comp is not None:
-        row_gen = ComplibCompositionReader(args.comp)
+        row_gen = ComplibCompositionGenerator(args.comp)
     elif "method" in args:
         row_gen = MethodPlaceNotationGenerator(args.method)
     else:
@@ -86,11 +87,23 @@ def main():
         help="If set, the bot will wait for users to ring rather than pushing on with the rhythm."
     )
     parser.add_argument(
-        "-t", "--tower-style",
+        "-u", "--use-up-down-in",
         action="store_true",
-        help="If set, then the bot will ring 'towerbell style', i.e. only taking instructions from \
-the ringing-room calls. By default, it will ring 'handbell style', i.e. ringing two strokes of \
-rounds then straight into changes, and stopping at the first set of rounds."
+        help="If set, then the bot will automatically go into changes after two rounds have been \
+rung."
+    )
+    parser.add_argument(
+        "-s", "--stop-at-rounds",
+        action="store_true",
+        help="If set, then the bot will stand its bells after rounds is reached."
+    )
+    parser.add_argument(
+        "-H", "--handbell-style",
+        action="store_true",
+        help="If set, then the bot will ring 'handbell style', i.e. ringing two strokes of \
+rounds then straight into changes, and stopping at the first set of rounds. By default, it will \
+ring 'towerbell style', i.e. only taking instructions from the ringing-room calls. This is \
+equivalent to using the '-us' flags."
     )
 
     # Rhythm arguments
@@ -123,8 +136,9 @@ set a value depending on what proportion of the bells are user controlled."
     # Run the program
     configure_logging()
 
-    tower = RingingRoomTower(args.id, args.url)
-    bot = Bot(tower, row_generator(args), not args.tower_style, rhythm=rhythm(args))
+    tower = RingingRoomTower(args.id, get_load_balancing_url(args.id, args.url))
+    bot = Bot(tower, row_generator(args), args.use_up_down_in or args.handbell_style,
+              args.stop_at_rounds or args.handbell_style, rhythm=rhythm(args))
 
     with tower:
         tower.wait_loaded()

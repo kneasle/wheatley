@@ -82,11 +82,6 @@ def main():
         help="The URL of the server to join (defaults to 'https://ringingroom.com')"
     )
     parser.add_argument(
-        "-w", "--wait",
-        action="store_true",
-        help="If set, the bot will wait for users to ring rather than pushing on with the rhythm."
-    )
-    parser.add_argument(
         "-u", "--use-up-down-in",
         action="store_true",
         help="If set, then the bot will automatically go into changes after two rounds have been \
@@ -107,6 +102,11 @@ equivalent to using the '-us' flags."
     )
 
     # Rhythm arguments
+    parser.add_argument(
+        "-w", "--wait",
+        action="store_true",
+        help="If set, the bot will wait for users to ring rather than pushing on with the rhythm."
+    )
     
     parser.add_argument(
         "-i", "--inertia",

@@ -81,6 +81,11 @@ def main():
         help="The URL of the server to join (defaults to 'https://ringingroom.com')"
     )
     parser.add_argument(
+        "-w", "--wait",
+        action="store_true",
+        help="If set, the bot will wait for users to ring rather than pushing on with the rhythm."
+    )
+    parser.add_argument(
         "-t", "--tower-style",
         action="store_true",
         help="If set, then the bot will ring 'towerbell style', i.e. only taking instructions from \
@@ -89,11 +94,6 @@ rounds then straight into changes, and stopping at the first set of rounds."
     )
 
     # Rhythm arguments
-    parser.add_argument(
-        "-w", "--wait",
-        action="store_true",
-        help="If set, the bot will wait for users to ring rather than pushing on with the rhythm."
-    )
     
     parser.add_argument(
         "-i", "--inertia",

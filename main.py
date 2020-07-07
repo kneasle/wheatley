@@ -37,8 +37,6 @@ def row_generator(args):
 def rhythm(args):
     """ Generates a rhythm object according to the given CLI arguments. """
 
-    print(args.inertia)
-
     regression = RegressionRhythm(args.inertia)
 
     if args.wait:

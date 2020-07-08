@@ -107,7 +107,7 @@ equivalent to using the '-us' flags."
         action="store_true",
         help="If set, the bot will wait for users to ring rather than pushing on with the rhythm."
     )
-    
+
     parser.add_argument(
         "-i", "--inertia",
         type=float,

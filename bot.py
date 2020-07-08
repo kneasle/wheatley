@@ -24,7 +24,7 @@ class Bot:
                  stop_at_rounds, rhythm: Optional[Rhythm] = None):
         """ Initialise a Bot with all the parts it needs to run. """
 
-        self._rhythm = rhythm or RegressionRhythm()
+        self._rhythm = rhythm or RegressionRhythm(0.5)
 
         self._do_up_down_in = do_up_down_in
         self._stop_at_rounds = stop_at_rounds

@@ -48,7 +48,7 @@ class Rhythm(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def expect_bell(self, expected_bell: Bell, row_number: int, index: int, expected_stroke: bool):
+    def expect_bell(self, expected_bell: Bell, row_number: int, place: int, expected_stroke: bool):
         """
         Indicates that a given Bell is expected to be rung at a given row, place and stroke.
         Used by the rhythm so that when that bell is rung later, it can tell where that bell
@@ -105,7 +105,7 @@ class WaitForUserRhythm(Rhythm):
                 self.logger.info(f"Delayed for {delay_for_user}")
                 self.delay += delay_for_user
 
-    def expect_bell(self, expected_bell, row_number, index, expected_stroke):
+    def expect_bell(self, expected_bell, row_number, place, expected_stroke):
         """
         Indicates that a given Bell is expected to be rung at a given row, place and stroke.
         Used by the rhythm so that when that bell is rung later, it can tell where that bell
@@ -113,7 +113,7 @@ class WaitForUserRhythm(Rhythm):
         ringing.
         """
 
-        self._inner_rhythm.expect_bell(expected_bell, row_number, index, expected_stroke)
+        self._inner_rhythm.expect_bell(expected_bell, row_number, place, expected_stroke)
         self._expected_bells.add((expected_bell, expected_stroke))
 
     def on_bell_ring(self, bell, stroke, real_time):

@@ -5,12 +5,11 @@ program.
 """
 
 import time
-from typing import Optional
 
 import calls
 from row_generation import RowGenerator
 from bell import Bell
-from rhythm import RegressionRhythm, Rhythm
+from rhythm import Rhythm
 from tower import RingingRoomTower
 
 
@@ -21,10 +20,10 @@ class Bot:
     """
 
     def __init__(self, tower: RingingRoomTower, row_generator: RowGenerator, do_up_down_in,
-                 stop_at_rounds, rhythm: Optional[Rhythm] = None):
+                 stop_at_rounds, rhythm: Rhythm):
         """ Initialise a Bot with all the parts it needs to run. """
 
-        self._rhythm = rhythm or RegressionRhythm(0.5)
+        self._rhythm = rhythm
 
         self._do_up_down_in = do_up_down_in
         self._stop_at_rounds = stop_at_rounds

@@ -111,6 +111,7 @@ equivalent to using the '-us' flags."
     parser.add_argument(
         "-i", "--inertia",
         type=float,
+        default=0.5,
         help="Overrides the bot's 'inertia' - now much the bot will take other ringers' positions \
 into account when deciding when to ring.  0.0 means it will cling as closely as possible to the \
 current rhythm, 1.0 means that it will completely ignore the other ringers. By default, it will \

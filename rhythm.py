@@ -149,8 +149,7 @@ class RegressionRhythm(Rhythm):
         # a new rhythm
         # 0.0 means that a new regression line will take effect instantly
         # 1.0 means that no effect is made at all
-        self._inertia_set_by_user = inertia
-        self._inertia = 0.5
+        self._inertia = inertia
 
         self._handstroke_gap = handstroke_gap
 
@@ -288,9 +287,6 @@ class RegressionRhythm(Rhythm):
             10: 0.2,
             12: 0.2
         }[self.stage]
-
-        # Either set inertia to the inertia given by the user, or calculate a good value
-        self._inertia = self._inertia_set_by_user or 0.5
 
         if not user_controls_treble:
             # If the bot is ringing the first bell, then add it as a datapoint anyway, so that after

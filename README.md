@@ -35,7 +35,7 @@ but currently can only ring plain courses of any given method (or touches from C
    ```bash
    python3 --version
    ```
-   If Python 3.x is installed it will print the version and if python 3.x isn't installed it will produce an error.
+   If Python 3.x is installed it will print the version and if Python 3.x isn't installed it will produce an error.
    
 3. Move to the location of the repository:
    ```bash

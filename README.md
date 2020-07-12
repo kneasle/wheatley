@@ -11,9 +11,9 @@ However, by default it will adjust only to changes to overall rhythm - it will i
 bells holding up and ring in the 'right' place regardless.
 
 It's also very easy to use - run the command and it will ring with you after anyone calls
-`Look To!` in Ringing Room.
-It understands all the instructions in Ringing Room (`Go`, `Look To`, `That's All` and `Stand`),
-but currently can only ring plain courses of any given method (or touches from CompLib).
+`Look to` in Ringing Room.
+It understands `Go`, `Look to`, `That's all` and `Stand next` in Ringing Room, but currently can only
+ring plain courses of any given method (or touches from CompLib).
 
 ### Notable features
 - Configurable rhythm detection that updates in real time

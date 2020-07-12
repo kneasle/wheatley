@@ -39,7 +39,7 @@ ring plain courses of any given method (or touches from CompLib).
    
 3. Move to the location of the repository:
    ```bash
-   cd <repository location>
+   cd [REPOSITORY LOCATION]
    ```
 
 4. Install the required python packages:

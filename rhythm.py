@@ -185,7 +185,8 @@ class RegressionRhythm(Rhythm):
             regression_preferred_inertia = self._preferred_inertia if row_number > 0 else 0.0
 
             self._start_time = lerp(new_start_time, self._start_time, regression_preferred_inertia)
-            self._blow_interval = lerp(new_blow_interval, self._blow_interval, regression_preferred_inertia)
+            self._blow_interval = lerp(new_blow_interval, self._blow_interval,
+                                       regression_preferred_inertia)
 
             self.logger.debug(f"Bell interval: {self._blow_interval}")
 

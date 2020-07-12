@@ -89,7 +89,7 @@ You may have to use `python` instead of `python3` on Windows.
     python3 main.py --id 763451928 --method "Plain Bob Major" --wait
     ```
 
-*   Make the bot completely ignore other users' changes in rhythm (useful if its ringing most of
+*   Make the bot completely ignore other users' changes in rhythm (useful if it's ringing most of
     the bells and you don't want it to randomly change speed when you make mistakes):
     ```bash
     python3 main.py --id 763451928 --method "Plain Bob Major" --inertia 1.0

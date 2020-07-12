@@ -25,7 +25,8 @@ only ring plain courses of any given method (or touches from CompLib).
 
 ## Quickstart
 ### Installation (same for all platforms if using the command line)
-1. Clone and download this repository (using [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) will make updating easier):
+1. Clone and download this repository (using 
+   [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) will make updating easier):
    ```bash
    git clone https://github.com/Kneasle/ringing-room-bot
    ```
@@ -35,7 +36,8 @@ only ring plain courses of any given method (or touches from CompLib).
    ```bash
    python3 --version
    ```
-   If Python 3.x is installed it will print the version and if Python 3.x isn't installed it will produce an error.
+   If Python 3.x is installed it will print the version and if Python 3.x isn't installed it will
+   produce an error.
    
 3. Move to the location of the repository:
    ```bash
@@ -53,7 +55,8 @@ only ring plain courses of any given method (or touches from CompLib).
 Run the bot with `python3 main.py [args]` (or `./main.py [args]` on Unix).
 You may have to use `python` instead of `python3` on Windows.
 
-*   Join a `ringingroom.com` tower with (9 digit) id `[ID NUMBER]` and ring Plain Bob Major (tower bell style):
+*   Join a `ringingroom.com` tower with (9 digit) id `[ID NUMBER]` and ring Plain Bob Major (tower
+    bell style):
     ```bash
     python3 main.py --id [ID NUMBER] --method "Plain Bob Major"
     ```
@@ -65,7 +68,8 @@ You may have to use `python` instead of `python3` on Windows.
     python3 main.py -u --id [ID NUMBER] --method "Plain Bob Major"
     ```
 
-*   Make the bot ring full handbell style, i.e. 'up down and in' and standing at rounds (`-H` is equivalent to `-us`):
+*   Make the bot ring full handbell style, i.e. 'up down and in' and standing at rounds (`-H` is
+    equivalent to `-us`):
     ```bash
     python3 main.py --up-down-in --stop-at-rounds --id [ID NUMBER] --method "Plain Bob Major"
     # or

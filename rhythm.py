@@ -149,7 +149,7 @@ class RegressionRhythm(Rhythm):
         # a new rhythm
         # 0.0 means that a new regression line will take effect instantly
         # 1.0 means that no effect is made at all
-        self._inertia = inertia
+        self._preferred_inertia = inertia
 
         self._handstroke_gap = handstroke_gap
 
@@ -182,10 +182,10 @@ class RegressionRhythm(Rhythm):
             # Lerp between the new times and the old times, according to the desired inertia
             # The inertia is set to 0 for the first change, to make sure that there's a smooth
             # pullof
-            regression_inertia = self._inertia if row_number > 0 else 0.0
+            regression_preferred_inertia = self._preferred_inertia if row_number > 0 else 0.0
 
-            self._start_time = lerp(new_start_time, self._start_time, regression_inertia)
-            self._blow_interval = lerp(new_blow_interval, self._blow_interval, regression_inertia)
+            self._start_time = lerp(new_start_time, self._start_time, regression_preferred_inertia)
+            self._blow_interval = lerp(new_blow_interval, self._blow_interval, regression_preferred_inertia)
 
             self.logger.debug(f"Bell interval: {self._blow_interval}")
 

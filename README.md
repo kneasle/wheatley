@@ -53,7 +53,7 @@ ring plain courses of any given method (or touches from CompLib).
 Run the bot with `python3 main.py [args]` (or `./main.py [args]` on Unix).
 You may have to use `python` instead of `python3` on Windows.
 
-*   Join a `ringingroom.com` tower with id `[ID]` and ring Plain Bob Major (tower bell style):
+*   Join a `ringingroom.com` tower with (9 digit) id `[ID]` and ring Plain Bob Major (tower bell style):
     ```bash
     python3 main.py --id [ID] --method "Plain Bob Major"
     ```

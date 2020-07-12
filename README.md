@@ -53,48 +53,48 @@ ring plain courses of any given method (or touches from CompLib).
 Run the bot with `python3 main.py [args]` (or `./main.py [args]` on Unix).
 You may have to use `python` instead of `python3` on Windows.
 
-*   Join a `ringingroom.com` tower with (9 digit) id `[ID]` and ring Plain Bob Major (tower bell style):
+*   Join a `ringingroom.com` tower with (9 digit) id `[ID NUMBER]` and ring Plain Bob Major (tower bell style):
     ```bash
-    python3 main.py --id [ID] --method "Plain Bob Major"
+    python3 main.py --id [ID NUMBER] --method "Plain Bob Major"
     ```
 
 *   Make the bot ring 'up down and in' rather than waiting for 'go':
     ```bash
-    python3 main.py --up-down-in --id [ID] --method "Plain Bob Major"
+    python3 main.py --up-down-in --id [ID NUMBER] --method "Plain Bob Major"
     # or
-    python3 main.py -u --id [ID] --method "Plain Bob Major"
+    python3 main.py -u --id [ID NUMBER] --method "Plain Bob Major"
     ```
 
 *   Make the bot ring full handbell style, i.e. 'up down and in' and standing at rounds (`-H` is equivalent to `-us`):
     ```bash
-    python3 main.py --up-down-in --stop-at-rounds --id [ID] --method "Plain Bob Major"
+    python3 main.py --up-down-in --stop-at-rounds --id [ID NUMBER] --method "Plain Bob Major"
     # or
-    python3 main.py -us --id [ID] --method "Plain Bob Major"
+    python3 main.py -us --id [ID NUMBER] --method "Plain Bob Major"
     # or
-    python3 main.py -H --id [ID] --method "Plain Bob Major"
+    python3 main.py -H --id [ID NUMBER] --method "Plain Bob Major"
     ```
 
 *   Join a server other than `ringingroom.com`:
     ```bash
-    python3 main.py --id [ID] --url otherserver.com
+    python3 main.py --id [ID NUMBER] --url otherserver.com
     ```
 
 *   Ring rows taken from a (public) Complib composition, in this case https://complib.org/composition/65034:
     ```bash
-    python3 main.py --id [ID] --comp 65034
+    python3 main.py --id [ID NUMBER] --comp 65034
     ```
 
 *   Make the bot wait for people to ring rather than pushing on with the rhythm:
     ```bash
-    python3 main.py --id [ID] --method "Plain Bob Major" --wait
+    python3 main.py --id [ID NUMBER] --method "Plain Bob Major" --wait
     ```
 
 *   Make the bot completely ignore other users' changes in rhythm (useful if it's ringing most of
     the bells and you don't want it to randomly change speed when you make mistakes):
     ```bash
-    python3 main.py --id [ID] --method "Plain Bob Major" --inertia 1.0
+    python3 main.py --id [ID NUMBER] --method "Plain Bob Major" --inertia 1.0
     # or
-    python3 main.py --id [ID] --method "Plain Bob Major" -i 1.0
+    python3 main.py --id [ID NUMBER] --method "Plain Bob Major" -i 1.0
     ```
 
 *   Print a nice help string:

@@ -1,15 +1,35 @@
 # Ringing Room Bot
-A bot for Ringing Room that can fill in any set of bells to increase the scope of potential practices
+A bot for Ringing Room that can fill in any set of bells to increase the scope of potential practices.
 
-## Current features
-- Will anonymously ring any unassigned bells to plain courses of any method or any composition on CompLib (amongst other things).
-- Can detect and compenstate for changes in ringing speed made by the human ringers.
-- Adjustable sensitivity to speed changes (can be set to completely ignore other people), as well as adjustable pulloff speed (for when the bot is ringing both 1 and 2) and handstroke gap sizes.
-- Will respond to "Look to", "That's all", "Go", and "Stand" at the next handstroke after the call.
+This bot is designed to be a **'ninja helper with no ego'**.
+
+It will ring unassigned bells perfectly whilst fitting into whatever you are doing, adjusting to
+your changes in rhythm.
+It will never try to take control of the ringing by giving instructions or powering on with a
+different rhythm to everyone else (unless you tell it to).
+However, by default it will adjust only to changes to overall rhythm - it will ignore individual
+bells holding up and ring in the 'right' place regardless.
+
+It's also very easy to use - run the command and it will ring with you after anyone calls
+`Look To!` in Ringing Room.
+It understands all the instructions in Ringing Room (`Go`, `Look To`, `That's All` and `Stand`),
+but currently can only ring plain courses of any given method (or touches from CompLib).
+
+### Notable features
+- Configurable rhythm detection that updates in real time
+- Automatic correction for Ringing Room using multiple server URLs for load balancing
+- Very light resource footprint, as it doesn't interact with a browser to talk to Ringing Room
+
+### Roadmapped features
+- Make the bot able to ring touches of methods
 
 ## Quickstart
 ### Installation (same for all platforms if using the command line)
-1. Clone and download this repository.
+1. Clone and download this repository (using [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) will make updating easier):
+   ```bash
+   git clone https://github.com/Kneasle/ringing-room-bot
+   ```
+   (you can update the bot at any time with `git pull origin master`)
 
 2. Make sure you have Python 3.x installed with:
    ```bash
@@ -26,13 +46,60 @@ A bot for Ringing Room that can fill in any set of bells to increase the scope o
    ```bash
    pip3 install -r requirements.txt
    ```
-5. Start the bot with the following command, replacing `Plain Bob Major` with the title of the method you want to ring:
-   ```bash
-   python3 main.py --id <ringing room tower id> --method "Plain Bob Major"
-   ```
-On Unix you can run main.py directly:
-```bash
-./main.py --id <ringing room tower id> --method "Plain Bob Major"
-```
 
-For a list of options, you can run the bot with the `--help` or `-h` argument.
+5. Pick an example below to run the bot!
+
+## Examples
+Run the bot with `python3 main.py [args]` (or `./main.py [args]` on Unix).
+You may have to use `python` instead of `python3` on Windows.
+
+*   Join a `ringingroom.com` tower with id `763451928` and ring Plain Bob Major (tower bell style):
+    ```bash
+    python3 main.py --id 763451928 --method "Plain Bob Major"
+    ```
+
+*   Make the bot ring up-down-in rather than waiting for 'go':
+    ```bash
+    python3 main.py --up-down-in --id 763451928 --method "Plain Bob Major"
+    # or
+    python3 main.py -u --id 763451928 --method "Plain Bob Major"
+    ```
+
+*   Make the bot ring full handbell style, i.e. up-down-in and standing at rounds (`-H` is equivalent to `-us`):
+    ```bash
+    python3 main.py --up-down-in --stop-at-rounds --id 763451928 --method "Plain Bob Major"
+    # or
+    python3 main.py -us --id 763451928 --method "Plain Bob Major"
+    # or
+    python3 main.py -H --id 763451928 --method "Plain Bob Major"
+    ```
+
+*   Join a server other than `ringingroom.com`:
+    ```bash
+    python3 main.py --id 763451928 --url otherserver.com
+    ```
+
+*   Ring rows taken from a (public) Complib composition, in this case https://complib.org/composition/65034:
+    ```bash
+    python3 main.py --id 763451928 --comp 65034
+    ```
+
+*   Make the bot wait for people to ring rather than pushing on with the rhythm:
+    ```bash
+    python3 main.py --id 763451928 --method "Plain Bob Major" --wait
+    ```
+
+*   Make the bot completely ignore other users' changes in rhythm (useful if its ringing most of
+    the bells and you don't want it to randomly change speed when you make mistakes):
+    ```bash
+    python3 main.py --id 763451928 --method "Plain Bob Major" --inertia 1.0
+    # or
+    python3 main.py --id 763451928 --method "Plain Bob Major" -i 1.0
+    ```
+
+*   Print a nice help string:
+    ```bash
+    python3 main.py --help
+    # or
+    python3 main.py -h
+    ```

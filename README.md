@@ -25,7 +25,7 @@ only ring plain courses of any given method (or touches from CompLib).
 
 ## Quickstart
 ### Installation (same for all platforms if using the command line)
-1. Clone and download this repository (using 
+1. Clone and download this repository (using
    [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) will make updating easier):
    ```bash
    git clone https://github.com/Kneasle/ringing-room-bot
@@ -38,7 +38,7 @@ only ring plain courses of any given method (or touches from CompLib).
    ```
    If Python 3.x is installed it will print the version and if Python 3.x isn't installed it will
    produce an error.
-   
+
 3. Move to the location of the repository:
    ```bash
    cd [REPOSITORY LOCATION]

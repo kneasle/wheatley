@@ -58,14 +58,14 @@ You may have to use `python` instead of `python3` on Windows.
     python3 main.py --id [ID] --method "Plain Bob Major"
     ```
 
-*   Make the bot ring up-down-in rather than waiting for 'go':
+*   Make the bot ring 'up down and in' rather than waiting for 'go':
     ```bash
     python3 main.py --up-down-in --id [ID] --method "Plain Bob Major"
     # or
     python3 main.py -u --id [ID] --method "Plain Bob Major"
     ```
 
-*   Make the bot ring full handbell style, i.e. up-down-in and standing at rounds (`-H` is equivalent to `-us`):
+*   Make the bot ring full handbell style, i.e. 'up down and in' and standing at rounds (`-H` is equivalent to `-us`):
     ```bash
     python3 main.py --up-down-in --stop-at-rounds --id [ID] --method "Plain Bob Major"
     # or

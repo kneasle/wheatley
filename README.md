@@ -83,8 +83,8 @@ You may have to use `python` instead of `python3` on Windows.
     python3 main.py --id [ID NUMBER] --url otherserver.com
     ```
 
-*   Ring rows taken from a (public) composition from [complib.org](http://complib.org/), in this case 
-    https://complib.org/composition/65034:
+*   Ring rows taken from a (public) composition from [complib.org](http://complib.org/), in this
+    case https://complib.org/composition/65034:
     ```bash
     python3 main.py --id [ID NUMBER] --comp 65034
     ```

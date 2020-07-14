@@ -15,11 +15,6 @@ from regression import calculate_regression
 
 MAX_CHANGES_IN_DATASET = 3.0
 WEIGHT_REJECTION_THRESHOLD = 0.001
-# An inertia-like coefficient designed to allow the regression finder to slowly adjust to
-# a new rhythm
-# 0.0 means that a new regression line will take effect instantly
-# 1.0 means that no effect is made at all
-REGRESSION_INERTIA_COEFFICIENT = 0.5
 
 
 def inverse_lerp(a, b, c):
@@ -53,7 +48,7 @@ class Rhythm(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def expect_bell(self, expected_bell: Bell, row_number: int, index: int, expected_stroke: bool):
+    def expect_bell(self, expected_bell: Bell, row_number: int, place: int, expected_stroke: bool):
         """
         Indicates that a given Bell is expected to be rung at a given row, place and stroke.
         Used by the rhythm so that when that bell is rung later, it can tell where that bell
@@ -110,7 +105,7 @@ class WaitForUserRhythm(Rhythm):
                 self.logger.info(f"Delayed for {delay_for_user}")
                 self.delay += delay_for_user
 
-    def expect_bell(self, expected_bell, row_number, index, expected_stroke):
+    def expect_bell(self, expected_bell, row_number, place, expected_stroke):
         """
         Indicates that a given Bell is expected to be rung at a given row, place and stroke.
         Used by the rhythm so that when that bell is rung later, it can tell where that bell
@@ -118,7 +113,7 @@ class WaitForUserRhythm(Rhythm):
         ringing.
         """
 
-        self._inner_rhythm.expect_bell(expected_bell, row_number, index, expected_stroke)
+        self._inner_rhythm.expect_bell(expected_bell, row_number, place, expected_stroke)
         self._expected_bells.add((expected_bell, expected_stroke))
 
     def on_bell_ring(self, bell, stroke, real_time):
@@ -147,8 +142,14 @@ class RegressionRhythm(Rhythm):
 
     logger_name = "RHYTHM:Regression"
 
-    def __init__(self, handstroke_gap=1):
+    def __init__(self, inertia, handstroke_gap=1):
         """ Initialises a new RegressionRhythm with a given handstroke gap. """
+
+        # An inertia-like coefficient designed to allow the regression finder to slowly adjust to
+        # a new rhythm
+        # 0.0 means that a new regression line will take effect instantly
+        # 1.0 means that no effect is made at all
+        self._preferred_inertia = inertia
 
         self._handstroke_gap = handstroke_gap
 
@@ -163,7 +164,9 @@ class RegressionRhythm(Rhythm):
         self._expected_bells = {}
         self.data_set = []
 
-    def _add_data_point(self, blow_time, real_time, weight):
+    def _add_data_point(self, row_number, place, real_time, weight):
+        blow_time = self.index_to_blow_time(row_number, place)
+
         self.data_set.append((blow_time, real_time, weight))
 
         for (b, r, w) in self.data_set:
@@ -177,10 +180,13 @@ class RegressionRhythm(Rhythm):
             (new_start_time, new_blow_interval) = calculate_regression(self.data_set)
 
             # Lerp between the new times and the old times, according to the desired inertia
-            regression_inertia = REGRESSION_INERTIA_COEFFICIENT
+            # The inertia is set to 0 for the first change, to make sure that there's a smooth
+            # pullof
+            regression_preferred_inertia = self._preferred_inertia if row_number > 0 else 0.0
 
-            self._start_time = lerp(new_start_time, self._start_time, regression_inertia)
-            self._blow_interval = lerp(new_blow_interval, self._blow_interval, regression_inertia)
+            self._start_time = lerp(new_start_time, self._start_time, regression_preferred_inertia)
+            self._blow_interval = lerp(new_blow_interval, self._blow_interval,
+                                       regression_preferred_inertia)
 
             self.logger.debug(f"Bell interval: {self._blow_interval}")
 
@@ -211,7 +217,7 @@ class RegressionRhythm(Rhythm):
             # Slow the ticks slightly
             sleep(0.01)
 
-    def expect_bell(self, expected_bell, row_number, index, expected_stroke):
+    def expect_bell(self, expected_bell, row_number, place, expected_stroke):
         """
         Indicates that a given Bell is expected to be rung at a given row, place and stroke.
         Used by the rhythm so that when that bell is rung later, it can tell where that bell
@@ -219,10 +225,9 @@ class RegressionRhythm(Rhythm):
         ringing.
         """
 
-        self.logger.debug(f"Expected bell {expected_bell} at index {row_number}:{index} at stroke" \
+        self.logger.debug(f"Expected bell {expected_bell} at index {row_number}:{place} at stroke" \
                             + f"{expected_stroke}")
-        expected_blow_time = self.index_to_blow_time(row_number, index)
-        self._expected_bells[(expected_bell, expected_stroke)] = expected_blow_time
+        self._expected_bells[(expected_bell, expected_stroke)] = (row_number, place)
 
     def on_bell_ring(self, bell, stroke, real_time):
         """
@@ -232,7 +237,10 @@ class RegressionRhythm(Rhythm):
         # If this bell was expected at this stroke (i.e. is being rung by someone else)
         if (bell, stroke) in self._expected_bells:
             # Figure out where the bell was expected in ringing space
-            expected_blow_time = self._expected_bells[(bell, stroke)]
+            (row_number, place) = self._expected_bells[(bell, stroke)]
+
+            expected_blow_time = self.index_to_blow_time(row_number, place)
+
             diff = self.real_time_to_blow_time(real_time) - expected_blow_time
 
             self.logger.info(f"{bell} off by {diff} places")
@@ -250,7 +258,8 @@ class RegressionRhythm(Rhythm):
 
             # Add the bell as a datapoint with the calculated weight
             self._add_data_point(
-                expected_blow_time,
+                row_number,
+                place,
                 real_time,
                 weight
             )
@@ -283,7 +292,7 @@ class RegressionRhythm(Rhythm):
         if not user_controls_treble:
             # If the bot is ringing the first bell, then add it as a datapoint anyway, so that after
             # the 2nd bell is rung, a regression line can be made
-            self._add_data_point(0, start_time, 1)
+            self._add_data_point(0, 0, start_time, 1)
             self._start_time = start_time
         else:
             # If the bot isn't ringing the first bell, then set the expected time of the first bell

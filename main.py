@@ -38,7 +38,7 @@ def row_generator(args):
 def rhythm(args):
     """ Generates a rhythm object according to the given CLI arguments. """
 
-    regression = RegressionRhythm()
+    regression = RegressionRhythm(args.inertia)
 
     if args.wait:
         return WaitForUserRhythm(regression)
@@ -82,11 +82,6 @@ def main():
         help="The URL of the server to join (defaults to 'https://ringingroom.com')"
     )
     parser.add_argument(
-        "-w", "--wait",
-        action="store_true",
-        help="If set, the bot will wait for users to ring rather than pushing on with the rhythm."
-    )
-    parser.add_argument(
         "-u", "--use-up-down-in",
         action="store_true",
         help="If set, then the bot will automatically go into changes after two rounds have been \
@@ -104,6 +99,23 @@ rung."
 rounds then straight into changes, and stopping at the first set of rounds. By default, it will \
 ring 'towerbell style', i.e. only taking instructions from the ringing-room calls. This is \
 equivalent to using the '-us' flags."
+    )
+
+    # Rhythm arguments
+    parser.add_argument(
+        "-w", "--wait",
+        action="store_true",
+        help="If set, the bot will wait for users to ring rather than pushing on with the rhythm."
+    )
+
+    parser.add_argument(
+        "-i", "--inertia",
+        type=float,
+        default=0.5,
+        help="Overrides the bot's 'inertia' - now much the bot will take other ringers' positions \
+into account when deciding when to ring.  0.0 means it will cling as closely as possible to the \
+current rhythm, 1.0 means that it will completely ignore the other ringers. By default, it will \
+set a value depending on what proportion of the bells are user controlled."
     )
 
     # Row generator arguments

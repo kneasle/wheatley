@@ -25,32 +25,14 @@ take effect the handstroke after they are called, and `Bob` and `Single` will re
 - Make the bot able to ring touches of methods
 
 ## Quickstart
-### Installation (same for all platforms if using the command line)
-1. Clone and download this repository (using
-   [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) will make updating easier):
+### Installation (using Pip)
+1. Run the following command to install or update to the latest version of the bot:
    ```bash
-   git clone https://github.com/Kneasle/ringing-room-bot
+   pip3 install rr-bot
    ```
-   (you can update the bot at any time with `git pull origin master`)
+   (use `pip` on Windows).
 
-2. Make sure you have Python 3.x installed with:
-   ```bash
-   python3 --version
-   ```
-   If Python 3.x is installed it will print the version and if Python 3.x isn't installed it will
-   produce an error.
-
-3. Move to the location of the repository:
-   ```bash
-   cd [REPOSITORY LOCATION]
-   ```
-
-4. Install the required python packages:
-   ```bash
-   pip3 install -r requirements.txt
-   ```
-
-5. Pick an example below to run the bot!
+2. Pick an example below to run the bot!
 
 ## Examples
 Run the bot with `rr-bot [ARGS]`.

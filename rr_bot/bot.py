@@ -6,11 +6,11 @@ program.
 
 import time
 
-import calls
-from row_generation import RowGenerator
-from bell import Bell
-from rhythm import Rhythm
-from tower import RingingRoomTower
+from rr_bot import calls
+from rr_bot.row_generation import RowGenerator
+from rr_bot.bell import Bell
+from rr_bot.rhythm import Rhythm
+from rr_bot.tower import RingingRoomTower
 
 
 class Bot:

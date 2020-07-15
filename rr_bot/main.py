@@ -8,12 +8,12 @@ required to make the bot easily configurable.
 import logging
 import argparse
 
-from rhythm import RegressionRhythm, WaitForUserRhythm
-from tower import RingingRoomTower
-from bot import Bot
-from page_parser import get_load_balancing_url
-
-from row_generation import RowGenerator, ComplibCompositionGenerator, MethodPlaceNotationGenerator
+from rr_bot.rhythm import RegressionRhythm, WaitForUserRhythm
+from rr_bot.tower import RingingRoomTower
+from rr_bot.bot import Bot
+from rr_bot.page_parser import get_load_balancing_url
+from rr_bot.row_generation import RowGenerator, ComplibCompositionGenerator
+from rr_bot.row_generation import MethodPlaceNotationGenerator
 
 
 def row_generator(args):

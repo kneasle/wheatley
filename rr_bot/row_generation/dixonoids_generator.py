@@ -2,7 +2,7 @@
 
 from typing import Dict, List
 
-from bell import Bell
+from rr_bot.bell import Bell
 
 from .helpers import convert_pn
 from .row_generator import RowGenerator

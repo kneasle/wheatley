@@ -21,9 +21,6 @@ take effect the handstroke after they are called, and `Bob` and `Single` will re
 - Automatic correction for Ringing Room using multiple server URLs for load balancing
 - Very light resource footprint, as it doesn't interact with a browser to talk to Ringing Room
 
-### Roadmapped features
-- Make the bot able to ring touches of methods
-
 ## Quickstart
 ### Installation (using Pip)
 1. Run the following command to install or update to the latest version of the bot:

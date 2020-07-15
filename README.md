@@ -24,6 +24,11 @@ take effect the handstroke after they are called, and `Bob` and `Single` will re
 ### Contributing
 Contributions are very welcome!  See [here](CONTRIBUTING.md) for guidance.
 
+If you have any issues/suggestions, either
+[make an issue](https://github.com/Kneasle/ringing-room-bot/issues/new), or drop me a message
+[on Facebook](https://www.facebook.com/kneasle.wh.71).
+
+
 ## Quickstart
 ### Installation (using Pip)
 1. Run the following command to install or update to the latest version of the bot:

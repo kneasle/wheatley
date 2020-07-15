@@ -1,3 +1,5 @@
+""" Setup script to install the Ringing Room Bot. """
+
 import setuptools
 
 with open("README.md", "r") as fh:

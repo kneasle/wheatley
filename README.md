@@ -3,7 +3,7 @@ A bot for Ringing Room that can fill in any set of bells to increase the scope o
 
 This bot is designed to be a **'ninja helper with no ego'**.
 
-It will ring all unassigned bells perfectly whilst fitting into whatever you are doing, adjusting to
+It will ring all unassigned bells perfectly whilst fitting in with whatever you are doing, adjusting to
 your changes in rhythm.
 It will never try to take control of the ringing by giving instructions or powering on with a
 different rhythm to everyone else (unless you tell it to).
@@ -12,7 +12,7 @@ bells holding up and ring in the 'right' place regardless.
 
 Only one ringer needs to run the command and it will ring with you after anyone calls `Look to` in
 Ringing Room.
-It will understand all ringing room calls - `Go`, `Look to`, `That's all` and `Stand next` will
+It will understand all Ringing Room calls - `Go`, `Look to`, `That's all` and `Stand next` will
 take effect the handstroke after they are called, and `Bob` and `Single` will result in `14` and
 `1234` lead end calls.
 

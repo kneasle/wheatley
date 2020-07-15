@@ -12,8 +12,9 @@ bells holding up and ring in the 'right' place regardless.
 
 Only one ringer needs to run the command and it will ring with you after anyone calls `Look to` in
 Ringing Room.
-It understands `Go`, `Look to`, `That's all` and `Stand next` in Ringing Room, but currently can
-only ring plain courses of any given method (or touches from CompLib).
+It will understand all ringing room calls - `Go`, `Look to`, `That's all` and `Stand next` will
+take effect the handstroke after they are called, and `Bob` and `Single` will result in `14` and
+`1234` lead end calls.
 
 ### Notable features
 - Configurable rhythm detection that updates in real time

@@ -19,7 +19,7 @@ take effect the handstroke after they are called, and `Bob` and `Single` will re
 ### Notable features
 - Configurable rhythm detection that updates in real time
 - Automatic correction for Ringing Room using multiple server URLs for load balancing
-- Very light resource footprint, as it doesn't interact with a browser to talk to Ringing Room
+- Very light resource footprint, as it doesn't interact with a browser to communicate with Ringing Room
 
 ### Contributing
 Contributions are very welcome!  See [here](CONTRIBUTING.md) for guidance.

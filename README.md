@@ -53,59 +53,58 @@ take effect the handstroke after they are called, and `Bob` and `Single` will re
 5. Pick an example below to run the bot!
 
 ## Examples
-Run the bot with `python3 main.py [ARGS]` (or `./main.py [ARGS]` on Unix).
-You may have to use `python` instead of `python3` on Windows.
+Run the bot with `rr-bot [ARGS]`.
 
 *   Join a `ringingroom.com` tower with (9 digit) id `[ID NUMBER]` and ring Plain Bob Major (tower
     bell style - wait for `Go` and `That's all`):
     ```bash
-    python3 main.py [ID NUMBER] --method "Plain Bob Major"
+    rr-bot [ID NUMBER] --method "Plain Bob Major"
     ```
 
 *   Make the bot ring 'up, down and in' rather than waiting for 'go':
     ```bash
-    python3 main.py --up-down-in --id [ID NUMBER] --method "Plain Bob Major"
+    rr-bot --up-down-in --id [ID NUMBER] --method "Plain Bob Major"
     # or
-    python3 main.py [ID NUMBER] -u --method "Plain Bob Major"
+    rr-bot [ID NUMBER] -u --method "Plain Bob Major"
     ```
 
 *   Make the bot ring full handbell style, i.e. 'up, down and in' and standing at rounds (`-H` is
     equivalent to `-us`):
     ```bash
-    python3 main.py [ID NUMBER] --up-down-in --stop-at-rounds --method "Plain Bob Major"
+    rr-bot [ID NUMBER] --up-down-in --stop-at-rounds --method "Plain Bob Major"
     # or
-    python3 main.py [ID NUMBER] -us --method "Plain Bob Major"
+    rr-bot [ID NUMBER] -us --method "Plain Bob Major"
     # or
-    python3 main.py [ID NUMBER] -H --method "Plain Bob Major"
+    rr-bot [ID NUMBER] -H --method "Plain Bob Major"
     ```
 
 *   Join a server other than `ringingroom.com`:
     ```bash
-    python3 main.py [ID NUMBER] --url otherserver.com --method [METHOD TITLE]
+    rr-bot [ID NUMBER] --url otherserver.com --method [METHOD TITLE]
     ```
 
 *   Ring rows taken from a (public) composition from [complib.org](http://complib.org/), in this
     case https://complib.org/composition/65034:
     ```bash
-    python3 main.py [ID NUMBER] --comp 65034
+    rr-bot [ID NUMBER] --comp 65034
     ```
 
 *   Make the bot wait for people to ring rather than pushing on with the rhythm:
     ```bash
-    python3 main.py [ID NUMBER] --method "Plain Bob Major" --wait
+    rr-bot [ID NUMBER] --method "Plain Bob Major" --wait
     ```
 
 *   Make the bot completely ignore other users' changes in rhythm (useful if it's ringing most of
     the bells and you don't want it to randomly change speed when you make mistakes):
     ```bash
-    python3 main.py [ID NUMBER] --method "Plain Bob Major" --inertia 1.0
+    rr-bot [ID NUMBER] --method "Plain Bob Major" --inertia 1.0
     # or
-    python3 main.py [ID NUMBER] --method "Plain Bob Major" -i 1.0
+    rr-bot [ID NUMBER] --method "Plain Bob Major" -i 1.0
     ```
 
 *   Print a nice help string:
     ```bash
-    python3 main.py --help
+    rr-bot --help
     # or
-    python3 main.py -h
+    rr-bot -h
     ```

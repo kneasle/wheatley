@@ -4,7 +4,7 @@ from typing import List
 
 import requests
 
-from bell import Bell
+from rr_bot.bell import Bell
 from .row_generator import RowGenerator
 
 

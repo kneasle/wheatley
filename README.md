@@ -21,91 +21,72 @@ take effect the handstroke after they are called, and `Bob` and `Single` will re
 - Automatic correction for Ringing Room using multiple server URLs for load balancing
 - Very light resource footprint, as it doesn't interact with a browser to talk to Ringing Room
 
-### Roadmapped features
-- Make the bot able to ring touches of methods
+### Contributing
+Contributions are very welcome!  See [here](CONTRIBUTING.md) for guidance.
 
 ## Quickstart
-### Installation (same for all platforms if using the command line)
-1. Clone and download this repository (using
-   [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) will make updating easier):
+### Installation (using Pip)
+1. Run the following command to install or update to the latest version of the bot:
    ```bash
-   git clone https://github.com/Kneasle/ringing-room-bot
+   pip3 install --upgrade rr-bot
    ```
-   (you can update the bot at any time with `git pull origin master`)
+   (use `pip install --upgrade rr-bot` on Windows).
 
-2. Make sure you have Python 3.x installed with:
-   ```bash
-   python3 --version
-   ```
-   If Python 3.x is installed it will print the version and if Python 3.x isn't installed it will
-   produce an error.
-
-3. Move to the location of the repository:
-   ```bash
-   cd [REPOSITORY LOCATION]
-   ```
-
-4. Install the required python packages:
-   ```bash
-   pip3 install -r requirements.txt
-   ```
-
-5. Pick an example below to run the bot!
+2. Pick an example below to run the bot!
 
 ## Examples
-Run the bot with `python3 main.py [ARGS]` (or `./main.py [ARGS]` on Unix).
-You may have to use `python` instead of `python3` on Windows.
+Run the bot with `rr-bot [ARGS]`.
 
 *   Join a `ringingroom.com` tower with (9 digit) id `[ID NUMBER]` and ring Plain Bob Major (tower
     bell style - wait for `Go` and `That's all`):
     ```bash
-    python3 main.py [ID NUMBER] --method "Plain Bob Major"
+    rr-bot [ID NUMBER] --method "Plain Bob Major"
     ```
 
 *   Make the bot ring 'up, down and in' rather than waiting for 'go':
     ```bash
-    python3 main.py --up-down-in --id [ID NUMBER] --method "Plain Bob Major"
+    rr-bot --up-down-in --id [ID NUMBER] --method "Plain Bob Major"
     # or
-    python3 main.py [ID NUMBER] -u --method "Plain Bob Major"
+    rr-bot [ID NUMBER] -u --method "Plain Bob Major"
     ```
 
 *   Make the bot ring full handbell style, i.e. 'up, down and in' and standing at rounds (`-H` is
     equivalent to `-us`):
     ```bash
-    python3 main.py [ID NUMBER] --up-down-in --stop-at-rounds --method "Plain Bob Major"
+    rr-bot [ID NUMBER] --up-down-in --stop-at-rounds --method "Plain Bob Major"
     # or
-    python3 main.py [ID NUMBER] -us --method "Plain Bob Major"
+    rr-bot [ID NUMBER] -us --method "Plain Bob Major"
     # or
-    python3 main.py [ID NUMBER] -H --method "Plain Bob Major"
+    rr-bot [ID NUMBER] -H --method "Plain Bob Major"
     ```
 
 *   Join a server other than `ringingroom.com`:
     ```bash
-    python3 main.py [ID NUMBER] --url otherserver.com --method [METHOD TITLE]
+    rr-bot [ID NUMBER] --url otherserver.com --method [METHOD TITLE]
     ```
 
 *   Ring rows taken from a (public) composition from [complib.org](http://complib.org/), in this
     case https://complib.org/composition/65034:
     ```bash
-    python3 main.py [ID NUMBER] --comp 65034
+    rr-bot [ID NUMBER] --comp 65034
     ```
 
 *   Make the bot wait for people to ring rather than pushing on with the rhythm:
     ```bash
-    python3 main.py [ID NUMBER] --method "Plain Bob Major" --wait
+    rr-bot [ID NUMBER] --method "Plain Bob Major" --wait
     ```
 
 *   Make the bot completely ignore other users' changes in rhythm (useful if it's ringing most of
     the bells and you don't want it to randomly change speed when you make mistakes):
     ```bash
-    python3 main.py [ID NUMBER] --method "Plain Bob Major" --inertia 1.0
+    rr-bot [ID NUMBER] --method "Plain Bob Major" --inertia 1.0
     # or
-    python3 main.py [ID NUMBER] --method "Plain Bob Major" -i 1.0
+    rr-bot [ID NUMBER] --method "Plain Bob Major" -i 1.0
     ```
 
 *   Print a nice help string:
     ```bash
-    python3 main.py --help
+    rr-bot --help
     # or
-    python3 main.py -h
+    rr-bot -h
     ```

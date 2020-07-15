@@ -1,11 +1,13 @@
 """ A module to hold a decorator class to add calling go and stop to a RowGenerator. """
 
+# pylint: disable=protected-access
+
 from random import random
 from typing import List
 
-import calls
-from bell import Bell
-from tower import RingingRoomTower
+from rr_bot import calls
+from rr_bot.bell import Bell
+from rr_bot.tower import RingingRoomTower
 
 from .row_generator import RowGenerator
 

@@ -10,6 +10,7 @@ before starting to implement things.
 ├── LICENSE
 ├── README.md
 ├── requirements.txt
+├── setup.py                                        => Build script run to generate the PIP package
 ├── rr_bot
 │   ├── __init__.py                                 => Empty file
 │   ├── __main__.py                                 => Code to start the bot
@@ -22,21 +23,20 @@ before starting to implement things.
 │   ├── rhythm.py                                   => Code used to drive the bot's rhythm
 │   ├── tower.py                                    => Code used to interact with ringing room
 │   └── row_generation                              => Modular row generators
+│       ├── __init__.py
 │       ├── complib_composition_generator.py
 │       ├── dixonoids_generator.py
 │       ├── go_and_stop_calling_generator.py
 │       ├── helpers.py
-│       ├── __init__.py
 │       ├── method_place_notation_generator.py
 │       ├── place_notation_generator.py
 │       ├── plain_hunt_generator.py
 │       └── row_generator.py
-├── setup.py                                        => Build script run to generate the PIP package
 └── tests                                           => Unit tests for the row generation module
     ├── __init__.py
     └── row_generation
-        ├── generator_test_helpers.py
         ├── __init__.py
+        ├── generator_test_helpers.py
         ├── test_DixonoidsGenerator.py
         ├── test_Helpers.py
         ├── test_MethodPlaceNotationGenerator.py

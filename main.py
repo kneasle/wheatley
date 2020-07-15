@@ -72,7 +72,8 @@ def main():
     parser.add_argument(
         "room_id",
         type=int,
-        help="The numerical ID of the tower to join, represented as a row on 9 bells, e.g. 763451928."
+        help="The numerical ID of the tower to join, represented as a row on 9 bells, \
+              e.g. 763451928."
     )
     parser.add_argument(
         "--url",

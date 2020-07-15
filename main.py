@@ -85,7 +85,7 @@ def main():
         "-u", "--use-up-down-in",
         action="store_true",
         help="If set, then the bot will automatically go into changes after two rounds have been \
-rung."
+              rung."
     )
     parser.add_argument(
         "-s", "--stop-at-rounds",
@@ -96,9 +96,9 @@ rung."
         "-H", "--handbell-style",
         action="store_true",
         help="If set, then the bot will ring 'handbell style', i.e. ringing two strokes of \
-rounds then straight into changes, and stopping at the first set of rounds. By default, it will \
-ring 'towerbell style', i.e. only taking instructions from the ringing-room calls. This is \
-equivalent to using the '-us' flags."
+              rounds then straight into changes, and stopping at the first set of rounds. By \
+              default, it will ring 'towerbell style', i.e. only taking instructions from the \
+              ringing-room calls. This is equivalent to using the '-us' flags."
     )
 
     # Rhythm arguments
@@ -113,9 +113,10 @@ equivalent to using the '-us' flags."
         type=float,
         default=0.5,
         help="Overrides the bot's 'inertia' - now much the bot will take other ringers' positions \
-into account when deciding when to ring.  0.0 means it will cling as closely as possible to the \
-current rhythm, 1.0 means that it will completely ignore the other ringers. By default, it will \
-set a value depending on what proportion of the bells are user controlled."
+              into account when deciding when to ring.  0.0 means it will cling as closely as \
+              possible to the current rhythm, 1.0 means that it will completely ignore the other \
+              ringers. By default, it will set a value depending on what proportion of the bells \
+              are user controlled."
     )
 
     # Row generator arguments

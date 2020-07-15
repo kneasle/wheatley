@@ -29,5 +29,5 @@ setuptools.setup(
     ],
     python_requires='>=3.6',
 
-    entry_points={'console_scripts': ['rr-bot = rr_bot:main']}
+    entry_points={'console_scripts': ['rr-bot = rr_bot.main:main']}
 )

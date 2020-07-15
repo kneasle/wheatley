@@ -70,10 +70,9 @@ def main():
     )
 
     parser.add_argument(
-        "--id",
-        default=763451928,
+        "room_id",
         type=int,
-        help="The ID of the tower to join (defaults to the ID of 'Bot Training Ground', 763451928)."
+        help="The numerical ID of the tower to join, represented as a row on 9 bells, e.g. 763451928."
     )
     parser.add_argument(
         "--url",
@@ -137,7 +136,7 @@ set a value depending on what proportion of the bells are user controlled."
     # Run the program
     configure_logging()
 
-    tower = RingingRoomTower(args.id, get_load_balancing_url(args.id, args.url))
+    tower = RingingRoomTower(args.room_id, get_load_balancing_url(args.room_id, args.url))
     bot = Bot(tower, row_generator(args), args.use_up_down_in or args.handbell_style,
               args.stop_at_rounds or args.handbell_style, rhythm=rhythm(args))
 

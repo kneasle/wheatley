@@ -57,7 +57,7 @@ Run the bot with `python3 main.py [ARGS]` (or `./main.py [ARGS]` on Unix).
 You may have to use `python` instead of `python3` on Windows.
 
 *   Join a `ringingroom.com` tower with (9 digit) id `[ID NUMBER]` and ring Plain Bob Major (tower
-    bell style):
+    bell style - wait for `Go` and `That's all`):
     ```bash
     python3 main.py --id [ID NUMBER] --method "Plain Bob Major"
     ```

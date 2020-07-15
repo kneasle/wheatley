@@ -7,7 +7,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="rr-bot",
-    version="0.1.0",
+    version="0.1.1",
 
     author="Ben White-Horne",
     author_email="kneasle@gmail.com",
@@ -28,6 +28,12 @@ setuptools.setup(
         "Operating System :: OS Independent"
     ],
     python_requires='>=3.6',
+    install_requires=[
+        "numpy",
+        "requests",
+        "python-socketio",
+        "websocket-client"
+    ],
 
     entry_points={'console_scripts': ['rr-bot = rr_bot.main:main']}
 )

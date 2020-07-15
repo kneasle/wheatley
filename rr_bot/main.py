@@ -120,7 +120,7 @@ def main():
     )
 
     # Row generator arguments
-    row_gen_group = parser.add_mutually_exclusive_group(required = True)
+    row_gen_group = parser.add_mutually_exclusive_group(required=True)
     row_gen_group.add_argument(
         "--comp",
         type=int,

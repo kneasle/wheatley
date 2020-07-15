@@ -9,6 +9,8 @@ python3 rr_bot [ARGS]
 ```
 (or `python rr_bot [ARGS]` on Windows).
 
+Or, on unix you can `cd` to the `rr_bot` directory and run `./main.py [ARGS]`.
+
 ## Code structure
 ```
 .

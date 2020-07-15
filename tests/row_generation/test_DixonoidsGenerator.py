@@ -1,7 +1,7 @@
 from unittest import TestCase
 
-from row_generation import DixonoidsGenerator
-from test.row_generation import as_bells
+from tests.row_generation import as_bells
+from rr_bot.row_generation import DixonoidsGenerator
 
 
 class DixonoidsGeneratorTests(TestCase):

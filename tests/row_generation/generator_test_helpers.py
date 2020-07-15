@@ -1,6 +1,6 @@
 from typing import List, Iterator
 
-from bell import Bell
+from rr_bot.bell import Bell
 
 
 def rounds(stage: int) -> List[int]:

@@ -1,8 +1,8 @@
 import unittest
 from unittest import TestCase
 
-from row_generation import PlaceNotationGenerator
-from test.row_generation import gen_rows
+from rr_bot.row_generation import PlaceNotationGenerator
+from . import gen_rows
 
 
 class PlaceNotationGeneratorTests(TestCase):

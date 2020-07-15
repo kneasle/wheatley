@@ -21,16 +21,16 @@ take effect the handstroke after they are called, and `Bob` and `Single` will re
 - Automatic correction for Ringing Room using multiple server URLs for load balancing
 - Very light resource footprint, as it doesn't interact with a browser to talk to Ringing Room
 
-## Contributing
+### Contributing
 Contributions are very welcome!  See [here](CONTRIBUTING.md) for guidance.
 
 ## Quickstart
 ### Installation (using Pip)
 1. Run the following command to install or update to the latest version of the bot:
    ```bash
-   pip3 install rr-bot
+   pip3 install --upgrade rr-bot
    ```
-   (use `pip` on Windows).
+   (use `pip install --upgrade rr-bot` on Windows).
 
 2. Pick an example below to run the bot!
 

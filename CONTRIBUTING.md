@@ -3,6 +3,12 @@ Pull requests are welcome, but please
 [make an issue](https://github.com/Kneasle/ringing-room-bot/issues/new) to discuss the changes
 before starting to implement things.
 
+To run the bot from source code, `cd` to the repository directory and run:
+```bash
+python3 rr_bot [ARGS]
+```
+(or `python rr_bot [ARGS]` on Windows).
+
 ## Code structure
 ```
 .

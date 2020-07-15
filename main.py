@@ -120,7 +120,7 @@ def main():
     )
 
     # Row generator arguments
-    row_gen_group = parser.add_mutually_exclusive_group()
+    row_gen_group = parser.add_mutually_exclusive_group(required = True)
     row_gen_group.add_argument(
         "--comp",
         type=int,
@@ -128,7 +128,6 @@ def main():
     )
     row_gen_group.add_argument(
         "--method",
-        default="Plain Bob Minor",
         type=str,
         help="The title of the method you want to ring"
     )

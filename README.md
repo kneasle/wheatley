@@ -53,7 +53,7 @@ take effect the handstroke after they are called, and `Bob` and `Single` will re
 5. Pick an example below to run the bot!
 
 ## Examples
-Run the bot with `python3 main.py [args]` (or `./main.py [args]` on Unix).
+Run the bot with `python3 main.py [ARGS]` (or `./main.py [ARGS]` on Unix).
 You may have to use `python` instead of `python3` on Windows.
 
 *   Join a `ringingroom.com` tower with (9 digit) id `[ID NUMBER]` and ring Plain Bob Major (tower

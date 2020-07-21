@@ -280,15 +280,10 @@ class RegressionRhythm(Rhythm):
         # Remove any data that's left over in the dataset from the last touch
         self.data_set = []
 
-        # Find the default blow interval for the given stage (used when the bot isn't ringing
-        # both trebles)
-        self._blow_interval = {
-            4: 0.4,
-            6: 0.3,
-            8: 0.3,
-            10: 0.2,
-            12: 0.2
-        }[self.stage]
+        # Calculate the blow interval from the peal speed, asuming a peal of 5040 changes
+        peal_speed_seconds = self._peal_speed * 60
+        seconds_per_whole_pull = peal_speed_seconds / 2520  # 2520 = 5040 / 2
+        self._blow_interval = seconds_per_whole_pull / (self.stage * 2 + 1)
 
         if not user_controls_treble:
             # If the bot is ringing the first bell, then add it as a datapoint anyway, so that after

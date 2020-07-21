@@ -42,6 +42,8 @@ def parse_peal_speed(peal_speed: str):
     """
 
     def exit_with_message(error_text):
+        """ Print a helpful error message and exit the program with an error code. """
+
         sys.exit(f"Error parsing peal speed '{peal_speed}': {error_text}")
 
     # Remove the 'm' from the end of the peal speed - it doesn't add any clarity

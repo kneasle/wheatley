@@ -7,6 +7,7 @@ required to make the bot easily configurable.
 
 import logging
 import argparse
+import sys
 
 from rr_bot.rhythm import RegressionRhythm, WaitForUserRhythm
 from rr_bot.tower import RingingRoomTower
@@ -33,6 +34,66 @@ def row_generator(args):
     # row_gen = PlaceNotationGenerator.stedman(11)
 
     return row_gen
+
+
+def parse_peal_speed(peal_speed: str):
+    """
+    Parses a peal speed written in the format /2h58(m?)/ or /XXX(m?)/ into a number of minutes.
+    """
+
+    def exit_with_message(error_text):
+        sys.exit(f"Error parsing peal speed '{peal_speed}': {error_text}")
+
+    # Remove the 'm' from the end of the peal speed - it doesn't add any clarity
+    stripped_peal_speed = peal_speed[:]
+
+    if stripped_peal_speed.endswith("m"):
+        stripped_peal_speed = stripped_peal_speed[:-1]
+
+    if "h" in stripped_peal_speed:
+        # Split the peal speed into its hour and minute components, and print a helpful message
+        # if there are too many parts
+        split_parts = stripped_peal_speed.split("h")
+
+        if len(split_parts) > 2:
+            exit_with_message("The peal speed should string should contain at most one 'h'.")
+
+        hour_string, minute_string = split_parts
+
+        # Parse the hours value, and print messages if it is invalid or negative
+        try:
+            hours = int(hour_string)
+        except ValueError:
+            exit_with_message(f"The hour value '{hour_string}' is a not an integer.")
+
+        if hours < 0:
+            exit_with_message(f"The hour value '{hour_string}' must be a positive integer.")
+
+        # Parse the minute value, and print messages if it is invalid or negative
+        try:
+            minutes = 0 if minute_string == "" else int(minute_string)
+        except ValueError:
+            exit_with_message(f"The minute value '{minute_string}' is a not an integer.")
+
+        if minutes < 0:
+            exit_with_message(f"The minute value '{minute_string}' must be a positive integer.")
+
+        if minutes > 59:
+            exit_with_message(f"The minute value '{minute_string}' must be smaller than 60.")
+
+        return hours * 60 + minutes
+
+    # If the user doesn't put an 'h' in their string, then we assume it's just a minute value that
+    # may or may not be bigger than 60
+    try:
+        minutes = int(stripped_peal_speed)
+    except ValueError:
+        exit_with_message(f"The minute value '{minute_string}' is a not an integer.")
+
+    if minutes < 0:
+        exit_with_message(f"The minute value '{minute_string}' must be a positive integer.")
+
+    return minutes
 
 
 def rhythm(args):

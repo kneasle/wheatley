@@ -99,7 +99,9 @@ def parse_peal_speed(peal_speed: str):
 def rhythm(args):
     """ Generates a rhythm object according to the given CLI arguments. """
 
-    regression = RegressionRhythm(args.inertia)
+    peal_speed = parse_peal_speed(args.peal_speed)
+
+    regression = RegressionRhythm(args.inertia, peal_speed)
 
     if args.wait:
         return WaitForUserRhythm(regression)
@@ -177,6 +179,13 @@ def main():
               possible to the current rhythm, 1.0 means that it will completely ignore the other \
               ringers. By default, it will set a value depending on what proportion of the bells \
               are user controlled."
+    )
+    parser.add_argument(
+        "-S", "--peal-speed",
+        default="2h58",
+        help="Sets the default speed that the bot will ring (assuming a peal of 5040 changes), \
+              though this will usually be adjusted by the bot whilst ringing to keep with other \
+              ringers.  Example formatting: '3h4' = '3h04m' = '3h04' = '184m'.  Defaults to '2h58'."
     )
 
     # Row generator arguments

@@ -5,8 +5,8 @@ The file containing the main function for the bot, as well as all the command li
 required to make the bot easily configurable.
 """
 
-import logging
 import argparse
+import logging
 import sys
 
 from rr_bot.rhythm import RegressionRhythm, WaitForUserRhythm

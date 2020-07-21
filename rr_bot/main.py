@@ -62,7 +62,7 @@ def parse_peal_speed(peal_speed: str):
 
         hour_string, minute_string = split_parts
 
-        # Parse the hours value, and print messages if it is invalid or negative
+        # Parse the hours value, and print messages if it is invalid
         try:
             hours = int(hour_string)
         except ValueError:
@@ -71,7 +71,7 @@ def parse_peal_speed(peal_speed: str):
         if hours < 0:
             exit_with_message(f"The hour value '{hour_string}' must be a positive integer.")
 
-        # Parse the minute value, and print messages if it is invalid or negative
+        # Parse the minute value, and print messages if it is invalid
         try:
             minutes = 0 if minute_string == "" else int(minute_string)
         except ValueError:

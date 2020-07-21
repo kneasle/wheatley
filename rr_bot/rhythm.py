@@ -275,13 +275,13 @@ class RegressionRhythm(Rhythm):
         """ Allow the Rhythm object to initialise itself when 'Look to' is called. """
 
         self._number_of_user_controlled_bells = number_of_user_controlled_bells
+        self.stage = stage
 
         # Remove any data that's left over in the dataset from the last touch
         self.data_set = []
 
         # Find the default blow interval for the given stage (used when the bot isn't ringing
         # both trebles)
-        self.stage = stage
         self._blow_interval = {
             4: 0.4,
             6: 0.3,

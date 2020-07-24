@@ -186,7 +186,8 @@ def main():
         default="2h58",
         help="Sets the default speed that the bot will ring (assuming a peal of 5040 changes), \
               though this will usually be adjusted by the bot whilst ringing to keep with other \
-              ringers.  Example formatting: '3h4' = '3h04m' = '3h04' = '184m'.  Defaults to '2h58'."
+              ringers.  Example formatting: '3h4' = '3h4m' = '3h04m' = '3h04' = '184m' = '184'. \
+              Defaults to '2h58'."
     )
 
     # Row generator arguments

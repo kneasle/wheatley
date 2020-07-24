@@ -5,11 +5,11 @@ before starting to implement things.
 
 To run the bot from source code, `cd` to the repository directory and run:
 ```bash
-python3 rr_bot [ARGS]
+python3 rr-bot [ARGS]
 ```
-(or `python rr_bot [ARGS]` on Windows).
+(or `python rr-bot [ARGS]` on Windows).
 
-Or, on unix you can `cd` to the `rr_bot` directory and run `./main.py [ARGS]`.
+Or, on Unix you can run `./rr-bot [ARGS]`.
 
 ## Code structure
 ```
@@ -19,6 +19,7 @@ Or, on unix you can `cd` to the `rr_bot` directory and run `./main.py [ARGS]`.
 ├── README.md
 ├── requirements.txt
 ├── setup.py                                        => Build script run to generate the PIP package
+├── rr-bot                                          => A shell-executable python script to launch the bot
 ├── rr_bot
 │   ├── __init__.py                                 => Empty file
 │   ├── __main__.py                                 => Code to start the bot

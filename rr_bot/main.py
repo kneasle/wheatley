@@ -102,7 +102,6 @@ def rhythm(args):
     """ Generates a rhythm object according to the given CLI arguments. """
 
     peal_speed = parse_peal_speed(args.peal_speed)
-
     regression = RegressionRhythm(args.inertia, peal_speed)
 
     if args.wait:

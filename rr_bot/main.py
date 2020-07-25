@@ -116,7 +116,7 @@ def parse_peal_speed(peal_speed: str):
         exit_with_message(f"The minute value '{stripped_peal_speed}' is not an integer.")
 
     if minutes < 0:
-        exit_with_message(f"The minute value '{minute_string}' must be a positive integer.")
+        exit_with_message(f"The minute value '{stripped_peal_speed}' must be a positive integer.")
 
     return minutes
 

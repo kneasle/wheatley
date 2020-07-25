@@ -74,7 +74,7 @@ def parse_peal_speed(peal_speed: str):
         split_parts = stripped_peal_speed.split("h")
 
         if len(split_parts) > 2:
-            exit_with_message("The peal speed should string should contain at most one 'h'.")
+            exit_with_message("The peal speed should contain at most one 'h'.")
 
         hour_string, minute_string = split_parts
 
@@ -82,7 +82,7 @@ def parse_peal_speed(peal_speed: str):
         try:
             hours = int(hour_string)
         except ValueError:
-            exit_with_message(f"The hour value '{hour_string}' is a not an integer.")
+            exit_with_message(f"The hour value '{hour_string}' is not an integer.")
 
         if hours < 0:
             exit_with_message(f"The hour value '{hour_string}' must be a positive integer.")
@@ -91,7 +91,7 @@ def parse_peal_speed(peal_speed: str):
         try:
             minutes = 0 if minute_string == "" else int(minute_string)
         except ValueError:
-            exit_with_message(f"The minute value '{minute_string}' is a not an integer.")
+            exit_with_message(f"The minute value '{minute_string}' is not an integer.")
 
         if minutes < 0:
             exit_with_message(f"The minute value '{minute_string}' must be a positive integer.")
@@ -106,7 +106,7 @@ def parse_peal_speed(peal_speed: str):
     try:
         minutes = int(stripped_peal_speed)
     except ValueError:
-        exit_with_message(f"The minute value '{stripped_peal_speed}' is a not an integer.")
+        exit_with_message(f"The minute value '{stripped_peal_speed}' is not an integer.")
 
     if minutes < 0:
         exit_with_message(f"The minute value '{minute_string}' must be a positive integer.")

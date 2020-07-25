@@ -142,8 +142,12 @@ class RegressionRhythm(Rhythm):
 
     logger_name = "RHYTHM:Regression"
 
-    def __init__(self, inertia, handstroke_gap=1):
-        """ Initialises a new RegressionRhythm with a given handstroke gap. """
+    def __init__(self, inertia, peal_speed=178, handstroke_gap=1):
+        """
+        Initialises a new RegressionRhythm with a given default peal speed and handstroke gap.
+        `peal_speed` is the number of minutes in a peal of 5040 changes, and `handstroke_gap`
+        measures how many places long the handstroke gap is.
+        """
 
         # An inertia-like coefficient designed to allow the regression finder to slowly adjust to
         # a new rhythm
@@ -151,6 +155,7 @@ class RegressionRhythm(Rhythm):
         # 1.0 means that no effect is made at all
         self._preferred_inertia = inertia
 
+        self._peal_speed = peal_speed
         self._handstroke_gap = handstroke_gap
 
         self.stage = 0
@@ -274,20 +279,15 @@ class RegressionRhythm(Rhythm):
         """ Allow the Rhythm object to initialise itself when 'Look to' is called. """
 
         self._number_of_user_controlled_bells = number_of_user_controlled_bells
+        self.stage = stage
 
         # Remove any data that's left over in the dataset from the last touch
         self.data_set = []
 
-        # Find the default blow interval for the given stage (used when the bot isn't ringing
-        # both trebles)
-        self.stage = stage
-        self._blow_interval = {
-            4: 0.4,
-            6: 0.3,
-            8: 0.3,
-            10: 0.2,
-            12: 0.2
-        }[self.stage]
+        # Calculate the blow interval from the peal speed, asuming a peal of 5040 changes
+        peal_speed_seconds = self._peal_speed * 60
+        seconds_per_whole_pull = peal_speed_seconds / 2520  # 2520 = 5040 / 2
+        self._blow_interval = seconds_per_whole_pull / (self.stage * 2 + 1)
 
         if not user_controls_treble:
             # If the bot is ringing the first bell, then add it as a datapoint anyway, so that after

@@ -76,6 +76,13 @@ Run the bot with `rr-bot [ARGS]`.
     rr-bot [ID NUMBER] --comp 65034
     ```
 
+*   Make the bot ring at a peal speed of 3 hours 30 minutes (i.e. quite slowly):
+    ```bash
+    rr-bot [ID NUMBER] --peal-speed 3h30
+    # or
+    rr-bot [ID NUMBER] -S 3h30
+    ```
+
 *   Make the bot wait for people to ring rather than pushing on with the rhythm:
     ```bash
     rr-bot [ID NUMBER] --method "Plain Bob Major" --wait

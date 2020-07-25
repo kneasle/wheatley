@@ -36,15 +36,31 @@ def row_generator(args):
     return row_gen
 
 
+class PealSpeedParseError(ValueError):
+    """
+    An error thrown with a helpful error message when the user inputs a peal speed string that
+    cannot be parsed by the parser.
+    """
+
+    def __init__(self, peal_spead_string, message):
+        super().__init__()
+
+        self.peal_spead_string = peal_spead_string
+        self.message = message
+
+    def __str__(self):
+        return f"Error parsing peal speed '{self.peal_spead_string}': {self.message}"
+
+
 def parse_peal_speed(peal_speed: str):
     """
     Parses a peal speed written in the format /2h58(m?)/ or /XXX(m?)/ into a number of minutes.
     """
 
     def exit_with_message(error_text):
-        """ Print a helpful error message and exit the program with an error code. """
+        """ Raise an exception with a useful error message. """
 
-        sys.exit(f"Error parsing peal speed '{peal_speed}': {error_text}")
+        raise PealSpeedParseError(peal_speed, error_text)
 
     # Remove the 'm' from the end of the peal speed - it doesn't add any clarity
     stripped_peal_speed = peal_speed[:]
@@ -101,7 +117,11 @@ def parse_peal_speed(peal_speed: str):
 def rhythm(args):
     """ Generates a rhythm object according to the given CLI arguments. """
 
-    peal_speed = parse_peal_speed(args.peal_speed)
+    try:
+        peal_speed = parse_peal_speed(args.peal_speed)
+    except PealSpeedParseError as e:
+        sys.exit(str(e))
+
     regression = RegressionRhythm(args.inertia, peal_speed)
 
     if args.wait:

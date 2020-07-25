@@ -143,7 +143,11 @@ class RegressionRhythm(Rhythm):
     logger_name = "RHYTHM:Regression"
 
     def __init__(self, inertia, peal_speed=178, handstroke_gap=1):
-        """ Initialises a new RegressionRhythm with a given handstroke gap. """
+        """
+        Initialises a new RegressionRhythm with a given default peal speed and handstroke gap.
+        `peal_speed` is the number of minutes in a peal of 5040 changes, and `handstroke_gap`
+        measures how many places long the handstroke gap is.
+        """
 
         # An inertia-like coefficient designed to allow the regression finder to slowly adjust to
         # a new rhythm

@@ -62,9 +62,12 @@ def parse_peal_speed(peal_speed: str):
 
         raise PealSpeedParseError(peal_speed, error_text)
 
-    # Remove the 'm' from the end of the peal speed - it doesn't add any clarity
-    stripped_peal_speed = peal_speed[:]
+    # Strip whitspace from the argument, so that if the user is in fact insane enough to pad their
+    # CLI arguments with whitespace then they can do so and not crash the program.  This also has
+    # the side effect of cloning the input string so we can freely modify it.
+    stripped_peal_speed = peal_speed.strip()
 
+    # Remove the 'm' from the end of the peal speed - it doesn't add any clarity
     if stripped_peal_speed.endswith("m"):
         stripped_peal_speed = stripped_peal_speed[:-1]
 
@@ -77,6 +80,10 @@ def parse_peal_speed(peal_speed: str):
             exit_with_message("The peal speed should contain at most one 'h'.")
 
         hour_string, minute_string = split_parts
+
+        # Strip the input values so that the user can put whitespace into the input if they want
+        hour_string = hour_string.strip()
+        minute_string = minute_string.strip()
 
         # Parse the hours value, and print messages if it is invalid
         try:

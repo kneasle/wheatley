@@ -106,7 +106,7 @@ def parse_peal_speed(peal_speed: str):
     try:
         minutes = int(stripped_peal_speed)
     except ValueError:
-        exit_with_message(f"The minute value '{minute_string}' is a not an integer.")
+        exit_with_message(f"The minute value '{stripped_peal_speed}' is a not an integer.")
 
     if minutes < 0:
         exit_with_message(f"The minute value '{minute_string}' must be a positive integer.")

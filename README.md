@@ -1,7 +1,7 @@
-# Ringing Room Bot
+# Wheatley
 A bot for Ringing Room that can fill in any set of bells to increase the scope of potential practices.
 
-This bot is designed to be a **'ninja helper with no ego'**.
+Wheatley is designed to be a **'ninja helper with no ego'**.
 
 It will ring all unassigned bells perfectly whilst fitting in with whatever you are doing, adjusting to
 your changes in rhythm.
@@ -10,8 +10,8 @@ different rhythm to everyone else (unless you tell it to).
 However, by default it will adjust only to changes to overall rhythm - it will ignore individual
 bells holding up and ring in the 'right' place regardless.
 
-Only one ringer needs to run the command and it will ring with you after anyone calls `Look to` in
-Ringing Room.
+Only one ringer needs to run the command and Wheatley will ring with you after anyone calls
+`Look to` in Ringing Room.
 It will understand all Ringing Room calls - `Go`, `Look to`, `That's all` and `Stand next` will
 take effect the handstroke after they are called, and `Bob` and `Single` will result in `14` and
 `1234` lead end calls.
@@ -31,13 +31,13 @@ If you have any issues/suggestions, either
 
 ## Quickstart
 ### Installation (using Pip)
-1. Run the following command to install or update to the latest version of the bot:
+1. Run the following command to install or update to the latest version of Wheatley:
    ```bash
    pip3 install --upgrade wheatley
    ```
    (use `pip install --upgrade wheatley` on Windows).
 
-2. Pick an example below to run the bot!
+2. Pick an example below to run Wheatley!
 
 ## Examples
 Run the bot with `wheatley [ARGS]`.
@@ -48,14 +48,14 @@ Run the bot with `wheatley [ARGS]`.
     wheatley [ID NUMBER] --method "Plain Bob Major"
     ```
 
-*   Make the bot ring 'up, down and in' rather than waiting for 'go':
+*   Ring 'up, down and in' rather than waiting for 'go':
     ```bash
     wheatley --up-down-in --id [ID NUMBER] --method "Plain Bob Major"
     # or
     wheatley [ID NUMBER] -u --method "Plain Bob Major"
     ```
 
-*   Make the bot ring full handbell style, i.e. 'up, down and in' and standing at rounds (`-H` is
+*   Ring full handbell style, i.e. 'up, down and in' and standing at rounds (`-H` is
     equivalent to `-us`):
     ```bash
     wheatley [ID NUMBER] --up-down-in --stop-at-rounds --method "Plain Bob Major"
@@ -76,19 +76,19 @@ Run the bot with `wheatley [ARGS]`.
     wheatley [ID NUMBER] --comp 65034
     ```
 
-*   Make the bot ring at a peal speed of 3 hours 30 minutes (i.e. quite slowly):
+*   Ring at a peal speed of 3 hours 30 minutes (i.e. quite slowly):
     ```bash
     wheatley [ID NUMBER] --peal-speed 3h30
     # or
     wheatley [ID NUMBER] -S 3h30
     ```
 
-*   Make the bot wait for people to ring rather than pushing on with the rhythm:
+*   Wait for people to ring rather than pushing on with the rhythm:
     ```bash
     wheatley [ID NUMBER] --method "Plain Bob Major" --wait
     ```
 
-*   Make the bot completely ignore other users' changes in rhythm (useful if it's ringing most of
+*   Completely ignore other users' changes in rhythm (useful if it's ringing most of
     the bells and you don't want it to randomly change speed when you make mistakes):
     ```bash
     wheatley [ID NUMBER] --method "Plain Bob Major" --inertia 1.0

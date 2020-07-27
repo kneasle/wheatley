@@ -9,7 +9,7 @@ from typing import Optional, Callable, Dict, List, Any
 
 import socketio
 
-from rr_bot.bell import Bell
+from wheatley.bell import Bell
 
 
 class RingingRoomTower:

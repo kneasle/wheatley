@@ -1,7 +1,7 @@
 import unittest
 from unittest import TestCase
 
-from rr_bot.row_generation import PlaceNotationGenerator
+from wheatley.row_generation import PlaceNotationGenerator
 from . import gen_rows
 
 

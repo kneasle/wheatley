@@ -5,9 +5,9 @@
 from random import random
 from typing import List
 
-from rr_bot import calls
-from rr_bot.bell import Bell
-from rr_bot.tower import RingingRoomTower
+from wheatley import calls
+from wheatley.bell import Bell
+from wheatley.tower import RingingRoomTower
 
 from .row_generator import RowGenerator
 

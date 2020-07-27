@@ -9,8 +9,8 @@ import math
 from abc import ABCMeta, abstractmethod
 from time import sleep
 
-from rr_bot.bell import Bell
-from rr_bot.regression import calculate_regression
+from wheatley.bell import Bell
+from wheatley.regression import calculate_regression
 
 
 MAX_CHANGES_IN_DATASET = 3.0

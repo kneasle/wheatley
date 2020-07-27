@@ -1,6 +1,6 @@
 import unittest
 
-from rr_bot.main import parse_peal_speed, PealSpeedParseError
+from wheatley.main import parse_peal_speed, PealSpeedParseError
 
 class ArgParseTests(unittest.TestCase):
 

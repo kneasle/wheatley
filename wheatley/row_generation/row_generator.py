@@ -4,7 +4,7 @@ import logging
 from abc import ABCMeta, abstractmethod
 from typing import List
 
-from rr_bot.bell import Bell
+from wheatley.bell import Bell
 
 
 class RowGenerator(metaclass=ABCMeta):

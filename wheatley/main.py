@@ -9,12 +9,12 @@ import argparse
 import logging
 import sys
 
-from rr_bot.rhythm import RegressionRhythm, WaitForUserRhythm
-from rr_bot.tower import RingingRoomTower
-from rr_bot.bot import Bot
-from rr_bot.page_parser import get_load_balancing_url
-from rr_bot.row_generation import RowGenerator, ComplibCompositionGenerator
-from rr_bot.row_generation import MethodPlaceNotationGenerator
+from wheatley.rhythm import RegressionRhythm, WaitForUserRhythm
+from wheatley.tower import RingingRoomTower
+from wheatley.bot import Bot
+from wheatley.page_parser import get_load_balancing_url
+from wheatley.row_generation import RowGenerator, ComplibCompositionGenerator
+from wheatley.row_generation import MethodPlaceNotationGenerator
 
 
 def row_generator(args):

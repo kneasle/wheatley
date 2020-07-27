@@ -2,7 +2,7 @@
 
 from typing import List
 
-from rr_bot.bell import Bell
+from wheatley.bell import Bell
 
 from .row_generator import RowGenerator
 

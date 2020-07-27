@@ -1,7 +1,7 @@
 import unittest
 from unittest import TestCase
 
-from rr_bot.row_generation import PlainHuntGenerator
+from wheatley.row_generation import PlainHuntGenerator
 from . import gen_rows
 
 

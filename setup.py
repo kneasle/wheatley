@@ -6,17 +6,17 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="rr-bot",
-    version="0.1.1",
+    name="wheatley",
+    version="0.1.2",
 
     author="Ben White-Horne",
     author_email="kneasle@gmail.com",
 
-    description="A program that will fill in any set of bells in Ringing Room.",
+    description="A program that will ring any set of bells in Ringing Room.",
     long_description=long_description,
     long_description_content_type="text/markdown",
 
-    url="https://github.com/Kneasle/ringing-room-bot/",
+    url="https://github.com/Kneasle/wheatley/",
 
     license="MIT",
     platforms="any",
@@ -35,5 +35,5 @@ setuptools.setup(
         "websocket-client"
     ],
 
-    entry_points={'console_scripts': ['rr-bot = rr_bot.main:main']}
+    entry_points={'console_scripts': ['wheatley = wheatley.main:main']}
 )

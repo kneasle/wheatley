@@ -1,7 +1,7 @@
 import unittest
 
-from rr_bot.row_generation.helpers import convert_bell_string, convert_to_bell_string, convert_pn
-from rr_bot.row_generation.helpers import _CROSS_PN
+from wheatley.row_generation.helpers import convert_bell_string, convert_to_bell_string, convert_pn
+from wheatley.row_generation.helpers import _CROSS_PN
 
 
 class HelpersBellStringTests(unittest.TestCase):

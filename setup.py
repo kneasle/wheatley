@@ -6,8 +6,8 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="rr-bot",
-    version="0.1.1",
+    name="wheatley",
+    version="0.1.0",
 
     author="Ben White-Horne",
     author_email="kneasle@gmail.com",
@@ -35,5 +35,5 @@ setuptools.setup(
         "websocket-client"
     ],
 
-    entry_points={'console_scripts': ['rr-bot = rr_bot.main:main']}
+    entry_points={'console_scripts': ['wheatley = wheatley.main:main']}
 )

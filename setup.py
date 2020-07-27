@@ -16,7 +16,7 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
 
-    url="https://github.com/Kneasle/ringing-room-bot/",
+    url="https://github.com/Kneasle/wheatley/",
 
     license="MIT",
     platforms="any",

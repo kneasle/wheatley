@@ -3,13 +3,13 @@ Pull requests are welcome, but please
 [make an issue](https://github.com/Kneasle/ringing-room-bot/issues/new) to discuss the changes
 before starting to implement things.
 
-To run the bot from source code, `cd` to the repository directory and run:
+To run the bot **from source code**, `cd` to the repository directory and run:
 ```bash
-python3 rr-bot [ARGS]
+python3 run-wheatley [ARGS]
 ```
-(or `python rr-bot [ARGS]` on Windows).
+(or `python run-wheatley [ARGS]` on Windows).
 
-Or, on Unix you can run `./rr-bot [ARGS]`.
+Or, on Unix you can run `./run-wheatley [ARGS]`.
 
 ## Code structure
 ```
@@ -19,8 +19,8 @@ Or, on Unix you can run `./rr-bot [ARGS]`.
 ├── README.md
 ├── requirements.txt
 ├── setup.py                                        => Build script run to generate the PIP package
-├── rr-bot                                          => A shell-executable python script to launch the bot
-├── rr_bot
+├── run-wheatley                                    => A shell-executable python script to launch Wheatley
+├── wheatley
 │   ├── __init__.py                                 => Empty file
 │   ├── __main__.py                                 => Code to start the bot
 │   ├── bell.py                                     => Stores the representation of a bell

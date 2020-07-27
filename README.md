@@ -33,72 +33,72 @@ If you have any issues/suggestions, either
 ### Installation (using Pip)
 1. Run the following command to install or update to the latest version of the bot:
    ```bash
-   pip3 install --upgrade rr-bot
+   pip3 install --upgrade wheatley
    ```
-   (use `pip install --upgrade rr-bot` on Windows).
+   (use `pip install --upgrade wheatley` on Windows).
 
 2. Pick an example below to run the bot!
 
 ## Examples
-Run the bot with `rr-bot [ARGS]`.
+Run the bot with `wheatley [ARGS]`.
 
 *   Join a `ringingroom.com` tower with (9 digit) id `[ID NUMBER]` and ring Plain Bob Major (tower
     bell style - wait for `Go` and `That's all`):
     ```bash
-    rr-bot [ID NUMBER] --method "Plain Bob Major"
+    wheatley [ID NUMBER] --method "Plain Bob Major"
     ```
 
 *   Make the bot ring 'up, down and in' rather than waiting for 'go':
     ```bash
-    rr-bot --up-down-in --id [ID NUMBER] --method "Plain Bob Major"
+    wheatley --up-down-in --id [ID NUMBER] --method "Plain Bob Major"
     # or
-    rr-bot [ID NUMBER] -u --method "Plain Bob Major"
+    wheatley [ID NUMBER] -u --method "Plain Bob Major"
     ```
 
 *   Make the bot ring full handbell style, i.e. 'up, down and in' and standing at rounds (`-H` is
     equivalent to `-us`):
     ```bash
-    rr-bot [ID NUMBER] --up-down-in --stop-at-rounds --method "Plain Bob Major"
+    wheatley [ID NUMBER] --up-down-in --stop-at-rounds --method "Plain Bob Major"
     # or
-    rr-bot [ID NUMBER] -us --method "Plain Bob Major"
+    wheatley [ID NUMBER] -us --method "Plain Bob Major"
     # or
-    rr-bot [ID NUMBER] -H --method "Plain Bob Major"
+    wheatley [ID NUMBER] -H --method "Plain Bob Major"
     ```
 
 *   Join a server other than `ringingroom.com`:
     ```bash
-    rr-bot [ID NUMBER] --url otherserver.com --method [METHOD TITLE]
+    wheatley [ID NUMBER] --url otherserver.com --method [METHOD TITLE]
     ```
 
 *   Ring rows taken from a (public) composition from [complib.org](http://complib.org/), in this
     case https://complib.org/composition/65034:
     ```bash
-    rr-bot [ID NUMBER] --comp 65034
+    wheatley [ID NUMBER] --comp 65034
     ```
 
 *   Make the bot ring at a peal speed of 3 hours 30 minutes (i.e. quite slowly):
     ```bash
-    rr-bot [ID NUMBER] --peal-speed 3h30
+    wheatley [ID NUMBER] --peal-speed 3h30
     # or
-    rr-bot [ID NUMBER] -S 3h30
+    wheatley [ID NUMBER] -S 3h30
     ```
 
 *   Make the bot wait for people to ring rather than pushing on with the rhythm:
     ```bash
-    rr-bot [ID NUMBER] --method "Plain Bob Major" --wait
+    wheatley [ID NUMBER] --method "Plain Bob Major" --wait
     ```
 
 *   Make the bot completely ignore other users' changes in rhythm (useful if it's ringing most of
     the bells and you don't want it to randomly change speed when you make mistakes):
     ```bash
-    rr-bot [ID NUMBER] --method "Plain Bob Major" --inertia 1.0
+    wheatley [ID NUMBER] --method "Plain Bob Major" --inertia 1.0
     # or
-    rr-bot [ID NUMBER] --method "Plain Bob Major" -i 1.0
+    wheatley [ID NUMBER] --method "Plain Bob Major" -i 1.0
     ```
 
 *   Print a nice help string:
     ```bash
-    rr-bot --help
+    wheatley --help
     # or
-    rr-bot -h
+    wheatley -h
     ```

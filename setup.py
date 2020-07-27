@@ -12,7 +12,7 @@ setuptools.setup(
     author="Ben White-Horne",
     author_email="kneasle@gmail.com",
 
-    description="A program that will fill in any set of bells in Ringing Room.",
+    description="A program that will ring any set of bells in Ringing Room.",
     long_description=long_description,
     long_description_content_type="text/markdown",
 

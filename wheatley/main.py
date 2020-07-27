@@ -17,6 +17,10 @@ from wheatley.row_generation import RowGenerator, ComplibCompositionGenerator
 from wheatley.row_generation import MethodPlaceNotationGenerator
 
 
+# Set the version number that will be printed by `wheatley --version`
+__version__ = "0.1.2"
+
+
 def row_generator(args):
     """ Generates a row generator according to the given CLI arguments. """
 
@@ -190,6 +194,11 @@ def main():
               rounds then straight into changes, and stopping at the first set of rounds. By \
               default, it will ring 'towerbell style', i.e. only taking instructions from the \
               ringing-room calls. This is equivalent to using the '-us' flags."
+    )
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"Wheatley v{__version__}"
     )
 
     # Rhythm arguments

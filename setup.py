@@ -7,7 +7,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="wheatley",
-    version="0.1.0",
+    version="0.1.2",
 
     author="Ben White-Horne",
     author_email="kneasle@gmail.com",

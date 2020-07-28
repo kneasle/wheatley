@@ -7,6 +7,7 @@ required to make the bot easily configurable.
 
 import argparse
 import logging
+import os
 import sys
 
 from wheatley.rhythm import RegressionRhythm, WaitForUserRhythm
@@ -15,10 +16,6 @@ from wheatley.bot import Bot
 from wheatley.page_parser import get_load_balancing_url
 from wheatley.row_generation import RowGenerator, ComplibCompositionGenerator
 from wheatley.row_generation import MethodPlaceNotationGenerator
-
-
-# Set the version number that will be printed by `wheatley --version`
-__version__ = "0.1.2"
 
 
 def row_generator(args):
@@ -158,6 +155,17 @@ def main():
     This parses the CLI arguments, creates the Rhythm, RowGenerator and Bot objects, then starts
     the bot's mainloop.
     """
+
+    # Try to read the file with the version number, if not print an error and set a poison value
+    # as the version
+    try:
+        version_file_path = os.path.join(os.path.split(__file__)[0], "version.txt")
+
+        __version__ = open(version_file_path).read()
+    except IOError:
+        print("Error reading the version file, so unable to print version if needed.  This error \
+is not fatal - the bot will continue to work as expected.")
+        __version__ = "<NO VERSION FOUND>"
 
     # Parse the arguments
     parser = argparse.ArgumentParser(

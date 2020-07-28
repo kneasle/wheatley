@@ -24,5 +24,3 @@ jobs:
         run: pylint3 wheatley/**/*.py
       - name: Run tests
         run: python3 -m pytest
-      - name: Check version string consistency
-        run: ./check-version-strings

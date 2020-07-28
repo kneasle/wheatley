@@ -163,9 +163,7 @@ def main():
 
         __version__ = open(version_file_path).read()
     except IOError:
-        print("Error reading the version file, so unable to print version if needed.  This error \
-is not fatal - the bot will continue to work as expected.")
-        __version__ = "<NO VERSION FOUND>"
+        __version__ = "<NO VERSION FILE FOUND>"
 
     # Parse the arguments
     parser = argparse.ArgumentParser(

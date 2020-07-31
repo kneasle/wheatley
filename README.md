@@ -3,23 +3,23 @@ A bot for Ringing Room that can fill in any set of bells to increase the scope o
 
 Wheatley is designed to be a **'ninja helper with no ego'**.
 
-It will ring all unassigned bells perfectly whilst fitting in with whatever you are doing, adjusting to
+He'll ring all unassigned bells perfectly whilst fitting in with whatever you are doing, adjusting to
 your changes in rhythm.
-It will never try to take control of the ringing by giving instructions or powering on with a
-different rhythm to everyone else (unless you tell it to).
-However, by default it will adjust only to changes to overall rhythm - it will ignore individual
-bells holding up and ring in the 'right' place regardless.
+He'll also never try to take control of the ringing by giving instructions or powering on with a
+different rhythm to everyone else (unless you tell him to).
+However, by default he'll adjust only to changes to overall rhythm – ignoring individual
+bells holding up and ringing in the 'right' place regardless.
 
 Only one ringer needs to run the command and Wheatley will ring with you after anyone calls
 `Look to` in Ringing Room.
-It will understand all Ringing Room calls - `Go`, `Look to`, `That's all` and `Stand next` will
+He understands all Ringing Room calls – `Go`, `Look to`, `That's all` and `Stand next` will
 take effect the handstroke after they are called, and `Bob` and `Single` will result in `14` and
 `1234` lead end calls.
 
 ### Notable features
 - Configurable rhythm detection that updates in real time
 - Automatic correction for Ringing Room using multiple server URLs for load balancing
-- Very light resource footprint, as it doesn't interact with a browser to communicate with Ringing Room
+- Very light resource footprint, as Wheatley doesn't interact with a browser to communicate with Ringing Room
 
 ### Contributing
 Contributions are very welcome!  See [here](CONTRIBUTING.md) for guidance.
@@ -88,7 +88,7 @@ Run the bot with `wheatley [ARGS]`.
     ```
 
 *   Completely ignore other users' changes in rhythm (useful if it's ringing most of
-    the bells and you don't want it to randomly change speed when you make mistakes):
+    the bells and you don't want him to randomly change speed when you make mistakes):
     ```bash
     wheatley [ID NUMBER] --method "Plain Bob Major" --inertia 1.0
     # or

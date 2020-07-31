@@ -5,9 +5,12 @@ import setuptools
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
+with open("wheatley/version.txt", "r") as fh:
+    version = fh.read()
+
 setuptools.setup(
     name="wheatley",
-    version="0.1.2",
+    version=version,
 
     author="Ben White-Horne",
     author_email="kneasle@gmail.com",
@@ -34,6 +37,7 @@ setuptools.setup(
         "python-socketio",
         "websocket-client"
     ],
+    package_data={"wheatley": ["version.txt"]},
 
     entry_points={'console_scripts': ['wheatley = wheatley.main:main']}
 )

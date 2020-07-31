@@ -1,4 +1,4 @@
-name: "Lint & Testing"
+name: "On push or PR to master"
 
 on:
   pull_request:

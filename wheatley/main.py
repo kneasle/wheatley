@@ -7,6 +7,7 @@ required to make the bot easily configurable.
 
 import argparse
 import logging
+import os
 import sys
 
 from wheatley.rhythm import RegressionRhythm, WaitForUserRhythm
@@ -155,6 +156,16 @@ def main():
     the bot's mainloop.
     """
 
+    # Try to read the file with the version number, if not print an error and set a poison value
+    # as the version
+    try:
+        version_file_path = os.path.join(os.path.split(__file__)[0], "version.txt")
+
+        with open(version_file_path) as f:
+            __version__ = f.read()
+    except IOError:
+        __version__ = "<NO VERSION FILE FOUND>"
+
     # Parse the arguments
     parser = argparse.ArgumentParser(
         description="A bot to fill in bells during ringingroom.com practices"
@@ -190,6 +201,11 @@ def main():
               rounds then straight into changes, and stopping at the first set of rounds. By \
               default, it will ring 'towerbell style', i.e. only taking instructions from the \
               ringing-room calls. This is equivalent to using the '-us' flags."
+    )
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"Wheatley v{__version__}"
     )
 
     # Rhythm arguments

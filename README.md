@@ -33,9 +33,8 @@ If you have any issues/suggestions, either
 ### Installation (using Pip)
 1. Run the following command to install or update to the latest version of Wheatley:
    ```bash
-   pip3 install --upgrade wheatley
+   pip install --upgrade wheatley
    ```
-   (use `pip install --upgrade wheatley` on Windows).
 
 2. Pick an example below to run Wheatley!
 

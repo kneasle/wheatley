@@ -161,7 +161,8 @@ def main():
     try:
         version_file_path = os.path.join(os.path.split(__file__)[0], "version.txt")
 
-        __version__ = open(version_file_path).read()
+        with open(version_file_path) as f:
+            __version__ = f.read()
     except IOError:
         __version__ = "<NO VERSION FILE FOUND>"
 

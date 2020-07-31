@@ -41,8 +41,8 @@ If you have any issues/suggestions, either
 ## Examples
 Run the bot with `wheatley [ARGS]`.
 
-*   Join a `ringingroom.com` tower with (9 digit) id `[ID NUMBER]` and ring Plain Bob Major (tower
-    bell style - wait for `Go` and `That's all`):
+*   Join a `ringingroom.com` tower with (9 digit) ID `[ID NUMBER]` and ring Plain Bob Major (tower
+    bell style – wait for `Go` and `That's all`):
     ```bash
     wheatley [ID NUMBER] --method "Plain Bob Major"
     ```

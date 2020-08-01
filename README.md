@@ -33,7 +33,8 @@ If you have any issues/suggestions, either
 
 ## Quickstart
 ### Installation (using Pip)
-1. Run the following command to install or update to the latest version of Wheatley:
+1. Run the following command to install or update to the
+[latest version of Wheatley](https://pypi.org/project/wheatley/):
    ```bash
    pip install --upgrade wheatley
    ```

@@ -22,14 +22,15 @@ class Bot:
 
     logger_name = "BOT"
 
-    def __init__(self, tower: RingingRoomTower, row_generator: RowGenerator, do_up_down_in,
-                 stop_at_rounds, rhythm: Rhythm):
+    def __init__(self, tower: RingingRoomTower, row_generator: RowGenerator, do_up_down_in: bool,
+                 stop_at_rounds: bool, rhythm: Rhythm, user_name: str = ""):
         """ Initialise a Bot with all the parts it needs to run. """
 
         self._rhythm = rhythm
 
         self._do_up_down_in = do_up_down_in
         self._stop_at_rounds = stop_at_rounds
+        self._user_name = user_name
 
         self.row_generator = row_generator
 
@@ -89,10 +90,10 @@ into changes unless something is done!")
         # Count number of user controlled bells
         number_of_user_controlled_bells = 0
         for i in range(self.stage):
-            if self._tower.user_controlled(Bell.from_index(i)):
+            if self._user_assigned_bell(Bell.from_index(i)):
                 number_of_user_controlled_bells += 1
 
-        self._rhythm.initialise_line(self.stage, self._tower.user_controlled(treble),
+        self._rhythm.initialise_line(self.stage, self._user_assigned_bell(treble),
                                      time.time() + 3, number_of_user_controlled_bells)
 
         # Clear all the flags
@@ -137,9 +138,9 @@ into changes unless something is done!")
         self._should_stand = True
 
     def _on_bell_ring(self, bell, stroke):
-        """ Callback called when the Tower recieves a signal that a bell has been rung. """
+        """ Callback called when the Tower receives a signal that a bell has been rung. """
 
-        if self._tower.user_controlled(bell):
+        if self._user_assigned_bell(bell):
             # This will give us the stroke _after_ the bell rings, we have to invert it, because
             # otherwise this will always expect the bells on the wrong stroke and no ringing will
             # ever happen
@@ -149,7 +150,7 @@ into changes unless something is done!")
     def expect_bell(self, index, bell):
         """ Called to let the rhythm expect a user-controlled bell at a certain time and stroke. """
 
-        if self._tower.user_controlled(bell):
+        if self._user_assigned_bell(bell):
             self._rhythm.expect_bell(
                 bell,
                 self._row_number,
@@ -187,7 +188,7 @@ into changes unless something is done!")
 
         bell = Bell.from_index(self._place) if self._is_ringing_rounds else self._row[self._place]
 
-        user_controlled = self._tower.user_controlled(bell)
+        user_controlled = self._user_assigned_bell(bell)
         self._rhythm.wait_for_bell_time(time.time(), bell, self._row_number, self._place,
                                         user_controlled, self.is_handstroke)
         if not user_controlled:
@@ -249,3 +250,12 @@ into changes unless something is done!")
                 self.tick()
 
             time.sleep(0.01)
+
+    def _user_assigned_bell(self, bell: Bell):
+        """ True when the bell is assigned to a different user name than given to the bot """
+        return not self._bot_assigned_bell(bell)
+
+    def _bot_assigned_bell(self, bell: Bell):
+        """ True when the bell is assigned to the user name given to the bot
+        or bell is unassigned with default empty user name """
+        return self._tower.is_bell_assigned_to(bell, self._user_name)

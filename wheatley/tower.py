@@ -84,10 +84,10 @@ class RingingRoomTower:
             self.logger.error(e)
             return False
 
-    def user_controlled(self, bell: Bell):
-        """ Returns true if a given bell is controlled by a user other than the bot. """
+    def is_bell_assigned_to(self, bell: Bell, user: str):
+        """ Returns true if a given bell is assigned to the given user name. """
 
-        return self._assigned_users.get(bell, "") != ""
+        return self._assigned_users.get(bell, "") == user
 
     def get_stroke(self, bell: Bell):
         """ Returns the stroke of a given bell. """
@@ -208,7 +208,7 @@ class RingingRoomTower:
         """ Callback called when a bell assignment is changed. """
 
         bell = Bell.from_number(data["bell"])
-        user = data["user"]
+        user = data["user"] or ""
         self._assigned_users[bell] = user
         self.logger.info(f"RECEIVED: Assigned bell '{bell}' to '{user or '[WHEATLEY]'}'")
 

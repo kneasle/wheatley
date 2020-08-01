@@ -1,4 +1,6 @@
 # Wheatley
+[![PyPI version](https://badge.fury.io/py/wheatley.svg)](https://badge.fury.io/py/wheatley)
+
 A bot for Ringing Room that can fill in any set of bells to increase the scope of potential practices.
 
 Wheatley is designed to be a **'ninja helper with no ego'**.

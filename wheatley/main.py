@@ -132,6 +132,7 @@ def rhythm(args):
 
     regression = RegressionRhythm(
         args.inertia,
+        handstroke_gap=args.handstroke_gap,
         peal_speed=peal_speed,
         max_rows_in_dataset=args.max_rows_in_dataset
     )
@@ -235,6 +236,13 @@ def main():
               though this will usually be adjusted by the bot whilst ringing to keep with other \
               ringers.  Example formatting: '3h4' = '3h4m' = '3h04m' = '3h04' = '184m' = '184'. \
               Defaults to '2h58'."
+    )
+    parser.add_argument(
+        "-G", "--handstroke-gap",
+        type=float,
+        default=1.0,
+        help="Sets the handstroke gap as a factor of the space between two bells.  Defaults to \
+              '1.0'."
     )
     parser.add_argument(
         "-X", "--max-rows-in-dataset",

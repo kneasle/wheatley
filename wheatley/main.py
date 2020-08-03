@@ -220,7 +220,7 @@ def main():
         help="If set, the bot will wait for users to ring rather than pushing on with the rhythm."
     )
     parser.add_argument(
-        "-i", "--inertia",
+        "-I", "--inertia",
         type=float,
         default=0.5,
         help="Overrides the bot's 'inertia' - now much the bot will take other ringers' positions \

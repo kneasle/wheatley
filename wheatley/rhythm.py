@@ -156,7 +156,7 @@ class RegressionRhythm(Rhythm):
 
         self._peal_speed = peal_speed
         self._handstroke_gap = handstroke_gap
-        self._max_rows_in_dataset = max_changes_in_dataset
+        self._max_rows_in_dataset = max_rows_in_dataset
 
         self.stage = 0
         self.logger = logging.getLogger(self.logger_name)

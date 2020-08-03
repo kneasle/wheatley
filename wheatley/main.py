@@ -130,7 +130,12 @@ def rhythm(args):
     except PealSpeedParseError as e:
         sys.exit(str(e))
 
-    regression = RegressionRhythm(args.inertia, peal_speed)
+    regression = RegressionRhythm(
+        args.inertia,
+        handstroke_gap=args.handstroke_gap,
+        peal_speed=peal_speed,
+        max_rows_in_dataset=args.max_rows_in_dataset
+    )
 
     if args.wait:
         return WaitForUserRhythm(regression)
@@ -215,7 +220,7 @@ def main():
         help="If set, the bot will wait for users to ring rather than pushing on with the rhythm."
     )
     parser.add_argument(
-        "-i", "--inertia",
+        "-I", "--inertia",
         type=float,
         default=0.5,
         help="Overrides the bot's 'inertia' - now much the bot will take other ringers' positions \
@@ -231,6 +236,23 @@ def main():
               though this will usually be adjusted by the bot whilst ringing to keep with other \
               ringers.  Example formatting: '3h4' = '3h4m' = '3h04m' = '3h04' = '184m' = '184'. \
               Defaults to '2h58'."
+    )
+    parser.add_argument(
+        "-G", "--handstroke-gap",
+        type=float,
+        default=1.0,
+        help="Sets the handstroke gap as a factor of the space between two bells.  Defaults to \
+              '1.0'."
+    )
+    parser.add_argument(
+        "-X", "--max-rows-in-dataset",
+        type=float,
+        default=3.0,
+        help="Sets the maximum number of rows that Wheatley will store to determine the current \
+              ringing speed.  If you make this larger, then will be more consistent but less \
+              quick to respond to changes in rhythm.  Defaults to '3.0'.  Setting both this and \
+              --inertia to a very small values could result in Wheatley ringing ridiculously \
+              quickly."
     )
 
     # Row generator arguments

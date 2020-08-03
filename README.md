@@ -92,7 +92,7 @@ Run the bot with `wheatley [ARGS]`.
     ```bash
     wheatley [ID NUMBER] --method "Plain Bob Major" --inertia 1.0
     # or
-    wheatley [ID NUMBER] --method "Plain Bob Major" -i 1.0
+    wheatley [ID NUMBER] --method "Plain Bob Major" -I 1.0
     ```
 
 *   Print a nice help string:

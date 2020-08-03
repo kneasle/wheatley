@@ -1,0 +1,7 @@
+# 0.2.0
+- Added CLI arg for max rows stored in the regression dataset (`-X` or `--max-rows-in-dataset`)
+
+# 0.1.0
+- Added CLI arg for peal speed (`S` or `--peal-speed`)
+- Added `--version` string, which is set automatically by the GitHub Action for releasing to PyPI
+- Renamed the bot to Wheatley

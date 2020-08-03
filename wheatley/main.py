@@ -250,7 +250,7 @@ def main():
         default=3.0,
         help="Sets the maximum number of rows that Wheatley will store to determine the current \
               ringing speed.  If you make this larger, then will be more consistent but less \
-              quick to respond to changes in rhythm.  Defaults to 3.0.  Setting both this and \
+              quick to respond to changes in rhythm.  Defaults to '3.0'.  Setting both this and \
               --inertia to a very small values could result in Wheatley ringing ridiculously \
               quickly."
     )

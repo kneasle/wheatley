@@ -6,6 +6,7 @@ program.
 
 import time
 import logging
+from typing import Optional
 
 from wheatley import calls
 from wheatley.row_generation import RowGenerator
@@ -23,7 +24,7 @@ class Bot:
     logger_name = "BOT"
 
     def __init__(self, tower: RingingRoomTower, row_generator: RowGenerator, do_up_down_in: bool,
-                 stop_at_rounds: bool, rhythm: Rhythm, user_name: str = ""):
+                 stop_at_rounds: bool, rhythm: Rhythm, user_name: Optional[str] = None):
         """ Initialise a Bot with all the parts it needs to run. """
 
         self._rhythm = rhythm
@@ -257,5 +258,5 @@ into changes unless something is done!")
 
     def _bot_assigned_bell(self, bell: Bell):
         """ True when the bell is assigned to the user name given to the bot
-        or bell is unassigned with default empty user name """
+        or bell is unassigned when user name is not set"""
         return self._tower.is_bell_assigned_to(bell, self._user_name)

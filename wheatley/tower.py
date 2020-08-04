@@ -84,10 +84,10 @@ class RingingRoomTower:
             self.logger.error(e)
             return False
 
-    def is_bell_assigned_to(self, bell: Bell, user: str):
+    def is_bell_assigned_to(self, bell: Bell, user: Optional[str]):
         """ Returns true if a given bell is assigned to the given user name. """
 
-        return self._assigned_users.get(bell, "") == user
+        return self._assigned_users.get(bell, None) == user
 
     def get_stroke(self, bell: Bell):
         """ Returns the stroke of a given bell. """
@@ -208,9 +208,12 @@ class RingingRoomTower:
         """ Callback called when a bell assignment is changed. """
 
         bell = Bell.from_number(data["bell"])
-        user = data["user"] or ""
+        user = data["user"] or None
         self._assigned_users[bell] = user
-        self.logger.info(f"RECEIVED: Assigned bell '{bell}' to '{user or '[WHEATLEY]'}'")
+        if user:
+            self.logger.info(f"RECEIVED: Assigned bell '{bell}' to '{user or '[WHEATLEY]'}'")
+        else:
+            self.logger.info(f"RECEIVED: Unassigned bell '{bell}'")
 
     def _on_call(self, data):
         """ Callback called when a call is made. """

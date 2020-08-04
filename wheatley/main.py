@@ -124,10 +124,10 @@ def main():
     )
     tower_group.add_argument(
         "-n", "--name",
-        default="",
+        default=None,
         type=str,
-        help="The display name in ringing room to ring assigned bells."
-             "Defaults to ringing unassigned bells."
+        help="If set, then the bot will ring bells assigned to the given name. \
+             When not set, the bot rings unassigned bells."
     )
 
     # Row generation arguments

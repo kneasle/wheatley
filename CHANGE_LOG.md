@@ -27,6 +27,7 @@
 # 0.2.0
 - Added CLI arg for max rows stored in the regression dataset (`-X` or `--max-rows-in-dataset`)
 - Added CLI arg for handstroke gap (`-G` or `--handstroke-gap`)
+- Added CLI arg for specifying a user name (`-n` or `--name`) instead of ringin unassigned bells
 - Renamed shorthand for `--inertia` from `-i` to `-I` for consistency with the other regression
   args
 - Fixed incorrect import when running on Windows

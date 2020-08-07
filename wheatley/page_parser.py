@@ -18,6 +18,16 @@ class TowerNotFoundError(ValueError):
     def __str__(self):
         return f"Tower {self._id} not found."
 
+class InvalidURLError(Exception):
+    """ An error class created whenever the user inputs a URL that is invalid. """
+
+    def __init__(self, url):
+        super().__init__()
+        self._url = url
+
+    def __str__(self):
+        return f"Unable to make a connection to '{self._url}'."
+
 
 def fix_url(url):
     """ Add 'https://' to the start of a URL if necessary """
@@ -40,7 +50,11 @@ def get_load_balancing_url(tower_id, http_server_url):
     # See https://github.com/lelandpaul/virtual-ringing-room/blob/
     #     ec00927ca57ab94fa2ff6a978ffaff707ab23a57/app/templates/ringing_room.html#L46
     url = urllib.parse.urljoin(http_server_url, str(tower_id))
-    html = requests.get(url).text
+
+    try:
+        html = requests.get(url).text
+    except requests.exceptions.ConnectionError:
+        raise InvalidURLError(http_server_url)
 
     try:
         url_start_index = html.index("server_ip") + len('server_ip: "')

@@ -11,12 +11,13 @@ import requests
 class TowerNotFoundError(ValueError):
     """ An error class created whenever the user inputs an incorrect room id. """
 
-    def __init__(self, tower_id):
+    def __init__(self, tower_id, url):
         super().__init__()
         self._id = tower_id
+        self._url = url
 
     def __str__(self):
-        return f"Tower {self._id} not found."
+        return f"Tower {self._id} not found at '{self._url}'."
 
 class InvalidURLError(Exception):
     """ An error class created whenever the user inputs a URL that is invalid. """
@@ -63,4 +64,4 @@ def get_load_balancing_url(tower_id, http_server_url):
 
         return load_balancing_url
     except ValueError:
-        raise TowerNotFoundError(tower_id)
+        raise TowerNotFoundError(tower_id, http_server_url)

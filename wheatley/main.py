@@ -219,9 +219,7 @@ def main():
 
     try:
         socket_url = get_load_balancing_url(args.room_id, http_server_url)
-    except TowerNotFoundError:
-        sys.exit(f"Invalid argument: Tower {args.room_id} not found at '{http_server_url}'.")
-    except InvalidURLError as e:
+    except (TowerNotFoundError, InvalidURLError) as e:
         sys.exit(f"Invalid argument: {e}")
 
     tower = RingingRoomTower(args.room_id, socket_url)

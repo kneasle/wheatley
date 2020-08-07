@@ -40,6 +40,7 @@ class Bot:
         self._tower.invoke_on_call[calls.STAND].append(self._on_stand_next)
 
         self._tower.invoke_on_bell_rung.append(self._on_bell_ring)
+        self._tower.invoke_on_reset.append(self._on_size_change)
 
         self._is_ringing = False
         self._is_ringing_rounds = True
@@ -69,6 +70,11 @@ class Bot:
         return self._tower.number_of_bells
 
     # Callbacks
+    def _on_size_change(self):
+        if not self.row_generator.is_tower_size_valid(self._tower.number_of_bells):
+            print("WARNING: Row generation stage is NOT consistent with tower size! \
+Wheatley will crash when you go into changes unless something is done")
+
     def _on_look_to(self):
         """ Callback called when a user calls 'Look To'. """
 

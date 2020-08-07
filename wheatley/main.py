@@ -67,7 +67,7 @@ def rhythm(args):
         max_rows_in_dataset=args.max_rows_in_dataset
     )
 
-    if args.wait:
+    if not args.keep_going:
         return WaitForUserRhythm(regression)
 
     return regression
@@ -145,9 +145,10 @@ def main():
 
     # Rhythm arguments
     parser.add_argument(
-        "-w", "--wait",
+        "-k", "--keep-going",
         action="store_true",
-        help="If set, the bot will wait for users to ring rather than pushing on with the rhythm."
+        help="If set, the bot will not wait for users to ring - instead, it will push on with the \
+              rhythm."
     )
     parser.add_argument(
         "-I", "--inertia",

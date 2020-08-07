@@ -19,6 +19,15 @@ class TowerNotFoundError(ValueError):
         return f"Tower {self._id} not found."
 
 
+def fix_url(url):
+    """ Add 'https://' to the start of a URL if necessary """
+
+    if not url.startswith("http"):
+        return "https://" + url
+
+    return url
+
+
 def get_load_balancing_url(tower_id, http_server_url):
     """
     Get the URL of the socket server which (since the addition of load balancing) is not

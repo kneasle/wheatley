@@ -13,7 +13,7 @@ import sys
 from wheatley.rhythm import RegressionRhythm, WaitForUserRhythm
 from wheatley.tower import RingingRoomTower
 from wheatley.bot import Bot
-from wheatley.page_parser import get_load_balancing_url, TowerNotFoundError
+from wheatley.page_parser import fix_url, get_load_balancing_url, TowerNotFoundError
 from wheatley.row_generation import RowGenerator, ComplibCompositionGenerator
 from wheatley.row_generation import MethodPlaceNotationGenerator
 from wheatley.arg_parsing import parse_peal_speed, PealSpeedParseError, parse_call
@@ -215,10 +215,12 @@ def main():
     # Run the program
     configure_logging()
 
+    http_server_url = fix_url(args.url)
+
     try:
-        socket_url = get_load_balancing_url(args.room_id, args.url)
+        socket_url = get_load_balancing_url(args.room_id, http_server_url)
     except TowerNotFoundError:
-        sys.exit(f"Invalid argument: Tower {args.room_id} not found at '{args.url}'.")
+        sys.exit(f"Invalid argument: Tower {args.room_id} not found at '{http_server_url}'.")
 
     tower = RingingRoomTower(args.room_id, socket_url)
     bot = Bot(tower, row_generator(args), args.use_up_down_in or args.handbell_style,

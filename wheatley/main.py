@@ -17,6 +17,7 @@ from wheatley.page_parser import *
 from wheatley.row_generation import RowGenerator, ComplibCompositionGenerator
 from wheatley.row_generation import MethodPlaceNotationGenerator
 from wheatley.arg_parsing import parse_peal_speed, PealSpeedParseError, parse_call
+from wheatley.row_generation.method_place_notation_generator import MethodNotFoundError
 
 
 def row_generator(args):
@@ -25,11 +26,14 @@ def row_generator(args):
     if "comp" in args and args.comp is not None:
         row_gen = ComplibCompositionGenerator(args.comp)
     elif "method" in args:
-        row_gen = MethodPlaceNotationGenerator(
-            args.method,
-            parse_call(args.bob),
-            parse_call(args.single)
-        )
+        try:
+            row_gen = MethodPlaceNotationGenerator(
+                args.method,
+                parse_call(args.bob),
+                parse_call(args.single)
+            )
+        except MethodNotFoundError as e:
+            sys.exit(f"Invalid argument: {e}")
     else:
         assert False, \
             "This shouldn't be possible because one of --method and --comp should always be defined"

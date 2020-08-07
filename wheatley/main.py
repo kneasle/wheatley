@@ -215,10 +215,8 @@ def main():
     # Run the program
     configure_logging()
 
-    http_server_url = fix_url(args.url)
-
     try:
-        socket_url = get_load_balancing_url(args.room_id, http_server_url)
+        socket_url = get_load_balancing_url(args.room_id, args.url)
     except (TowerNotFoundError, InvalidURLError) as e:
         sys.exit(f"Invalid argument: {e}")
 

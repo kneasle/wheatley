@@ -226,8 +226,10 @@ def main():
 
     try:
         socket_url = get_load_balancing_url(args.room_id, args.url)
-    except (TowerNotFoundError, InvalidURLError) as e:
+    except TowerNotFoundError as e:
         sys.exit(f"Bad value for 'room_id': {e}")
+    except InvalidURLError as e:
+        sys.exit(f"Bad value for '--url': {e}")
 
     tower = RingingRoomTower(args.room_id, socket_url)
     bot = Bot(tower, row_generator(args), args.use_up_down_in or args.handbell_style,

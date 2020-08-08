@@ -1,6 +1,6 @@
 # 0.3.0
 - Added overridable bobs and singles (`-b`/`--bob` for Bobs, `-n`/`--single` for Singles)
-- Made the error messages nicer for the following scenaria:
+- Made the error messages less cryptic for the following scenaria:
   - Inputting an method name not found in the CC method library
   - Inputting the ID of a non-existent CompLib composition
   - Inputting the ID of a private CompLib composition (since private comps are not supported yet)

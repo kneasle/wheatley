@@ -38,7 +38,7 @@ def row_generator(args):
                 parse_call(args.single)
             )
         except MethodNotFoundError as e:
-            sys.exit(f"Invalid argument: {e}")
+            sys.exit(f"Bad value for '--method': {e}")
     else:
         assert False, \
             "This shouldn't be possible because one of --method and --comp should always be defined"
@@ -227,7 +227,7 @@ def main():
     try:
         socket_url = get_load_balancing_url(args.room_id, args.url)
     except (TowerNotFoundError, InvalidURLError) as e:
-        sys.exit(f"Invalid argument: {e}")
+        sys.exit(f"Bad value for 'room_id': {e}")
 
     tower = RingingRoomTower(args.room_id, socket_url)
     bot = Bot(tower, row_generator(args), args.use_up_down_in or args.handbell_style,

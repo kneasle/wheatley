@@ -14,9 +14,11 @@ from wheatley.rhythm import RegressionRhythm, WaitForUserRhythm
 from wheatley.tower import RingingRoomTower
 from wheatley.bot import Bot
 from wheatley.page_parser import get_load_balancing_url, TowerNotFoundError, InvalidURLError
+from wheatley.arg_parsing import parse_peal_speed, PealSpeedParseError, parse_call
+
 from wheatley.row_generation import RowGenerator, ComplibCompositionGenerator
 from wheatley.row_generation import MethodPlaceNotationGenerator
-from wheatley.arg_parsing import parse_peal_speed, PealSpeedParseError, parse_call
+from wheatley.row_generation.complib_composition_generator import PrivateCompError, InvalidCompError
 from wheatley.row_generation.method_place_notation_generator import MethodNotFoundError
 
 
@@ -24,7 +26,10 @@ def row_generator(args):
     """ Generates a row generator according to the given CLI arguments. """
 
     if "comp" in args and args.comp is not None:
-        row_gen = ComplibCompositionGenerator(args.comp)
+        try:
+            row_gen = ComplibCompositionGenerator(args.comp)
+        except (PrivateCompError, InvalidCompError) as e:
+            sys.exit(f"Bad value for '--comp': {e}")
     elif "method" in args:
         try:
             row_gen = MethodPlaceNotationGenerator(

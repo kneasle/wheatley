@@ -22,6 +22,7 @@ class RowGenerator(metaclass=ABCMeta):
         self._has_bob = False
         self._has_single = False
         self._index = 0
+        self._row = self.rounds()
 
     def is_tower_size_valid(self, tower_size) -> bool:
         """

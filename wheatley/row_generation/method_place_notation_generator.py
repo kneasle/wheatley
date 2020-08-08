@@ -8,6 +8,11 @@ from .place_notation_generator import PlaceNotationGenerator
 
 
 class MethodNotFoundError(ValueError):
+    """
+    An error class to store the error thrown when a method title is inputted that doesn't have an
+    entry in the CC method library.
+    """
+
     def __init__(self, name):
         super().__init__()
         self._name = name

@@ -13,7 +13,7 @@ import sys
 from wheatley.rhythm import RegressionRhythm, WaitForUserRhythm
 from wheatley.tower import RingingRoomTower
 from wheatley.bot import Bot
-from wheatley.page_parser import *
+from wheatley.page_parser import get_load_balancing_url, TowerNotFoundError, InvalidURLError
 from wheatley.row_generation import RowGenerator, ComplibCompositionGenerator
 from wheatley.row_generation import MethodPlaceNotationGenerator
 from wheatley.arg_parsing import parse_peal_speed, PealSpeedParseError, parse_call

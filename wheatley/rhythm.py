@@ -89,18 +89,22 @@ class WaitForUserRhythm(Rhythm):
         """
 
         self._inner_rhythm = rhythm
-        self._expected_bells = set()
+        self._current_stroke = True
+        self._expected_bells = {True: set(), False: set()}
+        self._early_bells = {True: set(), False: set()}
         self.delay = 0
         self.logger = logging.getLogger(self.logger_name)
 
     def wait_for_bell_time(self, current_time, bell, row_number, place, user_controlled, stroke):
         """ Sleeps the thread until a given Bell should have rung. """
 
+        assert stroke == self._current_stroke
+
         self._inner_rhythm.wait_for_bell_time(current_time - self.delay, bell, row_number, place,
                                               user_controlled, stroke)
         if user_controlled:
             delay_for_user = 0
-            while (bell, stroke) in self._expected_bells:
+            while bell in self._expected_bells[stroke]:
                 self.sleep(self.sleep_time)
                 delay_for_user += self.sleep_time
                 self.logger.debug(f"Waiting for {bell}")
@@ -117,18 +121,32 @@ class WaitForUserRhythm(Rhythm):
         """
 
         self._inner_rhythm.expect_bell(expected_bell, row_number, place, expected_stroke)
-        self._expected_bells.add((expected_bell, expected_stroke))
+
+        if expected_stroke != self._current_stroke:
+            self._current_stroke = expected_stroke
+            self._expected_bells[expected_stroke].clear()
+            self._early_bells[not expected_stroke].clear()
+
+        if expected_bell not in self._early_bells[expected_stroke]:
+            self._expected_bells[expected_stroke].add(expected_bell)
 
     def on_bell_ring(self, bell, stroke, real_time):
         """
         Called when a bell is rung at a given stroke.  Used as a callback from the Tower class.
         """
-
         self._inner_rhythm.on_bell_ring(bell, stroke, real_time - self.delay)
-        try:
-            self._expected_bells.remove((bell, stroke))
-        except KeyError:
-            pass
+
+        if stroke == self._current_stroke:
+            try:
+                self._expected_bells[self._current_stroke].remove(bell)
+            except KeyError:
+                pass
+            try:
+                self._early_bells[not self._current_stroke].remove(bell)
+            except KeyError:
+                pass
+        else:
+            self._early_bells[not self._current_stroke].add(bell)
 
     def initialise_line(self, stage, user_controls_treble, start_time,
                         number_of_user_controlled_bells):

@@ -22,16 +22,20 @@ class WaitForUserRhythmTests(unittest.TestCase):
 
         self.waiting_for_bell_time = False
 
+        self._finished_test = False
         self._sleeping = False
         self._return_from_sleep = False
         self.total_sleep_calls = 0
         self.total_sleep_delay = 0
 
+    def tearDown(self):
+        self._finished_test = True
+
     def _patched_sleep(self, seconds):
         self._sleeping = True
         self.total_sleep_calls += 1
         self.total_sleep_delay += seconds
-        while not self._return_from_sleep:
+        while not self._return_from_sleep and not self._finished_test:
             time.sleep(0.001)
         self._return_from_sleep = False
         self._sleeping = False
@@ -99,7 +103,7 @@ class WaitForUserRhythmTests(unittest.TestCase):
         # 10 + (11.1 - 11) = 10.1
         self.assertEqual(10.1, round(self.wait_rhythm.delay, 2))
 
-    def test_wait_for_bell_time__bell_rung_early_in_row(self):
+    def test_wait_for_bell_time__bell_rung_early_in_row_doesnt_wait(self):
         initial_delay = 0
         expected_first_bell_time = 1
         expected_second_bell_time = 2
@@ -129,7 +133,7 @@ class WaitForUserRhythmTests(unittest.TestCase):
         # 1.2 - 1, Second being early has not added delay
         self.assertEqual(0.2, round(self.wait_rhythm.delay, 2))
 
-    def test_wait_for_bell_time__bell_rung_early_in_previous_row(self):
+    def test_wait_for_bell_time__bell_rung_early_in_previous_row_doesnt_wait(self):
         initial_delay = 0
         expected_first_time = 1
         expected_second_time = 2
@@ -159,13 +163,11 @@ class WaitForUserRhythmTests(unittest.TestCase):
 
         self.assertEqual(0, self.wait_rhythm.delay)
 
-    def test_wait_for_bell_time__bell_early_and_corrected_in_previous_row(self):
-        initial_delay = 0
+    def test_wait_for_bell_time__bell_early_and_corrected_in_previous_row_waits_for_bell(self):
         expected_first_time = 1
         expected_second_time = 2
 
         self.wait_rhythm.expect_bell(treble, 1, 1, handstroke)
-        self.wait_rhythm.delay = initial_delay
 
         self.wait_rhythm.on_bell_ring(treble, handstroke, 1)
 
@@ -188,6 +190,10 @@ class WaitForUserRhythmTests(unittest.TestCase):
                                       user_controlled=True, stroke=backstroke)
 
         self.assertTrue(self.waiting_for_bell_time)
+
+        self.wait_rhythm.on_bell_ring(treble, backstroke, expected_second_time)
+        self.mock_inner_rhythm.on_bell_ring.assert_any_call(treble, backstroke, expected_second_time)
+
         self.assertEqual(0, self.wait_rhythm.delay)
 
 

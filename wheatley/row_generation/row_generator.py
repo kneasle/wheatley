@@ -29,7 +29,7 @@ class RowGenerator(metaclass=ABCMeta):
         Returns True if the row_generator can generate rows correctly for a given tower size.
         """
 
-        return tower_size in [self.stage, self.stage + 1]
+        return tower_size == self.number_of_bells
 
     def reset(self):
         """ Reset the row generator. """

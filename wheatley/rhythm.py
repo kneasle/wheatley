@@ -5,13 +5,12 @@ based on when the user-controlled bells ring.
 
 import logging
 import math
+import time
 
 from abc import ABCMeta, abstractmethod
-from time import sleep
 
 from wheatley.bell import Bell
 from wheatley.regression import calculate_regression
-
 
 WEIGHT_REJECTION_THRESHOLD = 0.001
 
@@ -72,11 +71,16 @@ class Rhythm(metaclass=ABCMeta):
 
         pass
 
+    def sleep(self, seconds: float):
+        """ Sleeps for given number of seconds. Allows mocking in tests"""
+        time.sleep(seconds)
+
 
 class WaitForUserRhythm(Rhythm):
     """ A decorator class that adds the ability to wait for user-controlled bells to ring. """
 
     logger_name = "RHYTHM:WaitForUser"
+    sleep_time = 0.01
 
     def __init__(self, rhythm: Rhythm):
         """
@@ -97,8 +101,8 @@ class WaitForUserRhythm(Rhythm):
         if user_controlled:
             delay_for_user = 0
             while (bell, stroke) in self._expected_bells:
-                sleep(0.01)
-                delay_for_user += 0.01
+                self.sleep(self.sleep_time)
+                delay_for_user += self.sleep_time
                 self.logger.debug(f"Waiting for {bell}")
             if delay_for_user:
                 self.logger.info(f"Delayed for {delay_for_user}")
@@ -208,19 +212,19 @@ class RegressionRhythm(Rhythm):
         if user_controlled and self._start_time == float('inf'):
             self.logger.debug(f"Waiting for pull off")
             while self._start_time == float('inf'):
-                sleep(0.01)
+                self.sleep(0.01)
             self.logger.debug(f"Pulled off")
             return
 
         bell_time = self.index_to_real_time(row_number, place)
         if bell_time == float('inf') or self._start_time == 0:
             self.logger.error(f"Bell Time {bell_time}; Start Time {self._start_time}")
-            sleep(self._blow_interval or 0.2)
+            self.sleep(self._blow_interval or 0.2)
         elif bell_time > current_time:
-            sleep(bell_time - current_time)
+            self.sleep(bell_time - current_time)
         else:
             # Slow the ticks slightly
-            sleep(0.01)
+            self.sleep(0.01)
 
     def expect_bell(self, expected_bell, row_number, place, expected_stroke):
         """
@@ -230,8 +234,8 @@ class RegressionRhythm(Rhythm):
         ringing.
         """
 
-        self.logger.debug(f"Expected bell {expected_bell} at index {row_number}:{place} at stroke" \
-                            + f"{expected_stroke}")
+        self.logger.debug(f"Expected bell {expected_bell} at index {row_number}:{place} at stroke"
+                          + f"{expected_stroke}")
         self._expected_bells[(expected_bell, expected_stroke)] = (row_number, place)
 
     def on_bell_ring(self, bell, stroke, real_time):

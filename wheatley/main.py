@@ -16,7 +16,7 @@ from wheatley.bot import Bot
 from wheatley.page_parser import get_load_balancing_url
 from wheatley.row_generation import RowGenerator, ComplibCompositionGenerator
 from wheatley.row_generation import MethodPlaceNotationGenerator
-from wheatley.arg_parsing import parse_peal_speed, PealSpeedParseError
+from wheatley.arg_parsing import parse_peal_speed, PealSpeedParseError, parse_call
 
 
 def row_generator(args):
@@ -25,7 +25,11 @@ def row_generator(args):
     if "comp" in args and args.comp is not None:
         row_gen = ComplibCompositionGenerator(args.comp)
     elif "method" in args:
-        row_gen = MethodPlaceNotationGenerator(args.method, args.far_calls)
+        row_gen = MethodPlaceNotationGenerator(
+            args.method,
+            parse_call(args.bob),
+            parse_call(args.single)
+        )
     else:
         assert False, \
             "This shouldn't be possible because one of --method and --comp should always be defined"

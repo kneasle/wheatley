@@ -85,3 +85,34 @@ def parse_peal_speed(peal_speed: str):
         exit_with_message(f"The minute value '{stripped_peal_speed}' must be a positive integer.")
 
     return minutes
+
+
+def parse_call(input_string: str):
+    """ Parse a call string into a dict of lead locations to place notation strings. """
+
+    parsed_calls = {}
+
+    for segment in input_string.split(","):
+        # Default the location to 0 and initialise place_notation_str with None
+        location = 0
+        place_notation_str = None
+
+        if ":" in segment:
+            # Split the segment into location and place notations
+            location_str, place_notation_str = segment.split(":")
+
+            # Strip whitespace from the string segments so that they can be parsed more easily
+            location_str = location_str.strip()
+            place_notation_str = place_notation_str.strip()
+
+            # Parse the first section as an integer
+            location = int(location_str)
+        else:
+            # If there's only one section, it must be the place notation so all we need to do is to
+            # strip it of whitespace (and `location` defaults to 0 so that's also set correctly)
+            place_notation_str = segment.strip()
+
+        # Insert the new call definition into the dictionary
+        parsed_calls[location] = place_notation_str
+
+    return parsed_calls

@@ -29,7 +29,19 @@ class PlaceNotationGenerator(RowGenerator):
 
         def parse_call_dict(unparsed_calls):
             """ Parse a dict of type `int => str` to `int => [PlaceNotation]`. """
-            return {i % self.lead_len: convert_pn(pn) for i, pn in unparsed_calls.items()}
+            parsed_calls = {}
+
+            for i, place_notation_str in unparsed_calls.items():
+                # Parse the place notation string into a list of place notations, adjust the
+                # call locations by the length of their calls (so that e.g. `0` always refers to
+                # the lead end regardless of how long the calls are).
+                converted_place_notations = convert_pn(place_notation_str)
+                adjusted_index = (i - len(converted_place_notations)) % self.lead_len
+
+                # Add the processed call to the output dictionary
+                parsed_calls[adjusted_index] = converted_place_notations
+
+            return parsed_calls
 
         self.bobs_pn = parse_call_dict(bob)
         self.singles_pn = parse_call_dict(single)

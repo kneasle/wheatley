@@ -28,7 +28,7 @@ def parse_peal_speed(peal_speed: str):
 
         raise PealSpeedParseError(peal_speed, error_text)
 
-    # Strip whitspace from the argument, so that if the user is in fact insane enough to pad their
+    # Strip whitespace from the argument, so that if the user is in fact insane enough to pad their
     # CLI arguments with whitespace then they can do so and not crash the program.  This also has
     # the side effect of cloning the input string so we can freely modify it.
     stripped_peal_speed = peal_speed.strip()

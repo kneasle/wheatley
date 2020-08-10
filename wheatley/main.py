@@ -274,7 +274,7 @@ def main():
         action="store_true",
         help="If set, this will make Wheatley ring 'far' calls (ie. 6ths place in Major, 8ths \
               place in Royal, etc) instead of near (4ths place) calls.  This option will have no \
-              effect when ringing an odd-bell method."
+              effect when ringing an odd-bell method or when ringing from a CompLib composition."
     )
 
     args = parser.parse_args()

@@ -1,6 +1,6 @@
 import unittest
 
-from wheatley.main import parse_peal_speed, PealSpeedParseError
+from wheatley.arg_parsing import parse_peal_speed, PealSpeedParseError, parse_call
 
 
 class ArgParseTests(unittest.TestCase):
@@ -36,6 +36,16 @@ class ArgParseTests(unittest.TestCase):
                 with self.assertRaises(PealSpeedParseError) as e:
                     parse_peal_speed(input_arg)
                 self.assertEqual(expected_message, e.exception.message)
+
+    def test_call_parsing(self):
+        test_cases = [("14", {0: '14'}),
+                      ("  0 \t:  \n 16   ", {0: '16'}),
+                      ("20: 70", {20: '70'}),
+                      ("20: 70, 14", {20: '70', 0: '14'})]
+
+        for (input_arg, expected_call_dict) in test_cases:
+            with self.subTest(input=input_arg, expected_call_dict=expected_call_dict):
+                self.assertEqual(expected_call_dict, parse_call(input_arg))
 
 
 if __name__ == '__main__':

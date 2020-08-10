@@ -1,3 +1,6 @@
+# 0.3.0
+- Added CLI flag to specify ringing far calls on even-bell methods (`-f` or `--far-calls`)
+
 # 0.2.0
 - Added CLI arg for max rows stored in the regression dataset (`-X` or `--max-rows-in-dataset`)
 - Added CLI arg for handstroke gap (`-G` or `--handstroke-gap`)

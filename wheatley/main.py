@@ -16,6 +16,7 @@ from wheatley.bot import Bot
 from wheatley.page_parser import get_load_balancing_url
 from wheatley.row_generation import RowGenerator, ComplibCompositionGenerator
 from wheatley.row_generation import MethodPlaceNotationGenerator
+from wheatley.arg_parsing import parse_peal_speed, PealSpeedParseError
 
 
 def row_generator(args):
@@ -35,91 +36,6 @@ def row_generator(args):
     # row_gen = PlaceNotationGenerator.stedman(11)
 
     return row_gen
-
-
-class PealSpeedParseError(ValueError):
-    """
-    An error thrown with a helpful error message when the user inputs a peal speed string that
-    cannot be parsed by the parser.
-    """
-
-    def __init__(self, peal_spead_string, message):
-        super().__init__()
-
-        self.peal_spead_string = peal_spead_string
-        self.message = message
-
-    def __str__(self):
-        return f"Error parsing peal speed '{self.peal_spead_string}': {self.message}"
-
-
-def parse_peal_speed(peal_speed: str):
-    """
-    Parses a peal speed written in the format /2h58(m?)/ or /XXX(m?)/ into a number of minutes.
-    """
-
-    def exit_with_message(error_text):
-        """ Raise an exception with a useful error message. """
-
-        raise PealSpeedParseError(peal_speed, error_text)
-
-    # Strip whitspace from the argument, so that if the user is in fact insane enough to pad their
-    # CLI arguments with whitespace then they can do so and not crash the program.  This also has
-    # the side effect of cloning the input string so we can freely modify it.
-    stripped_peal_speed = peal_speed.strip()
-
-    # Remove the 'm' from the end of the peal speed - it doesn't add any clarity
-    if stripped_peal_speed.endswith("m"):
-        stripped_peal_speed = stripped_peal_speed[:-1]
-
-    if "h" in stripped_peal_speed:
-        # Split the peal speed into its hour and minute components, and print a helpful message
-        # if there are too many parts
-        split_parts = stripped_peal_speed.split("h")
-
-        if len(split_parts) > 2:
-            exit_with_message("The peal speed should contain at most one 'h'.")
-
-        hour_string, minute_string = split_parts
-
-        # Strip the input values so that the user can put whitespace into the input if they want
-        hour_string = hour_string.strip()
-        minute_string = minute_string.strip()
-
-        # Parse the hours value, and print messages if it is invalid
-        try:
-            hours = int(hour_string)
-        except ValueError:
-            exit_with_message(f"The hour value '{hour_string}' is not an integer.")
-
-        if hours < 0:
-            exit_with_message(f"The hour value '{hour_string}' must be a positive integer.")
-
-        # Parse the minute value, and print messages if it is invalid
-        try:
-            minutes = 0 if minute_string == "" else int(minute_string)
-        except ValueError:
-            exit_with_message(f"The minute value '{minute_string}' is not an integer.")
-
-        if minutes < 0:
-            exit_with_message(f"The minute value '{minute_string}' must be a positive integer.")
-
-        if minutes > 59:
-            exit_with_message(f"The minute value '{minute_string}' must be smaller than 60.")
-
-        return hours * 60 + minutes
-
-    # If the user doesn't put an 'h' in their string, then we assume it's just a minute value that
-    # may or may not be bigger than 60
-    try:
-        minutes = int(stripped_peal_speed)
-    except ValueError:
-        exit_with_message(f"The minute value '{stripped_peal_speed}' is not an integer.")
-
-    if minutes < 0:
-        exit_with_message(f"The minute value '{stripped_peal_speed}' must be a positive integer.")
-
-    return minutes
 
 
 def rhythm(args):

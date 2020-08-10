@@ -24,7 +24,7 @@ def row_generator(args):
     if "comp" in args and args.comp is not None:
         row_gen = ComplibCompositionGenerator(args.comp)
     elif "method" in args:
-        row_gen = MethodPlaceNotationGenerator(args.method)
+        row_gen = MethodPlaceNotationGenerator(args.method, args.far_calls)
     else:
         assert False, \
             "This shouldn't be possible because one of --method and --comp should always be defined"
@@ -266,6 +266,15 @@ def main():
         "--method",
         type=str,
         help="The title of the method you want to ring"
+    )
+
+    parser.add_argument(
+        "-f",
+        "--far-calls",
+        action="store_true",
+        help="If set, this will make Wheatley ring 'far' calls (ie. 6ths place in Major, 8ths \
+              place in Royal, etc) instead of near (4ths place) calls.  This option will have no \
+              effect when ringing an odd-bell method."
     )
 
     args = parser.parse_args()

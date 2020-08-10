@@ -14,6 +14,7 @@ class ArgParseTests(unittest.TestCase):
                       ("2h58", 178),
                       ("2h58m", 178),
                       (" 2 h 30 m ", 150)]
+
         for (input_arg, expected_minutes) in test_cases:
             with self.subTest(input=input_arg, expected_minutes=expected_minutes):
                 self.assertEqual(expected_minutes, parse_peal_speed(input_arg))
@@ -31,6 +32,7 @@ class ArgParseTests(unittest.TestCase):
                       ("", "The minute value '' is not an integer."),
                       ("    ", "The minute value '' is not an integer."),
                       ("\nXX   X ", "The minute value 'XX   X' is not an integer.")]
+
         for (input_arg, expected_message) in test_cases:
             with self.subTest(input=input_arg, expected_message=expected_message):
                 with self.assertRaises(PealSpeedParseError) as e:

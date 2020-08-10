@@ -1,0 +1,6 @@
+#!/usr/bin/env python3
+
+""" A script to run all the fuzzing tests. """
+
+# Run the fuzzing tests
+from fuzzing import call_parsing

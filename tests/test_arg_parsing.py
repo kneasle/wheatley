@@ -24,7 +24,7 @@ class ArgParseTests(unittest.TestCase):
                       ("-4h", "The hour value '-4' must be a positive integer."),
                       ("3hP", "The minute value 'P' is not an integer."),
                       ("3h-2m", "The minute value '-2' must be a positive integer."),
-                      ("3h100m", "The minute value '100' must be smaller than 60."),
+                      ("3h100", "The minute value '100' must be smaller than 60."),
                       ("125x", "The minute value '125x' is not an integer."),
                       ("-2m", "The minute value '-2' must be a positive integer."),
                       ("-200", "The minute value '-200' must be a positive integer."),

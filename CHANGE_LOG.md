@@ -1,5 +1,5 @@
 # 0.3.0
-- Added CLI flag to specify ringing far calls on even-bell methods (`-f` or `--far-calls`)
+- Added overridable bobs and singles (`-b`/`--bob` for Bobs, `-n`/`--single` for Singles)
 
 # 0.2.0
 - Added CLI arg for max rows stored in the regression dataset (`-X` or `--max-rows-in-dataset`)

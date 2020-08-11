@@ -41,6 +41,7 @@ class ArgParseTests(unittest.TestCase):
 
     def test_call_parsing(self):
         test_cases = [("14", {0: '14'}),
+                      ("3.123", {0: '3.123'}),
                       ("  0 \t:  \n 16   ", {0: '16'}),
                       ("20: 70", {20: '70'}),
                       ("20: 70, 14", {20: '70', 0: '14'})]

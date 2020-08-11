@@ -87,8 +87,29 @@ def parse_peal_speed(peal_speed: str):
     return minutes
 
 
+class CallParseError(ValueError):
+    """
+    An error thrown with a helpful error message when the user inputs a peal speed string that
+    cannot be parsed by the parser.
+    """
+
+    def __init__(self, call_string, message):
+        super().__init__()
+
+        self.call_string = call_string
+        self.message = message
+
+    def __str__(self):
+        return f"Error parsing call string '{self.call_string}': {self.message}"
+
+
 def parse_call(input_string: str):
     """ Parse a call string into a dict of lead locations to place notation strings. """
+
+    def exit_with_message(message):
+        """ Raises a parse error with the given error message. """
+
+        raise CallParseError(input_string, message)
 
     parsed_calls = {}
 
@@ -99,18 +120,27 @@ def parse_call(input_string: str):
 
         if ":" in segment:
             # Split the segment into location and place notations
-            location_str, place_notation_str = segment.split(":")
+            try:
+                location_str, place_notation_str = segment.split(":")
+            except ValueError:
+                exit_with_message(f"Call specification '{segment}' should contain at most one ':'.")
 
             # Strip whitespace from the string segments so that they can be parsed more easily
             location_str = location_str.strip()
             place_notation_str = place_notation_str.strip()
 
             # Parse the first section as an integer
-            location = int(location_str)
+            try:
+                location = int(location_str)
+            except ValueError:
+                exit_with_message(f"Location '{location_str}' is not an integer.")
         else:
             # If there's only one section, it must be the place notation so all we need to do is to
             # strip it of whitespace (and `location` defaults to 0 so that's also set correctly)
             place_notation_str = segment.strip()
+
+        if place_notation_str == "":
+            exit_with_message("Place notation strings cannot be empty.")
 
         # Insert the new call definition into the dictionary
         parsed_calls[location] = place_notation_str

@@ -1,4 +1,4 @@
-name: "Tests/Linting/Fuzzing"
+name: "Testing/Linting/Fuzzing"
 
 on:
   pull_request:

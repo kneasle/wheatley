@@ -61,5 +61,6 @@ class ArgParseTests(unittest.TestCase):
                     parse_call(input_arg)
                 self.assertEqual(expected_message, e.exception.message)
 
+
 if __name__ == '__main__':
     unittest.main()

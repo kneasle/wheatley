@@ -1,6 +1,6 @@
 import unittest
 
-from wheatley.arg_parsing import parse_peal_speed, PealSpeedParseError, parse_call
+from wheatley.arg_parsing import parse_peal_speed, PealSpeedParseError, parse_call, CallParseError
 
 
 class ArgParseTests(unittest.TestCase):
@@ -49,6 +49,17 @@ class ArgParseTests(unittest.TestCase):
             with self.subTest(input=input_arg, expected_call_dict=expected_call_dict):
                 self.assertEqual(expected_call_dict, parse_call(input_arg))
 
+    def test_call_parsing_errors(self):
+        test_cases = [("xx:14", "Location 'xx' is not an integer."),
+                      ("", "Place notation strings cannot be empty."),
+                      ("  ,  ,    ", "Place notation strings cannot be empty."),
+                      (":::  ,", "Call specification ':::' should contain at most one ':'.")]
+
+        for (input_arg, expected_message) in test_cases:
+            with self.subTest(input=input_arg, expected_message=expected_message):
+                with self.assertRaises(CallParseError) as e:
+                    parse_call(input_arg)
+                self.assertEqual(expected_message, e.exception.message)
 
 if __name__ == '__main__':
     unittest.main()

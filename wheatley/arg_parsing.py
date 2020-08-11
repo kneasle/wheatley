@@ -123,7 +123,7 @@ def parse_call(input_string: str):
             try:
                 location_str, place_notation_str = segment.split(":")
             except ValueError:
-                exit_with_message(f"Call specification '{segment}' should contain at most one ':'.")
+                exit_with_message(f"Call specification '{segment.strip()}' should contain at most one ':'.")
 
             # Strip whitespace from the string segments so that they can be parsed more easily
             location_str = location_str.strip()

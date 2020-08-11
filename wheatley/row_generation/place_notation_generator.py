@@ -80,7 +80,7 @@ class PlaceNotationGenerator(RowGenerator):
         main_body = [stage_bell if i % 2 else "1" for i in range(1, 2 * stage + 1)]
         main_body[0] = "3"
         notation = ".".join(main_body)
-        return PlaceNotationGenerator(stage, notation, bob={0: "3"}, single={0: "3.123"})
+        return PlaceNotationGenerator(stage, notation, bob={0: "3.1"}, single={0: "3.123"})
 
     @staticmethod
     def stedman(stage: int):

@@ -1,12 +1,28 @@
 """ Utils for the fuzzing code. """
 
-def fuzz_for_unwrapped_errors(function_to_fuzz,
+class FuzzingError(ValueError):
+    """ A custom error used to signal that some un-abstracted errors were found. """
+
+    def __init__(self, function_name, errors_found):
+        super().__init__()
+
+        self._function_name = function_name
+        self._errors_found = errors_found
+
+    def __str__(self):
+        error_messages = "\n  ".join(self._errors_found)
+
+        return f"'{self._function_name}' threw uncaught errors:\n{error_messages}"
+
+
+def fuzz_for_unwrapped_errors(function_name,
+                              function_to_fuzz,
                               input_generation_function,
                               expected_error,
                               iterations=10000):
     """ Fuzz a given function with generated input, checking for a given error. """
 
-    errors_found = 0
+    errors_found = []
 
     for _ in range(iterations):
         generated_input = input_generation_function()
@@ -21,12 +37,15 @@ def fuzz_for_unwrapped_errors(function_to_fuzz,
             if "'" in error_type:
                 error_type = error_type.split("'")[1]
 
-            print(f"Error type '{error_type}' thrown on input '{generated_input}': '{e}'.")
+            errors_found.append(
+                f"Error type '{error_type}' thrown on input '{generated_input}': '{e}'."
+            )
 
-            errors_found += 1
+            if len(errors_found) > 10:
+                break
 
-            if errors_found > 10:
-                return
-
-    if errors_found == 0:
-        print(f"{iterations} iterations were run, and they all threw the right error class.")
+    if len(errors_found) == 0:
+        print(f"{iterations} iterations were run on {function_name}, and they all threw the right \
+error class.")
+    else:
+        raise FuzzingError(function_name, errors_found)

@@ -11,4 +11,4 @@ def random_call_string():
 
     return "".join([choice("1234567890:, ") for _ in range(randint(0, 20))])
 
-fuzz_for_unwrapped_errors(parse_call, random_call_string, CallParseError)
+fuzz_for_unwrapped_errors("parse_call", parse_call, random_call_string, CallParseError)

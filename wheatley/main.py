@@ -196,7 +196,7 @@ def main():
               Ringing Room.  These will by default happen at the lead end.  Examples: "16" or \
               "0:16" => 6ths place lead end bob.  "3.1" or "0:3.1" => a Grandsire Bob.  "20: 70" \
               => a 70 bob taking effect 20 changes into a lead (the Half Lead for Surprise Royal). \
-              "3: 5, 9: 5" => bobs in Stedman Triples.  Defaults to "14".'
+              "3: 5/9: 5" => bobs in Stedman Triples.  Defaults to "14".'
     )
     parser.add_argument(
         "-n",
@@ -206,7 +206,7 @@ def main():
               Ringing Room.  These will by default happen at the lead end.  Examples: "1678" or \
               "0:168" => 6ths place lead end single.  "3.123" or "0:3.123" => a Grandsire Single. \
               "20: 7890" => a 7890 single taking effect 20 changes into a lead (the Half Lead for \
-              Surprise Royal). "3: 567, 9: 567" => singles in Stedman Triples.  Defaults to "1234".'
+              Surprise Royal). "3: 567/9: 567" => singles in Stedman Triples.  Defaults to "1234".'
     )
 
     args = parser.parse_args()

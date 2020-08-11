@@ -114,7 +114,7 @@ def parse_call(input_string: str):
     # A dictionary that will be filled with the parsed calls
     parsed_calls = {}
 
-    for segment in input_string.split(","):
+    for segment in input_string.split("/"):
         # Default the location to 0 and initialise place_notation_str with None
         location = 0
         place_notation_str = None

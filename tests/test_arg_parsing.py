@@ -42,7 +42,7 @@ class ArgParseTests(unittest.TestCase):
     def test_call_parsing(self):
         test_cases = [("14", {0: '14'}),
                       ("3.123", {0: '3.123'}),
-                      ("  0 \t/  \n 16   ", {0: '16'}),
+                      ("  0 \t:  \n 16   ", {0: '16'}),
                       ("20: 70", {20: '70'}),
                       ("20: 70/ 14", {20: '70', 0: '14'})]
 
@@ -54,7 +54,7 @@ class ArgParseTests(unittest.TestCase):
         test_cases = [("xx:14", "Location 'xx' is not an integer."),
                       ("", "Place notation strings cannot be empty."),
                       ("  /  /    ", "Place notation strings cannot be empty."),
-                      ("14, 1234  ", "Location 0 has two conflicting calls: '14' and '1234'."),
+                      ("14/ 1234  ", "Location 0 has two conflicting calls: '14' and '1234'."),
                       (":::  /", "Call specification ':::' should contain at most one ':'.")]
 
         for (input_arg, expected_message) in test_cases:

@@ -8,14 +8,14 @@ class PealSpeedParseError(ValueError):
     cannot be parsed by the parser.
     """
 
-    def __init__(self, peal_spead_string, message):
+    def __init__(self, peal_speed_string, message):
         super().__init__()
 
-        self.peal_spead_string = peal_spead_string
+        self.peal_speed_string = peal_speed_string
         self.message = message
 
     def __str__(self):
-        return f"Error parsing peal speed '{self.peal_spead_string}': {self.message}"
+        return f"Error parsing peal speed '{self.peal_speed_string}': {self.message}"
 
 
 def parse_peal_speed(peal_speed: str):

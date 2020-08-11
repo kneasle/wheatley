@@ -111,6 +111,7 @@ def parse_call(input_string: str):
 
         raise CallParseError(input_string, message)
 
+    # A dictionary that will be filled with the parsed calls
     parsed_calls = {}
 
     for segment in input_string.split(","):
@@ -123,7 +124,9 @@ def parse_call(input_string: str):
             try:
                 location_str, place_notation_str = segment.split(":")
             except ValueError:
-                exit_with_message(f"Call specification '{segment.strip()}' should contain at most one ':'.")
+                exit_with_message(
+                    f"Call specification '{segment.strip()}' should contain at most one ':'."
+                )
 
             # Strip whitespace from the string segments so that they can be parsed more easily
             location_str = location_str.strip()
@@ -139,10 +142,15 @@ def parse_call(input_string: str):
             # strip it of whitespace (and `location` defaults to 0 so that's also set correctly)
             place_notation_str = segment.strip()
 
+        # Produce a nice error message if the pn string is empty
         if place_notation_str == "":
             exit_with_message("Place notation strings cannot be empty.")
 
         # Insert the new call definition into the dictionary
+        if location in parsed_calls:
+            exit_with_message(f"Location {location} has two conflicting calls: \
+'{parsed_calls[location]}' and '{place_notation_str}'.")
+
         parsed_calls[location] = place_notation_str
 
     return parsed_calls

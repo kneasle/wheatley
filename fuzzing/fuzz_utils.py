@@ -16,7 +16,12 @@ def fuzz_for_unwrapped_errors(function_to_fuzz,
         except expected_error:
             pass
         except Exception as e:
-            print(f"Error type '{type(e)}' thrown on input '{generated_input}': '{e}'.")
+            error_type = str(type(e))
+
+            if "'" in error_type:
+                error_type = error_type.split("'")[1]
+
+            print(f"Error type '{error_type}' thrown on input '{generated_input}': '{e}'.")
 
             errors_found += 1
 

@@ -19,7 +19,7 @@ def fuzz_for_unwrapped_errors(function_name,
                               function_to_fuzz,
                               input_generation_function,
                               expected_error,
-                              iterations=10000):
+                              iterations=100000):
     """ Fuzz a given function with generated input, checking for a given error. """
 
     errors_found = []

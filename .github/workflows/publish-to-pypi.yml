@@ -28,6 +28,8 @@ jobs:
       run: pylint3 wheatley/**/*.py
     - name: Run tests
       run: python -m pytest
+    - name: Run fuzzer
+      run: ./fuzz
     - name: Make version file
       run: |
         echo ${{ github.ref }} | sed 's:.*/v::' > wheatley/version.txt

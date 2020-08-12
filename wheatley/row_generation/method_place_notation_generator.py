@@ -26,7 +26,7 @@ def generator_from_special_title(method_title: str) -> Optional[RowGenerator]:
         raise MethodNotFoundError(method_title)
 
     stage = STAGES[stage_name]
-    if method_name == "grandsire" and stage % 2 and stage >= 5:
+    if method_name == "grandsire" and stage >= 5:
         return PlaceNotationGenerator.grandsire(stage)
     if method_name == "stedman" and stage % 2 and stage >= 5:
         return PlaceNotationGenerator.stedman(stage)

@@ -59,16 +59,21 @@ class MethodPlaceNotationGeneratorTests(TestCase):
 
 
 class SpecialMethodNameTests(TestCase):
-    def test_grandsire__odd_stages(self):
+    def test_grandsire__all_stages_above_4(self):
         test_cases = [
             ("Grandsire Doubles", 5),
             ("GrandSire DouBles", 5),
             ("grandsire doubles", 5),
             ("GRANDSIRE DOUBLES", 5),
             ("  Grandsire   Doubles  ", 5),
+            ("Grandsire 5", 5),
             ("Grandsire Triples", 7),
             ("Grandsire Caters", 9),
             ("Grandsire Cinques", 11),
+            ("Grandsire Minor", 6),
+            ("Grandsire Major", 8),
+            ("Grandsire Royal", 10),
+            ("Grandsire Maximus", 12),
         ]
 
         for (method_title, expected_stage) in test_cases:
@@ -77,22 +82,7 @@ class SpecialMethodNameTests(TestCase):
                 self.assertIsInstance(generator, PlaceNotationGenerator)
                 self.assertTrue(expected_stage, generator.stage)
 
-    def test_grandsire__other_stages(self):
-        test_cases = [
-            ("Grandsire Singles"),
-            ("Grandsire Minimus"),
-            ("Grandsire Minor"),
-            ("Grandsire Major"),
-            ("Grandsire Royal"),
-            ("Grandsire Maximus"),
-        ]
-
-        for (method_title) in test_cases:
-            with self.subTest(method_title=method_title):
-                generator = generator_from_special_title(method_title)
-                self.assertIsNone(generator)
-
-    def test_grandsire__in_title(self):
+    def test_grandsire__in_title__is_none(self):
         test_cases = [
             ("Reverse Grandsire Doubles"),
             ("Double Grandsire Triples"),
@@ -118,7 +108,7 @@ class SpecialMethodNameTests(TestCase):
                 self.assertIsInstance(generator, PlaceNotationGenerator)
                 self.assertTrue(expected_stage, generator.stage)
 
-    def test_stedman__other_stages(self):
+    def test_stedman__other_stages__is_none(self):
         test_cases = [
             ("Stedman Singles"),
             ("Stedman Minimus"),
@@ -153,7 +143,7 @@ class SpecialMethodNameTests(TestCase):
                 self.assertIsInstance(generator, PlainHuntGenerator)
                 self.assertTrue(expected_stage, generator.stage)
 
-    def test_unknown_stages(self):
+    def test_unknown_stages__throws_MethodNotFoundError(self):
         test_cases = [
             ("Stedman"),
             ("Stedman Major 2"),

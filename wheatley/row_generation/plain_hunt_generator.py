@@ -8,7 +8,7 @@ from .row_generator import RowGenerator
 
 
 class PlainHuntGenerator(RowGenerator):
-    """ A row generator to create plain hunt on any (even) stage. """
+    """ A row generator to create plain hunt on any stage. """
 
     def _gen_row(self, previous_row: List[Bell], is_handstroke: bool, index: int) -> List[Bell]:
         if is_handstroke:

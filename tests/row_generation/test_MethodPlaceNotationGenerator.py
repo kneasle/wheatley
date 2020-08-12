@@ -1,7 +1,9 @@
 import unittest
 from unittest import TestCase
 
-from wheatley.row_generation import MethodPlaceNotationGenerator
+from wheatley.row_generation import MethodPlaceNotationGenerator, generator_from_special_title, PlaceNotationGenerator, \
+    PlainHuntGenerator
+from wheatley.row_generation.method_place_notation_generator import MethodNotFoundError
 
 plain_bob_minimus = """<?xml version="1.0"?>
 <methods xmlns="http://methods.ringing.org/NS/method" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:db="http://methods.ringing.org/NS/database" xmlns:ns_1="http://methods.ringing.org/NS/database" version="0.1" ns_1:page="0" ns_1:pagesize="100" ns_1:rows="1">
@@ -54,6 +56,106 @@ class MethodPlaceNotationGeneratorTests(TestCase):
         method_pn, stage = MethodPlaceNotationGenerator._parse_xml(scientific_triples)
         self.assertEqual("3.1.7.1.5.1.7.1.7.5.1.7.1.7.1.7.1.7.1.5.1.5.1.7.1.7.1.7.1.7", method_pn)
         self.assertEqual(7, stage)
+
+
+class SpecialMethodNameTests(TestCase):
+    def test_grandsire__all_stages_above_4(self):
+        test_cases = [
+            ("Grandsire Doubles", 5),
+            ("GrandSire DouBles", 5),
+            ("grandsire doubles", 5),
+            ("GRANDSIRE DOUBLES", 5),
+            ("  Grandsire   Doubles  ", 5),
+            ("Grandsire 5", 5),
+            ("Grandsire Triples", 7),
+            ("Grandsire Caters", 9),
+            ("Grandsire Cinques", 11),
+            ("Grandsire Minor", 6),
+            ("Grandsire Major", 8),
+            ("Grandsire Royal", 10),
+            ("Grandsire Maximus", 12),
+        ]
+
+        for (method_title, expected_stage) in test_cases:
+            with self.subTest(method_title=method_title, expected_stage=expected_stage):
+                generator = generator_from_special_title(method_title)
+                self.assertIsInstance(generator, PlaceNotationGenerator)
+                self.assertTrue(expected_stage, generator.stage)
+
+    def test_grandsire__in_title__is_none(self):
+        test_cases = [
+            ("Reverse Grandsire Doubles"),
+            ("Double Grandsire Triples"),
+            ("Grandsire Five Little Bob Triples")
+        ]
+
+        for (method_title) in test_cases:
+            with self.subTest(method_title=method_title):
+                generator = generator_from_special_title(method_title)
+                self.assertIsNone(generator)
+
+    def test_stedman__odd_stages(self):
+        test_cases = [
+            ("Stedman Doubles", 5),
+            ("Stedman Triples", 7),
+            ("Stedman Caters", 9),
+            ("Stedman Cinques", 11),
+        ]
+
+        for (method_title, expected_stage) in test_cases:
+            with self.subTest(method_title=method_title, expected_stage=expected_stage):
+                generator = generator_from_special_title(method_title)
+                self.assertIsInstance(generator, PlaceNotationGenerator)
+                self.assertTrue(expected_stage, generator.stage)
+
+    def test_stedman__other_stages__is_none(self):
+        test_cases = [
+            ("Stedman Singles"),
+            ("Stedman Minimus"),
+            ("Stedman Minor"),
+            ("Stedman Major"),
+            ("Stedman Royal"),
+            ("Stedman Maximus"),
+        ]
+
+        for (method_title) in test_cases:
+            with self.subTest(method_title=method_title):
+                generator = generator_from_special_title(method_title)
+                self.assertIsNone(generator)
+
+    def test_plain_hunt__all_stages(self):
+        test_cases = [
+            ("Plain Hunt Singles", 3),
+            ("Plain Hunt 3", 3),
+            ("Plain Hunt on 3", 3),
+            ("Plain Hunt Doubles", 5),
+            ("Plain Hunt Triples", 7),
+            ("Plain Hunt Caters", 9),
+            ("Plain Hunt Cinques", 11),
+            ("Plain Hunt Minimus", 4),
+            ("Plain Hunt Minor", 6),
+            ("Plain Hunt Major", 8),
+            ("Plain Hunt Royal", 10),
+            ("Plain Hunt Maximus", 12),
+        ]
+
+        for (method_title, expected_stage) in test_cases:
+            with self.subTest(method_title=method_title, expected_stage=expected_stage):
+                generator = generator_from_special_title(method_title)
+                self.assertIsInstance(generator, PlainHuntGenerator)
+                self.assertTrue(expected_stage, generator.stage)
+
+    def test_unknown_stages__throws_MethodNotFoundError(self):
+        test_cases = [
+            ("Stedman"),
+            ("Stedman Not a stage"),
+            ("Stedman 0"),
+        ]
+
+        for (method_title) in test_cases:
+            with self.subTest(method_title=method_title):
+                with self.assertRaises(MethodNotFoundError):
+                    generator = generator_from_special_title(method_title)
 
 
 if __name__ == '__main__':

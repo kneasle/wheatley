@@ -8,6 +8,19 @@ import re
 _CROSS_PN = []
 _LOOKUP_NAME = "!1234567890ET"
 
+STAGES = {
+    "singles": 3,
+    "minimus": 4,
+    "doubles": 5,
+    "minor": 6,
+    "triples": 7,
+    "major": 8,
+    "caters": 9,
+    "royal": 10,
+    "cinques": 11,
+    "maximus": 12
+}
+
 
 def convert_pn(pn_str: str) -> List[List[int]]:
     """ Convert a place notation string into a list of places. """

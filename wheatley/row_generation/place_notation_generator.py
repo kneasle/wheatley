@@ -70,13 +70,13 @@ class PlaceNotationGenerator(RowGenerator):
 
     @staticmethod
     def grandsire(stage: int):
-        """ Generates Grandsire on a given stage (even bell Grandsire will cause an exception). """
-
-        assert stage % 2 == 1
+        """ Generates Grandsire on a given stage. """
 
         stage_bell = convert_to_bell_string(stage)
 
-        main_body = [stage_bell if i % 2 else "1" for i in range(1, 2 * stage + 1)]
+        cross_notation = stage_bell if stage % 2 else '-'
+
+        main_body = ["1" if i % 2 else cross_notation for i in range(2 * stage)]
         main_body[0] = "3"
         notation = ".".join(main_body)
         return PlaceNotationGenerator(stage, notation, bob={-1: "3"}, single={-1: "3.123"})

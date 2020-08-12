@@ -1,5 +1,7 @@
 # 0.3.0
 - Added overridable bobs and singles (`-b`/`--bob` for Bobs, `-n`/`--single` for Singles)
+- Make default calls correct for `Grandsire` (any stage) and `Stedman` on odd stages
+- Make Wheatley recognise `Plain Hunt` as a method on any stage
 - Made the error messages less cryptic for the following scenaria:
   - Inputting an method name not found in the CC method library
   - Inputting the ID of a non-existent CompLib composition

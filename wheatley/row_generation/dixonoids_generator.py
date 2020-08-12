@@ -20,7 +20,7 @@ class DixonoidsGenerator(RowGenerator):
     DefaultBob = {1: ["x", "4"]}
     DefaultSingle = {1: ["x", "1234"]}
 
-    def __init__(self, stage: int, plain_rules: Dict[int, List[str]],
+    def __init__(self, stage: int, plain_rules: Dict[int, List[str]] = None,
                  bob_rules: Dict[int, List[str]] = None, single_rules: Dict[int, List[str]] = None):
         """
         Initialises a dixonoid generator.
@@ -35,6 +35,8 @@ class DixonoidsGenerator(RowGenerator):
 
         super(DixonoidsGenerator, self).__init__(stage)
 
+        if plain_rules is None:
+            plain_rules = self.DixonsRules
         if bob_rules is None:
             bob_rules = self.DefaultBob
         if single_rules is None:

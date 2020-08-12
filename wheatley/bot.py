@@ -77,7 +77,7 @@ class Bot:
     # Callbacks
     def _on_size_change(self):
         if not self.row_generator.is_tower_size_valid(self._tower.number_of_bells):
-            self.logger.warning("Row generation requires {self.row_generator.number_of_bells} \
+            self.logger.warning(f"Row generation requires {self.row_generator.number_of_bells} \
 bells, but the current tower has {self._tower.number_of_bells}.  Wheatley will crash when you go \
 into changes unless something is done!")
 

@@ -10,10 +10,15 @@ from .place_notation_generator import PlaceNotationGenerator
 class MethodPlaceNotationGenerator(PlaceNotationGenerator):
     """ A class to generate rows given a method title. """
 
-    def __init__(self, method_title: str):
+    def __init__(self, method_title: str, bob, single):
         method_xml = self._fetch_method(method_title)
         method_pn, stage = self._parse_xml(method_xml)
-        super(MethodPlaceNotationGenerator, self).__init__(stage, method_pn)
+        super(MethodPlaceNotationGenerator, self).__init__(
+            stage,
+            method_pn,
+            bob,
+            single
+        )
 
     @staticmethod
     def _parse_xml(method_xml: str):

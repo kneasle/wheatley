@@ -1,3 +1,6 @@
+# 0.3.0
+- Added overridable bobs and singles (`-b`/`--bob` for Bobs, `-n`/`--single` for Singles)
+
 # 0.2.0
 - Added CLI arg for max rows stored in the regression dataset (`-X` or `--max-rows-in-dataset`)
 - Added CLI arg for handstroke gap (`-G` or `--handstroke-gap`)

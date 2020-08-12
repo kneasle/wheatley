@@ -204,7 +204,7 @@ def main():
         default="1234",
         help='An override for what place notation(s) should be made when a `Single` is called in \
               Ringing Room.  These will by default happen at the lead end.  Examples: "1678" or \
-              "0:168" => 6ths place lead end single.  "3.123" or "0:3.123" => a Grandsire Single. \
+              "0:168" => 6ths place lead end single.  "-1:3.123" => a Grandsire Single. \
               "20: 7890" => a 7890 single taking effect 20 changes into a lead (the Half Lead for \
               Surprise Royal). "3: 567/9: 567" => singles in Stedman Triples.  Defaults to "1234".'
     )

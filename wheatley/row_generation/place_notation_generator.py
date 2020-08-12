@@ -37,10 +37,9 @@ class PlaceNotationGenerator(RowGenerator):
                 # call locations by the length of their calls (so that e.g. `0` always refers to
                 # the lead end regardless of how long the calls are).
                 converted_place_notations = convert_pn(place_notation_str)
-                adjusted_index = (i - len(converted_place_notations)) % self.lead_len
 
                 # Add the processed call to the output dictionary
-                parsed_calls[adjusted_index] = converted_place_notations
+                parsed_calls[(i - 1) % self.lead_len] = converted_place_notations
 
             return parsed_calls
 
@@ -80,7 +79,7 @@ class PlaceNotationGenerator(RowGenerator):
         main_body = [stage_bell if i % 2 else "1" for i in range(1, 2 * stage + 1)]
         main_body[0] = "3"
         notation = ".".join(main_body)
-        return PlaceNotationGenerator(stage, notation, bob={0: "3.1"}, single={0: "3.123"})
+        return PlaceNotationGenerator(stage, notation, bob={-1: "3"}, single={-1: "3.123"})
 
     @staticmethod
     def stedman(stage: int):

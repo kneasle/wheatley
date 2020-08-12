@@ -158,6 +158,34 @@ class PlaceNotationGeneratorTests(TestCase):
                           [1, 3, 4, 5, 2, 6]],
                          after_rows)
 
+    def test_grandsire_triples_bob(self):
+        generator = PlaceNotationGenerator.grandsire(7)
+
+        gen_rows(generator, 10)
+        generator.set_bob()
+        single_rows = gen_rows(generator, 5)
+
+        self.assertEqual([[5, 7, 1, 6, 2, 4, 3, 8],
+                          [5, 1, 7, 2, 6, 3, 4, 8],
+                          [1, 5, 7, 6, 2, 4, 3, 8],
+                          [1, 7, 5, 2, 6, 3, 4, 8],
+                          [7, 1, 5, 6, 2, 4, 3, 8]],
+                         single_rows)
+
+    def test_grandsire_triples_single(self):
+        generator = PlaceNotationGenerator.grandsire(7)
+
+        gen_rows(generator, 10)
+        generator.set_single()
+        single_rows = gen_rows(generator, 5)
+
+        self.assertEqual([[5, 7, 1, 6, 2, 4, 3, 8],
+                          [5, 1, 7, 2, 6, 3, 4, 8],
+                          [1, 5, 7, 6, 2, 4, 3, 8],
+                          [1, 5, 7, 2, 6, 3, 4, 8],
+                          [5, 1, 7, 6, 2, 4, 3, 8]],
+                         single_rows)
+
     def test_stedman_doubles_second_single(self):
         generator = PlaceNotationGenerator.stedman_doubles()
 

@@ -1,5 +1,7 @@
 # 0.3.0
 - Added overridable bobs and singles (`-b`/`--bob` for Bobs, `-n`/`--single` for Singles)
+- Special case `Grandsire` and `Stedman` on odd stages for the usual calls
+- Special case `Plain Hunt` on any stage 
 - Made the error messages less cryptic for the following scenaria:
   - Inputting an method name not found in the CC method library
   - Inputting the ID of a non-existent CompLib composition

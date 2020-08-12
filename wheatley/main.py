@@ -19,7 +19,7 @@ from wheatley.arg_parsing import parse_peal_speed, PealSpeedParseError, parse_ca
 from wheatley.row_generation import RowGenerator, ComplibCompositionGenerator
 from wheatley.row_generation import MethodPlaceNotationGenerator
 from wheatley.row_generation.complib_composition_generator import PrivateCompError, InvalidCompError
-from wheatley.row_generation.method_place_notation_generator import MethodNotFoundError
+from wheatley.row_generation.method_place_notation_generator import MethodNotFoundError, generator_from_special_title
 
 
 def row_generator(args):
@@ -32,11 +32,12 @@ def row_generator(args):
             sys.exit(f"Bad value for '--comp': {e}")
     elif "method" in args:
         try:
-            row_gen = MethodPlaceNotationGenerator(
-                args.method,
-                parse_call(args.bob),
-                parse_call(args.single)
-            )
+            row_gen = generator_from_special_title(args.method) or \
+                      MethodPlaceNotationGenerator(
+                          args.method,
+                          parse_call(args.bob),
+                          parse_call(args.single)
+                      )
         except MethodNotFoundError as e:
             sys.exit(f"Bad value for '--method': {e}")
     else:
@@ -187,12 +188,12 @@ def main():
     # Row generator arguments
     row_gen_group = parser.add_mutually_exclusive_group(required=True)
     row_gen_group.add_argument(
-        "--comp",
+        "-c", "--comp",
         type=int,
         help="The ID of the complib composition you want to ring"
     )
     row_gen_group.add_argument(
-        "--method",
+        "-m", "--method",
         type=str,
         help="The title of the method you want to ring"
     )

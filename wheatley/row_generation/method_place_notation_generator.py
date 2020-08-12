@@ -2,9 +2,39 @@
 
 import xml.etree.ElementTree as ET
 
+from typing import Optional
+
 import requests
 
+from .dixonoids_generator import DixonoidsGenerator
+from .helpers import STAGES
+from .plain_hunt_generator import PlainHuntGenerator
 from .place_notation_generator import PlaceNotationGenerator
+from .row_generator import RowGenerator
+
+
+def generator_from_special_title(method_title: str) -> Optional[RowGenerator]:
+    """ Creates a row generator from special method titles. """
+    lowered_title = method_title.lower().strip()
+    if " " not in lowered_title:
+        raise MethodNotFoundError(method_title)
+
+    method_name, stage_name = lowered_title.rsplit(" ", 1)
+    method_name = method_name.strip()
+
+    if stage_name not in STAGES:
+        raise MethodNotFoundError(method_title)
+
+    stage = STAGES[stage_name]
+    if method_name == "grandsire" and stage % 2 and stage >= 5:
+        return PlaceNotationGenerator.grandsire(stage)
+    if method_name == "stedman" and stage % 2 and stage >= 5:
+        return PlaceNotationGenerator.stedman(stage)
+    if method_name == "plain hunt":
+        return PlainHuntGenerator(stage)
+    if method_name == "dixon's bob" and stage == 6:
+        return DixonoidsGenerator(stage)
+    return None
 
 
 class MethodNotFoundError(ValueError):

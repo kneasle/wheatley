@@ -5,6 +5,7 @@ program.
 """
 
 import time
+import logging
 
 from wheatley import calls
 from wheatley.row_generation import RowGenerator
@@ -18,6 +19,8 @@ class Bot:
     A class to hold all the information that the bot will use to glue together the rhythm,
     row_gen and socket-io parts together into a useful program.
     """
+
+    logger_name = "BOT"
 
     def __init__(self, tower: RingingRoomTower, row_generator: RowGenerator, do_up_down_in,
                  stop_at_rounds, rhythm: Rhythm):
@@ -54,6 +57,8 @@ class Bot:
 
         self._row = None
 
+        self.logger = logging.getLogger(self.logger_name)
+
     # Convenient properties that are frequently used
     @property
     def is_handstroke(self):
@@ -72,8 +77,9 @@ class Bot:
     # Callbacks
     def _on_size_change(self):
         if not self.row_generator.is_tower_size_valid(self._tower.number_of_bells):
-            print("WARNING: Row generation stage is NOT consistent with tower size! \
-Wheatley will crash when you go into changes unless something is done")
+            self.logger.warning("Row generation requires {self.row_generator.number_of_bells} \
+bells, but the current tower has {self._tower.number_of_bells}.  Wheatley will crash when you go \
+into changes unless something is done!")
 
     def _on_look_to(self):
         """ Callback called when a user calls 'Look To'. """

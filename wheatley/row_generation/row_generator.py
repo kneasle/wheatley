@@ -24,6 +24,13 @@ class RowGenerator(metaclass=ABCMeta):
         self._index = 0
         self._row = self.rounds()
 
+    def is_tower_size_valid(self, tower_size) -> bool:
+        """
+        Returns True if the row_generator can generate rows correctly for a given tower size.
+        """
+
+        return tower_size == self.number_of_bells
+
     def reset(self):
         """ Reset the row generator. """
 

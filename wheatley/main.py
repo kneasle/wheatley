@@ -13,23 +13,32 @@ import sys
 from wheatley.rhythm import RegressionRhythm, WaitForUserRhythm
 from wheatley.tower import RingingRoomTower
 from wheatley.bot import Bot
-from wheatley.page_parser import get_load_balancing_url
+from wheatley.page_parser import get_load_balancing_url, TowerNotFoundError, InvalidURLError
+from wheatley.arg_parsing import parse_peal_speed, PealSpeedParseError, parse_call
+
 from wheatley.row_generation import RowGenerator, ComplibCompositionGenerator
 from wheatley.row_generation import MethodPlaceNotationGenerator
-from wheatley.arg_parsing import parse_peal_speed, PealSpeedParseError, parse_call
+from wheatley.row_generation.complib_composition_generator import PrivateCompError, InvalidCompError
+from wheatley.row_generation.method_place_notation_generator import MethodNotFoundError
 
 
 def row_generator(args):
     """ Generates a row generator according to the given CLI arguments. """
 
     if "comp" in args and args.comp is not None:
-        row_gen = ComplibCompositionGenerator(args.comp)
+        try:
+            row_gen = ComplibCompositionGenerator(args.comp)
+        except (PrivateCompError, InvalidCompError) as e:
+            sys.exit(f"Bad value for '--comp': {e}")
     elif "method" in args:
-        row_gen = MethodPlaceNotationGenerator(
-            args.method,
-            parse_call(args.bob),
-            parse_call(args.single)
-        )
+        try:
+            row_gen = MethodPlaceNotationGenerator(
+                args.method,
+                parse_call(args.bob),
+                parse_call(args.single)
+            )
+        except MethodNotFoundError as e:
+            sys.exit(f"Bad value for '--method': {e}")
     else:
         assert False, \
             "This shouldn't be possible because one of --method and --comp should always be defined"
@@ -215,7 +224,14 @@ def main():
     # Run the program
     configure_logging()
 
-    tower = RingingRoomTower(args.room_id, get_load_balancing_url(args.room_id, args.url))
+    try:
+        socket_url = get_load_balancing_url(args.room_id, args.url)
+    except TowerNotFoundError as e:
+        sys.exit(f"Bad value for 'room_id': {e}")
+    except InvalidURLError as e:
+        sys.exit(f"Bad value for '--url': {e}")
+
+    tower = RingingRoomTower(args.room_id, socket_url)
     bot = Bot(tower, row_generator(args), args.use_up_down_in or args.handbell_style,
               args.stop_at_rounds or args.handbell_style, rhythm=rhythm(args))
 

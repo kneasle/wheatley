@@ -3,4 +3,4 @@
 """ A script to run all the fuzzing tests. """
 
 # Run the fuzzing tests
-from fuzzing import call_parsing
+from fuzzing import call_parsing, peal_speed_parsing

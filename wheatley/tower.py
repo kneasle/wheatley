@@ -97,7 +97,7 @@ class RingingRoomTower:
     def set_at_hand(self):
         """ Sets all the bells at hand. """
 
-        self._emit("c_set_bells", {"tower_id": self.tower_id}, f"Set at hand")
+        self._emit("c_set_bells", {"tower_id": self.tower_id}, "Set at hand")
 
     def set_number_of_bells(self, number: int):
         """ Set the number of bells in the tower. """
@@ -181,6 +181,9 @@ class RingingRoomTower:
         self._bell_state = bell_state
 
         self.logger.debug(f"RECEIVED: Bells '{['H' if x else 'B' for x in bell_state]}'")
+
+        for invoke_callback in self.invoke_on_reset:
+            invoke_callback()
 
     def _on_size_change(self, data):
         """ Callback called when the number of bells in the room changes. """

@@ -7,12 +7,31 @@ import requests
 from .place_notation_generator import PlaceNotationGenerator
 
 
+class MethodNotFoundError(ValueError):
+    """
+    An error class to store the error thrown when a method title is inputted that doesn't have an
+    entry in the CC method library.
+    """
+
+    def __init__(self, name):
+        super().__init__()
+        self._name = name
+
+    def __str__(self):
+        return f"No method with title '{self._name}' found."
+
+
 class MethodPlaceNotationGenerator(PlaceNotationGenerator):
     """ A class to generate rows given a method title. """
 
     def __init__(self, method_title: str, bob, single):
         method_xml = self._fetch_method(method_title)
-        method_pn, stage = self._parse_xml(method_xml)
+
+        try:
+            method_pn, stage = self._parse_xml(method_xml)
+        except AttributeError:
+            raise MethodNotFoundError(method_title)
+
         super(MethodPlaceNotationGenerator, self).__init__(
             stage,
             method_pn,

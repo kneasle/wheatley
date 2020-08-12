@@ -22,15 +22,18 @@ def generator_from_special_title(method_title: str) -> Optional[RowGenerator]:
     method_name, stage_name = lowered_title.rsplit(" ", 1)
     method_name = method_name.strip()
 
-    if stage_name not in STAGES:
+    if stage_name.isdigit() and int(stage_name) in STAGES.values():
+        stage = int(stage_name)
+    elif stage_name in STAGES:
+        stage = STAGES[stage_name]
+    else:
         raise MethodNotFoundError(method_title)
 
-    stage = STAGES[stage_name]
     if method_name == "grandsire" and stage >= 5:
         return PlaceNotationGenerator.grandsire(stage)
     if method_name == "stedman" and stage % 2 and stage >= 5:
         return PlaceNotationGenerator.stedman(stage)
-    if method_name == "plain hunt":
+    if method_name == "plain hunt" or method_name == "plain hunt on":
         return PlainHuntGenerator(stage)
     if method_name == "dixon's bob" and stage == 6:
         return DixonoidsGenerator(stage)

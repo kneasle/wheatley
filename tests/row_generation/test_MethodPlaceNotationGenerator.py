@@ -126,6 +126,8 @@ class SpecialMethodNameTests(TestCase):
     def test_plain_hunt__all_stages(self):
         test_cases = [
             ("Plain Hunt Singles", 3),
+            ("Plain Hunt 3", 3),
+            ("Plain Hunt on 3", 3),
             ("Plain Hunt Doubles", 5),
             ("Plain Hunt Triples", 7),
             ("Plain Hunt Caters", 9),
@@ -146,7 +148,7 @@ class SpecialMethodNameTests(TestCase):
     def test_unknown_stages__throws_MethodNotFoundError(self):
         test_cases = [
             ("Stedman"),
-            ("Stedman Major 2"),
+            ("Stedman Not a stage"),
             ("Stedman 0"),
         ]
 

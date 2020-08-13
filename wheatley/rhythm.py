@@ -164,7 +164,7 @@ class RegressionRhythm(Rhythm):
 
     logger_name = "RHYTHM:Regression"
 
-    def __init__(self, inertia, peal_speed=178, handstroke_gap=1, max_rows_in_dataset=3.0):
+    def __init__(self, inertia, peal_speed=178, handstroke_gap=1, max_bells_in_dataset=15):
         """
         Initialises a new RegressionRhythm with a given default peal speed and handstroke gap.
         `peal_speed` is the number of minutes in a peal of 5040 changes, and `handstroke_gap`
@@ -179,7 +179,7 @@ class RegressionRhythm(Rhythm):
 
         self._peal_speed = peal_speed
         self._handstroke_gap = handstroke_gap
-        self._max_rows_in_dataset = max_rows_in_dataset
+        self._max_bells_in_dataset = max_bells_in_dataset
 
         self.stage = 0
         self.logger = logging.getLogger(self.logger_name)
@@ -199,8 +199,6 @@ class RegressionRhythm(Rhythm):
 
         for (b, r, w) in self.data_set:
             self.logger.debug(f"  {b}\t{r}\t{w}")
-
-        max_dataset_length = self._max_rows_in_dataset * self._number_of_user_controlled_bells
 
         # Only calculate the regression line if there are at least two datapoints, otherwise
         # just store the datapoint
@@ -222,7 +220,7 @@ class RegressionRhythm(Rhythm):
             self.data_set = list(filter(lambda d: d[2] > WEIGHT_REJECTION_THRESHOLD, self.data_set))
 
             # Eventually forget about datapoints
-            if len(self.data_set) >= max_dataset_length:
+            if len(self.data_set) >= self._max_bells_in_dataset:
                 del self.data_set[0]
 
     def wait_for_bell_time(self, current_time, bell, row_number, place, user_controlled, stroke):

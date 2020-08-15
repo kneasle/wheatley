@@ -11,6 +11,9 @@ import socketio
 
 from wheatley.bell import Bell
 
+HANDSTROKE = True
+BACKSTROKE = False
+
 
 class RingingRoomTower:
     """ A class representing a tower, which will handle a single ringing-room session. """
@@ -18,7 +21,7 @@ class RingingRoomTower:
     logger_name = "TOWER"
 
     def __init__(self, tower_id: int, url: str):
-        """ Initilise a tower with a given room id and url. """
+        """ Initialise a tower with a given room id and url. """
 
         self.tower_id = tower_id
         self.logger = logging.getLogger(self.logger_name)
@@ -221,4 +224,4 @@ class RingingRoomTower:
     def _bells_set_at_hand(number: int):
         """ Returns the representation of `number` bells, all set at handstroke. """
 
-        return [True for _ in range(number)]
+        return [HANDSTROKE for _ in range(number)]

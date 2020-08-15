@@ -11,6 +11,7 @@ from abc import ABCMeta, abstractmethod
 
 from wheatley.bell import Bell
 from wheatley.regression import calculate_regression
+from wheatley.tower import HANDSTROKE, BACKSTROKE
 
 WEIGHT_REJECTION_THRESHOLD = 0.001
 
@@ -89,9 +90,9 @@ class WaitForUserRhythm(Rhythm):
         """
 
         self._inner_rhythm = rhythm
-        self._current_stroke = True
-        self._expected_bells = {True: set(), False: set()}
-        self._early_bells = {True: set(), False: set()}
+        self._current_stroke = HANDSTROKE
+        self._expected_bells = {HANDSTROKE: set(), BACKSTROKE: set()}
+        self._early_bells = {HANDSTROKE: set(), BACKSTROKE: set()}
         self.delay = 0
         self.logger = logging.getLogger(self.logger_name)
 

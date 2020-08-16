@@ -161,6 +161,11 @@ class WaitForUserRhythm(Rhythm):
 
         self._inner_rhythm.initialise_line(stage, user_controls_treble, start_time - self.delay,
                                            number_of_user_controlled_bells)
+        self._expected_bells[HANDSTROKE].clear()
+        self._expected_bells[BACKSTROKE].clear()
+        self._early_bells[HANDSTROKE].clear()
+        self._early_bells[BACKSTROKE].clear()
+        self._current_stroke = HANDSTROKE
 
 
 class RegressionRhythm(Rhythm):

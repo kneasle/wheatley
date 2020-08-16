@@ -122,20 +122,20 @@ def main():
     parser.add_argument(
         "-u", "--use-up-down-in",
         action="store_true",
-        help="If set, then the bot will automatically go into changes after two rounds have been \
+        help="If set, then the Wheatley will automatically go into changes after two rounds have been \
               rung."
     )
     parser.add_argument(
         "-s", "--stop-at-rounds",
         action="store_true",
-        help="If set, then the bot will stand its bells after rounds is reached."
+        help="If set, then Wheatley will stand his bells the first time rounds is reached."
     )
     parser.add_argument(
         "-H", "--handbell-style",
         action="store_true",
-        help="If set, then the bot will ring 'handbell style', i.e. ringing two strokes of \
+        help="If set, then Wheatley will ring 'handbell style', i.e. ringing two strokes of \
               rounds then straight into changes, and stopping at the first set of rounds. By \
-              default, it will ring 'towerbell style', i.e. only taking instructions from the \
+              default, he will ring 'towerbell style', i.e. only taking instructions from the \
               ringing-room calls. This is equivalent to using the '-us' flags."
     )
     parser.add_argument(
@@ -148,7 +148,7 @@ def main():
     parser.add_argument(
         "-k", "--keep-going",
         action="store_true",
-        help="If set, the bot will not wait for users to ring - instead, it will push on with the \
+        help="If set, Wheatley will not wait for users to ring - instead, he will push on with the \
               rhythm."
     )
     parser.add_argument(
@@ -161,17 +161,16 @@ def main():
         "-I", "--inertia",
         type=float,
         default=0.5,
-        help="Overrides the bot's 'inertia' - now much the bot will take other ringers' positions \
-              into account when deciding when to ring.  0.0 means it will cling as closely as \
-              possible to the current rhythm, 1.0 means that it will completely ignore the other \
-              ringers. By default, it will set a value depending on what proportion of the bells \
-              are user controlled."
+        help="Overrides Wheatley's 'inertia' - now much Wheatley will take other ringers' positions \
+              into account when deciding when to ring.  0.0 means he will cling as closely as \
+              possible to the current rhythm, 1.0 means that he will completely ignore the other \
+              ringers."
     )
     parser.add_argument(
         "-S", "--peal-speed",
         default="2h58",
-        help="Sets the default speed that the bot will ring (assuming a peal of 5040 changes), \
-              though this will usually be adjusted by the bot whilst ringing to keep with other \
+        help="Sets the default speed that Wheatley will ring (assuming a peal of 5040 changes), \
+              though this will usually be adjusted by Wheatley whilst ringing to keep with other \
               ringers.  Example formatting: '3h4' = '3h4m' = '3h04m' = '3h04' = '184m' = '184'. \
               Defaults to '2h58'."
     )
@@ -187,7 +186,7 @@ def main():
         type=int,
         default=15,
         help="Sets the maximum number of bells that Wheatley will store to determine the current \
-              ringing speed.  If you make this larger, then will be more consistent but less \
+              ringing speed.  If you make this larger, then he will be more consistent but less \
               quick to respond to changes in rhythm.  Defaults to '15'.  Setting both this and \
               --inertia to a very small values could result in Wheatley ringing ridiculously \
               quickly."
@@ -198,12 +197,12 @@ def main():
     row_gen_group.add_argument(
         "-c", "--comp",
         type=int,
-        help="The ID of the complib composition you want to ring"
+        help="The ID of the complib composition that Wheatley should ring"
     )
     row_gen_group.add_argument(
         "-m", "--method",
         type=str,
-        help="The title of the method you want to ring"
+        help="The title of the method that Wheatley should ring"
     )
 
     parser.add_argument(

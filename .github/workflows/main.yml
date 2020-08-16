@@ -18,7 +18,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip3 install -r requirements.txt
-          pip3 install pytest pylint
+          pip3 install setuptools pytest pylint
       - name: Run linter
         run: python3 -m pylint wheatley/**/*.py
       - name: Run tests

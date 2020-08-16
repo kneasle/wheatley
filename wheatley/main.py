@@ -19,7 +19,8 @@ from wheatley.arg_parsing import parse_peal_speed, PealSpeedParseError, parse_ca
 from wheatley.row_generation import RowGenerator, ComplibCompositionGenerator
 from wheatley.row_generation import MethodPlaceNotationGenerator
 from wheatley.row_generation.complib_composition_generator import PrivateCompError, InvalidCompError
-from wheatley.row_generation.method_place_notation_generator import MethodNotFoundError, generator_from_special_title
+from wheatley.row_generation.method_place_notation_generator import MethodNotFoundError, \
+                                                                    generator_from_special_title
 
 
 def row_generator(args):

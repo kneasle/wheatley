@@ -72,7 +72,7 @@ class Rhythm(metaclass=ABCMeta):
 
         pass
 
-    def sleep(self, seconds: float):
+    def sleep(self, seconds: float):  # pylint: disable=no-self-use
         """ Sleeps for given number of seconds. Allows mocking in tests"""
         time.sleep(seconds)
 
@@ -229,10 +229,10 @@ class RegressionRhythm(Rhythm):
         """ Sleeps the thread until a given Bell should have rung. """
 
         if user_controlled and self._start_time == float('inf'):
-            self.logger.debug(f"Waiting for pull off")
+            self.logger.debug("Waiting for pull off")
             while self._start_time == float('inf'):
                 self.sleep(0.01)
-            self.logger.debug(f"Pulled off")
+            self.logger.debug("Pulled off")
             return
 
         bell_time = self.index_to_real_time(row_number, place)

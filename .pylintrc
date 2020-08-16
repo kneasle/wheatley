@@ -1,10 +1,10 @@
 [MESSAGES CONTROL]
 
-disable=broad-except,len-as-condition
+disable=broad-except,len-as-condition,logging-fstring-interpolation,unnecessary-pass
 
 [FORMAT]
 
-# Just allow me to make one-letter variable names
+# Just allow me to make one-letter variable names, please!
 good-names=a,b,c,d,e,f,g,h,i,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z
 
 # Enforce Unix line endings

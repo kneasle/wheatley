@@ -15,6 +15,11 @@ HANDSTROKE = True
 BACKSTROKE = False
 
 
+def stroke_to_string(stroke: bool) -> str:
+    """ Convert stroke to string for logging """
+    return "HANDSTROKE" if stroke else "BACKSTROKE"
+
+
 class RingingRoomTower:
     """ A class representing a tower, which will handle a single ringing-room session. """
 
@@ -61,12 +66,12 @@ class RingingRoomTower:
 
         return len(self._bell_state)
 
-    def ring_bell(self, bell: Bell, handstroke: bool):
+    def ring_bell(self, bell: Bell, is_handstroke: bool):
         """ Send a request to the the server if the bell can be rung on the given stroke. """
 
         try:
             stroke = self.get_stroke(bell)
-            if stroke != handstroke:
+            if stroke != is_handstroke:
                 self.logger.error(f"Bell {bell} on opposite stroke")
                 return False
             self._emit(
@@ -166,7 +171,7 @@ class RingingRoomTower:
             self.logger.info(f"EMIT: {message}")
 
     def _on_bell_rung(self, data):
-        """ Callback called when the client recieves a signal that a bell has been rung. """
+        """ Callback called when the client receives a signal that a bell has been rung. """
 
         self._on_global_bell_state(data)
 
@@ -176,7 +181,7 @@ class RingingRoomTower:
 
     def _on_global_bell_state(self, data):
         """
-        Callback called when recieving an update to the global tower state.
+        Callback called when receiving an update to the global tower state.
         Cannot have further callbacks assigned to it.
         """
 

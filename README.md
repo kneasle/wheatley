@@ -86,9 +86,11 @@ Run the bot with `wheatley [ARGS]`.
     wheatley [ID NUMBER] -S 3h30
     ```
 
-*   Wait for people to ring rather than pushing on with the rhythm:
+*   Make Wheatley push on with the rhythm rather than waiting for people to ring.
     ```bash
-    wheatley [ID NUMBER] --method "Plain Bob Major" --wait
+    wheatley [ID NUMBER] --method "Plain Bob Major" --keep-going
+    # or
+    wheatley [ID NUMBER] --method "Plain Bob Major" -k
     ```
 
 *   Completely ignore other users' changes in rhythm (useful if it's ringing most of

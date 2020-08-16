@@ -205,7 +205,7 @@ class RingingRoomTower:
         bell = Bell.from_number(data["bell"])
         user = data["user"]
         self._assigned_users[bell] = user
-        self.logger.info(f"RECEIVED: Assigned bell '{bell}' to '{user or 'BOT'}'")
+        self.logger.info(f"RECEIVED: Assigned bell '{bell}' to '{user or '[WHEATLEY]'}'")
 
     def _on_call(self, data):
         """ Callback called when a call is made. """

@@ -1,3 +1,5 @@
+- Renamed `BOT` to `[WHEATLEY]` in the logging output for unassigned bells
+
 # 0.3.0
 - Made the `--wait` flag set by default, now has to be turned off with `--keep-going` or `-k`.
 - Added overridable bobs and singles (`-b`/`--bob` for Bobs, `-n`/`--single` for Singles)

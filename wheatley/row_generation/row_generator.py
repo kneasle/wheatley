@@ -87,6 +87,7 @@ class RowGenerator(metaclass=ABCMeta):
         """ Permute a row by a place notation given by `places`. """
 
         new_row = list(row)
+
         i = 1
         if places and places[0] % 2 == 0:
             # Skip 1 for implicit lead when lowest pn is even

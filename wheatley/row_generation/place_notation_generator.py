@@ -19,6 +19,7 @@ class PlaceNotationGenerator(RowGenerator):
     def __init__(self, stage: int, method: str, bob: Dict[int, str] = None,
                  single: Dict[int, str] = None):
         super(PlaceNotationGenerator, self).__init__(stage)
+
         if bob is None:
             bob = PlaceNotationGenerator.DefaultBob
         if single is None:
@@ -50,6 +51,7 @@ class PlaceNotationGenerator(RowGenerator):
 
     def _gen_row(self, previous_row: List[Bell], is_handstroke: bool, index: int) -> List[Bell]:
         lead_index = index % self.lead_len
+
         assert lead_index % 2 != is_handstroke
 
         if self._has_bob and self.bobs_pn.get(lead_index):
@@ -79,6 +81,7 @@ class PlaceNotationGenerator(RowGenerator):
         main_body = ["1" if i % 2 else cross_notation for i in range(2 * stage)]
         main_body[0] = "3"
         notation = ".".join(main_body)
+
         return PlaceNotationGenerator(stage, notation, bob={-1: "3"}, single={-1: "3.123"})
 
     @staticmethod
@@ -95,6 +98,7 @@ class PlaceNotationGenerator(RowGenerator):
         stage_bell_2 = convert_to_bell_string(stage - 2)
 
         notation = f"3.1.{stage_bell}.3.1.3.1.3.{stage_bell}.1.3.1"
+
         return PlaceNotationGenerator(stage, notation, bob={3: stage_bell_2, 9: stage_bell_2},
                                       single={3: f"{stage_bell_2}{stage_bell_1}{stage_bell}",
                                               9: f"{stage_bell_2}{stage_bell_1}{stage_bell}"})
@@ -104,4 +108,5 @@ class PlaceNotationGenerator(RowGenerator):
         """ Generates Stedman on a given stage (even bell Stedman will cause an exception). """
 
         notation = "3.1.5.3.1.3.1.3.5.1.3.1"
+
         return PlaceNotationGenerator(5, notation, bob={}, single={6: "345", 12: "145"})

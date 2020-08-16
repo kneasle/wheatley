@@ -74,6 +74,7 @@ class Rhythm(metaclass=ABCMeta):
 
     def sleep(self, seconds: float):  # pylint: disable=no-self-use
         """ Sleeps for given number of seconds. Allows mocking in tests"""
+
         time.sleep(seconds)
 
 
@@ -105,10 +106,12 @@ class WaitForUserRhythm(Rhythm):
                                               user_controlled, stroke)
         if user_controlled:
             delay_for_user = 0
+
             while bell in self._expected_bells[stroke]:
                 self.sleep(self.sleep_time)
                 delay_for_user += self.sleep_time
                 self.logger.debug(f"Waiting for {bell}")
+
             if delay_for_user:
                 self.logger.info(f"Delayed for {delay_for_user}")
                 self.delay += delay_for_user
@@ -142,6 +145,7 @@ class WaitForUserRhythm(Rhythm):
                 self._expected_bells[self._current_stroke].remove(bell)
             except KeyError:
                 pass
+
             try:
                 self._early_bells[not self._current_stroke].remove(bell)
             except KeyError:
@@ -230,12 +234,16 @@ class RegressionRhythm(Rhythm):
 
         if user_controlled and self._start_time == float('inf'):
             self.logger.debug("Waiting for pull off")
+
             while self._start_time == float('inf'):
                 self.sleep(0.01)
+
             self.logger.debug("Pulled off")
+
             return
 
         bell_time = self.index_to_real_time(row_number, place)
+
         if bell_time == float('inf') or self._start_time == 0:
             self.logger.error(f"Bell Time {bell_time}; Start Time {self._start_time}")
             self.sleep(self._blow_interval or 0.2)

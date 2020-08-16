@@ -179,6 +179,7 @@ into changes unless something is done!")
 
         assert self.row_generator.number_of_bells == self._tower.number_of_bells, \
             f"{self.row_generator.number_of_bells} != {self._tower.number_of_bells}"
+
         self.row_generator.reset()
         self.start_next_row()
 

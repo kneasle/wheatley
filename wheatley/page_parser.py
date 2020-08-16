@@ -13,6 +13,7 @@ class TowerNotFoundError(ValueError):
 
     def __init__(self, tower_id, url):
         super().__init__()
+
         self._id = tower_id
         self._url = url
 
@@ -24,6 +25,7 @@ class InvalidURLError(Exception):
 
     def __init__(self, url):
         super().__init__()
+
         self._url = url
 
     def __str__(self):

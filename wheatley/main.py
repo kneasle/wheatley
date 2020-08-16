@@ -199,7 +199,6 @@ def main():
         type=str,
         help="The title of the method you want to ring"
     )
-
     parser.add_argument(
         "-b",
         "--bob",

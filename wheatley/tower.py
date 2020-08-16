@@ -39,9 +39,12 @@ class RingingRoomTower:
         """ Called when entering a 'with' block.  Opens the socket-io connection. """
 
         self.logger.debug("ENTER")
+
         if self._socket_io_client is not None:
             raise Exception("Trying to connect twice")
+
         self._create_client()
+
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -66,17 +69,22 @@ class RingingRoomTower:
 
         try:
             stroke = self.get_stroke(bell)
+
             if stroke != handstroke:
                 self.logger.error(f"Bell {bell} on opposite stroke")
+
                 return False
+
             self._emit(
                 "c_bell_rung",
                 {"bell": bell.number, "stroke": stroke, "tower_id": self.tower_id},
                 ""
             )
+
             return True
         except Exception as e:
             self.logger.error(e)
+
             return False
 
     def user_controlled(self, bell: Bell):
@@ -89,7 +97,9 @@ class RingingRoomTower:
 
         if bell.index >= len(self._bell_state) or bell.index < 0:
             self.logger.error(f"Bell {bell} not in tower")
+
             return None
+
         return self._bell_state[bell.index]
 
     def make_call(self, call: str):
@@ -116,12 +126,16 @@ class RingingRoomTower:
 
         if self._socket_io_client is None:
             raise Exception("Not Connected")
+
         iteration = 0
+
         while not self._bell_state:
             iteration += 1
+
             if iteration % 50 == 0:
                 self._join_tower()
                 self._request_global_state()
+
             sleep(0.1)
 
     def _create_client(self):
@@ -171,6 +185,7 @@ class RingingRoomTower:
         self._on_global_bell_state(data)
 
         who_rang = Bell.from_number(data["who_rang"])
+
         for bell_ring_callback in self.invoke_on_bell_rung:
             bell_ring_callback(who_rang, self.get_stroke(who_rang))
 
@@ -192,10 +207,12 @@ class RingingRoomTower:
         """ Callback called when the number of bells in the room changes. """
 
         new_size = data["size"]
+
         if new_size != self.number_of_bells:
             self._assigned_users = {}
             self._bell_state = self._bells_set_at_hand(new_size)
             self.logger.info(f"RECEIVED: New tower size '{new_size}'")
+
             for invoke_callback in self.invoke_on_reset:
                 invoke_callback()
 
@@ -216,7 +233,9 @@ class RingingRoomTower:
         found_callback = False
         for call_callback in self.invoke_on_call.get(call, []):
             call_callback()
+
             found_callback = True
+
         if not found_callback:
             self.logger.warning(f"No callback found for '{call}'")
 

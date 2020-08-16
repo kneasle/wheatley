@@ -54,4 +54,5 @@ def convert_to_bell_string(bell: int) -> str:
 
     if bell <= 0 or bell >= len(_LOOKUP_NAME):
         raise ValueError(f"'{bell}' is not known bell number")
+
     return _LOOKUP_NAME[bell]

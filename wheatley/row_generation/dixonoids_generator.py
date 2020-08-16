@@ -35,16 +35,9 @@ class DixonoidsGenerator(RowGenerator):
 
         super(DixonoidsGenerator, self).__init__(stage)
 
-        if plain_rules is None:
-            plain_rules = self.DixonsRules
-        if bob_rules is None:
-            bob_rules = self.DefaultBob
-        if single_rules is None:
-            single_rules = self.DefaultSingle
-
-        self.plain_rules = self._convert_pn_dict(plain_rules)
-        self.bob_rules = self._convert_pn_dict(bob_rules)
-        self.single_rules = self._convert_pn_dict(single_rules)
+        self.plain_rules = self._convert_pn_dict(plain_rules or self.DixonsRules)
+        self.bob_rules = self._convert_pn_dict(bob_rules or self.DefaultBob)
+        self.single_rules = self._convert_pn_dict(single_rules or self.DefaultSingle)
 
     def _gen_row(self, previous_row: List[Bell], is_handstroke: bool, index: int) -> List[Bell]:
         leading_bell = previous_row[0].number
@@ -52,10 +45,12 @@ class DixonoidsGenerator(RowGenerator):
 
         if self._has_bob and self.bob_rules.get(leading_bell):
             place_notation = self.bob_rules[leading_bell][pn_index]
+
             if not is_handstroke:
                 self.reset_calls()
         elif self._has_single and self.single_rules.get(leading_bell):
             place_notation = self.single_rules[leading_bell][pn_index]
+
             if not is_handstroke:
                 self.reset_calls()
         elif self.plain_rules.get(leading_bell):
@@ -63,8 +58,9 @@ class DixonoidsGenerator(RowGenerator):
         else:
             place_notation = self.plain_rules[0][pn_index]
 
-        row = self.permute(previous_row, place_notation)
-        return row
+        next_row = self.permute(previous_row, place_notation)
+
+        return next_row
 
     @staticmethod
     def _convert_pn_dict(rules: Dict[int, List[str]]) -> Dict[int, List[List[int]]]:

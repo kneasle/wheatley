@@ -146,29 +146,32 @@ class WaitForUserRhythm(Rhythm):
             except KeyError:
                 pass
             else:
-                self.logger.debug(f"{Bell} rung at {stroke_to_string(stroke)}")
+                self.logger.debug(f"{bell} rung at {stroke_to_string(stroke)}")
 
             try:
                 self._early_bells[not self._current_stroke].remove(bell)
             except KeyError:
                 pass
             else:
-                self.logger.debug(f"{Bell} reset to {stroke_to_string(stroke)}")
+                self.logger.debug(f"{bell} reset to {stroke_to_string(stroke)}")
         else:
-            self.logger.debug(f"{Bell} rung early to {stroke_to_string(stroke)}")
+            self.logger.debug(f"{bell} rung early to {stroke_to_string(stroke)}")
             self._early_bells[not self._current_stroke].add(bell)
 
     def initialise_line(self, stage, user_controls_treble, start_time,
                         number_of_user_controlled_bells):
         """ Allow the Rhythm object to initialise itself when 'Look to' is called. """
 
-        self._inner_rhythm.initialise_line(stage, user_controls_treble, start_time - self.delay,
-                                           number_of_user_controlled_bells)
         self._expected_bells[HANDSTROKE].clear()
         self._expected_bells[BACKSTROKE].clear()
         self._early_bells[HANDSTROKE].clear()
         self._early_bells[BACKSTROKE].clear()
         self._current_stroke = HANDSTROKE
+        # Clear any current waiting loops
+        self.sleep(2 * self.sleep_time)
+
+        self._inner_rhythm.initialise_line(stage, user_controls_treble, start_time - self.delay,
+                                           number_of_user_controlled_bells)
 
 
 class RegressionRhythm(Rhythm):

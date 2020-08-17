@@ -99,7 +99,10 @@ class WaitForUserRhythm(Rhythm):
     def wait_for_bell_time(self, current_time, bell, row_number, place, user_controlled, stroke):
         """ Sleeps the thread until a given Bell should have rung. """
 
-        assert stroke == self._current_stroke
+        # assert stroke == self._current_stroke
+        if stroke != self._current_stroke:
+            self.logger.debug(f"Switching to unexpected stroke {stroke_to_string(stroke)}")
+            self._current_stroke = stroke
 
         self._inner_rhythm.wait_for_bell_time(current_time - self.delay, bell, row_number, place,
                                               user_controlled, stroke)

@@ -101,11 +101,13 @@ def main():
     except IOError:
         __version__ = "<NO VERSION FILE FOUND>"
 
-    # Parse the arguments
+    # PARSE THE ARGUMENTS
+
     parser = argparse.ArgumentParser(
         description="A bot to fill in bells during ringingroom.com practices"
     )
 
+    # Tower arguments
     parser.add_argument(
         "room_id",
         type=int,
@@ -118,6 +120,8 @@ def main():
         type=str,
         help="The URL of the server to join (defaults to 'https://ringingroom.com')"
     )
+
+    # Row generation arguments
     parser.add_argument(
         "-u", "--use-up-down-in",
         action="store_true",
@@ -136,11 +140,6 @@ def main():
               rounds then straight into changes, and stopping at the first set of rounds. By \
               default, it will ring 'towerbell style', i.e. only taking instructions from the \
               ringing-room calls. This is equivalent to using the '-us' flags."
-    )
-    parser.add_argument(
-        "--version",
-        action="version",
-        version=f"Wheatley v{__version__}"
     )
 
     # Rhythm arguments
@@ -221,6 +220,12 @@ def main():
               Surprise Royal). "3: 567/9: 567" => singles in Stedman Triples.  Defaults to "1234".'
     )
 
+    # Misc arguments
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"Wheatley v{__version__}"
+    )
     args = parser.parse_args()
 
     # Run the program

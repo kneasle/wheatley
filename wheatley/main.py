@@ -102,110 +102,44 @@ def main():
     except IOError:
         __version__ = "<NO VERSION FILE FOUND>"
 
-    # Parse the arguments
+    # PARSE THE ARGUMENTS
+
     parser = argparse.ArgumentParser(
         description="A bot to fill in bells during ringingroom.com practices"
     )
 
-    parser.add_argument(
+    # Tower arguments
+    tower_group = parser.add_argument_group("Tower arguments")
+    tower_group.add_argument(
         "room_id",
         type=int,
         help="The numerical ID of the tower to join, represented as a row on 9 bells, \
               e.g. 763451928."
     )
-    parser.add_argument(
+    tower_group.add_argument(
         "--url",
         default="https://ringingroom.com",
         type=str,
         help="The URL of the server to join (defaults to 'https://ringingroom.com')"
     )
-    parser.add_argument(
-        "-u", "--use-up-down-in",
-        action="store_true",
-        help="If set, then the Wheatley will automatically go into changes after two rounds have been \
-              rung."
-    )
-    parser.add_argument(
-        "-s", "--stop-at-rounds",
-        action="store_true",
-        help="If set, then Wheatley will stand his bells the first time rounds is reached."
-    )
-    parser.add_argument(
-        "-H", "--handbell-style",
-        action="store_true",
-        help="If set, then Wheatley will ring 'handbell style', i.e. ringing two strokes of \
-              rounds then straight into changes, and stopping at the first set of rounds. By \
-              default, he will ring 'towerbell style', i.e. only taking instructions from the \
-              ringing-room calls. This is equivalent to using the '-us' flags."
-    )
-    parser.add_argument(
-        "--version",
-        action="version",
-        version=f"Wheatley v{__version__}"
-    )
 
-    # Rhythm arguments
-    parser.add_argument(
-        "-k", "--keep-going",
-        action="store_true",
-        help="If set, Wheatley will not wait for users to ring - instead, he will push on with the \
-              rhythm."
-    )
-    parser.add_argument(
-        "-w", "--wait",
-        action="store_true",
-        help="Legacy parameter, which is now set by default. The previous default behaviour of not waiting \
-              can be set with '-k'/'--keep-going'."
-    )
-    parser.add_argument(
-        "-I", "--inertia",
-        type=float,
-        default=0.5,
-        help="Overrides Wheatley's 'inertia' - now much Wheatley will take other ringers' positions \
-              into account when deciding when to ring.  0.0 means he will cling as closely as \
-              possible to the current rhythm, 1.0 means that he will completely ignore the other \
-              ringers."
-    )
-    parser.add_argument(
-        "-S", "--peal-speed",
-        default="2h58",
-        help="Sets the default speed that Wheatley will ring (assuming a peal of 5040 changes), \
-              though this will usually be adjusted by Wheatley whilst ringing to keep with other \
-              ringers.  Example formatting: '3h4' = '3h4m' = '3h04m' = '3h04' = '184m' = '184'. \
-              Defaults to '2h58'."
-    )
-    parser.add_argument(
-        "-G", "--handstroke-gap",
-        type=float,
-        default=1.0,
-        help="Sets the handstroke gap as a factor of the space between two bells.  Defaults to \
-              '1.0'."
-    )
-    parser.add_argument(
-        "-X", "--max-bells-in-dataset",
-        type=int,
-        default=15,
-        help="Sets the maximum number of bells that Wheatley will store to determine the current \
-              ringing speed.  If you make this larger, then he will be more consistent but less \
-              quick to respond to changes in rhythm.  Defaults to '15'.  Setting both this and \
-              --inertia to a very small values could result in Wheatley ringing ridiculously \
-              quickly."
-    )
+    # Row generation arguments
+    row_gen_group = parser.add_argument_group("Row generation arguments")
 
-    # Row generator arguments
-    row_gen_group = parser.add_mutually_exclusive_group(required=True)
-    row_gen_group.add_argument(
+    # An mutual exclusion group to disallow specifying both a method *and* a CompLib comp
+    comp_method_group = row_gen_group.add_mutually_exclusive_group(required=True)
+    comp_method_group.add_argument(
         "-c", "--comp",
         type=int,
-        help="The ID of the complib composition that Wheatley should ring"
+        help="The ID of the complib composition you want to ring"
     )
-    row_gen_group.add_argument(
+    comp_method_group.add_argument(
         "-m", "--method",
         type=str,
-        help="The title of the method that Wheatley should ring"
+        help="The title of the method you want to ring"
     )
 
-    parser.add_argument(
+    row_gen_group.add_argument(
         "-b",
         "--bob",
         default="14",
@@ -216,7 +150,7 @@ def main():
               "20:7/0:4" => a 70 bob 20 changes into a lead and a 14 bob at the lead end. \
               "3: 5/9: 5" => bobs in Stedman Triples.  Defaults to "14".'
     )
-    parser.add_argument(
+    row_gen_group.add_argument(
         "-n",
         "--single",
         default="1234",
@@ -226,7 +160,81 @@ def main():
               "20: 7890" => a 7890 single taking effect 20 changes into a lead (the Half Lead for \
               Surprise Royal). "3: 567/9: 567" => singles in Stedman Triples.  Defaults to "1234".'
     )
+    row_gen_group.add_argument(
+        "-u", "--use-up-down-in",
+        action="store_true",
+        help="If set, then the Wheatley will automatically go into changes after two rounds have been \
+              rung."
+    )
+    row_gen_group.add_argument(
+        "-s", "--stop-at-rounds",
+        action="store_true",
+        help="If set, then Wheatley will stand his bells the first time rounds is reached."
+    )
+    row_gen_group.add_argument(
+        "-H", "--handbell-style",
+        action="store_true",
+        help="If set, then Wheatley will ring 'handbell style', i.e. ringing two strokes of \
+              rounds then straight into changes, and stopping at the first set of rounds. By \
+              default, he will ring 'towerbell style', i.e. only taking instructions from the \
+              ringing-room calls. This is equivalent to using the '-us' flags."
+    )
 
+    # Rhythm arguments
+    rhythm_group = parser.add_argument_group("Rhythm arguments")
+    rhythm_group.add_argument(
+        "-k", "--keep-going",
+        action="store_true",
+        help="If set, Wheatley will not wait for users to ring - instead, he will push on with the \
+              rhythm."
+    )
+    rhythm_group.add_argument(
+        "-w", "--wait",
+        action="store_true",
+        help="Legacy parameter, which is now set by default. The previous default behaviour of not waiting \
+              can be set with '-k'/'--keep-going'."
+    )
+    rhythm_group.add_argument(
+        "-I", "--inertia",
+        type=float,
+        default=0.5,
+        help="Overrides Wheatley's 'inertia' - now much Wheatley will take other ringers' positions \
+              into account when deciding when to ring.  0.0 means he will cling as closely as \
+              possible to the current rhythm, 1.0 means that he will completely ignore the other \
+              ringers."
+    )
+    rhythm_group.add_argument(
+        "-S", "--peal-speed",
+        default="2h58",
+        help="Sets the default speed that Wheatley will ring (assuming a peal of 5040 changes), \
+              though this will usually be adjusted by Wheatley whilst ringing to keep with other \
+              ringers.  Example formatting: '3h4' = '3h4m' = '3h04m' = '3h04' = '184m' = '184'. \
+              Defaults to '2h58'."
+    )
+    rhythm_group.add_argument(
+        "-G", "--handstroke-gap",
+        type=float,
+        default=1.0,
+        help="Sets the handstroke gap as a factor of the space between two bells.  Defaults to \
+              '1.0'."
+    )
+    rhythm_group.add_argument(
+        "-X", "--max-bells-in-dataset",
+        type=int,
+        default=15,
+        help="Sets the maximum number of bells that Wheatley will store to determine the current \
+              ringing speed.  If you make this larger, then he will be more consistent but less \
+              quick to respond to changes in rhythm.  Defaults to '15'.  Setting both this and \
+              --inertia to a very small values could result in Wheatley ringing ridiculously \
+              quickly."
+    )
+
+    # Misc arguments
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"Wheatley v{__version__}"
+    )
     args = parser.parse_args()
 
     if args.wait:

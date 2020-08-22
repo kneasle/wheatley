@@ -11,7 +11,7 @@ from abc import ABCMeta, abstractmethod
 
 from wheatley.bell import Bell
 from wheatley.regression import calculate_regression
-from wheatley.tower import HANDSTROKE, BACKSTROKE
+from wheatley.tower import HANDSTROKE, BACKSTROKE, stroke_to_string
 
 WEIGHT_REJECTION_THRESHOLD = 0.001
 
@@ -99,7 +99,10 @@ class WaitForUserRhythm(Rhythm):
     def wait_for_bell_time(self, current_time, bell, row_number, place, user_controlled, stroke):
         """ Sleeps the thread until a given Bell should have rung. """
 
-        assert stroke == self._current_stroke
+        # assert stroke == self._current_stroke
+        if stroke != self._current_stroke:
+            self.logger.debug(f"Switching to unexpected stroke {stroke_to_string(stroke)}")
+            self._current_stroke = stroke
 
         self._inner_rhythm.wait_for_bell_time(current_time - self.delay, bell, row_number, place,
                                               user_controlled, stroke)
@@ -142,16 +145,30 @@ class WaitForUserRhythm(Rhythm):
                 self._expected_bells[self._current_stroke].remove(bell)
             except KeyError:
                 pass
+            else:
+                self.logger.debug(f"{bell} rung at {stroke_to_string(stroke)}")
+
             try:
                 self._early_bells[not self._current_stroke].remove(bell)
             except KeyError:
                 pass
+            else:
+                self.logger.debug(f"{bell} reset to {stroke_to_string(stroke)}")
         else:
+            self.logger.debug(f"{bell} rung early to {stroke_to_string(stroke)}")
             self._early_bells[not self._current_stroke].add(bell)
 
     def initialise_line(self, stage, user_controls_treble, start_time,
                         number_of_user_controlled_bells):
         """ Allow the Rhythm object to initialise itself when 'Look to' is called. """
+
+        self._expected_bells[HANDSTROKE].clear()
+        self._expected_bells[BACKSTROKE].clear()
+        self._early_bells[HANDSTROKE].clear()
+        self._early_bells[BACKSTROKE].clear()
+        self._current_stroke = HANDSTROKE
+        # Clear any current waiting loops
+        self.sleep(2 * self.sleep_time)
 
         self._inner_rhythm.initialise_line(stage, user_controls_treble, start_time - self.delay,
                                            number_of_user_controlled_bells)

@@ -111,6 +111,22 @@ def main(override_args=None, stop_on_join_tower=False):
         description="A bot to fill in bells during ringingroom.com practices"
     )
 
+    # Set when Wheatley is spawned by the Ringing Room server to change the default values.
+    # Should never be set when running Wheatley straight from the command line."
+    parser.add_argument(
+        "--server-mode",
+        action="store_true",
+        help=argparse.SUPPRESS
+    )
+    # The port of the SocketIO server for wheatley to connect to.  This parameter should only be
+    # used when Wheatley is being spawned by the Ringing Room server.
+    parser.add_argument(
+        "--server-port",
+        type=int,
+        default=80,
+        help=argparse.SUPPRESS
+    )
+
     # Tower arguments
     tower_group = parser.add_argument_group("Tower arguments")
     tower_group.add_argument(
@@ -259,7 +275,8 @@ def main(override_args=None, stop_on_join_tower=False):
     configure_logging()
 
     try:
-        tower_url = get_load_balancing_url(args.room_id, args.url)
+        url = "127.0.0.1:" + str(args.server_port) if args.server_mode else args.url
+        tower_url = get_load_balancing_url(args.room_id, url)
     except TowerNotFoundError as e:
         sys.exit(f"Bad value for 'room_id': {e}")
     except InvalidURLError as e:

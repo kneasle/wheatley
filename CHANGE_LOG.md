@@ -1,3 +1,9 @@
+# 0.4.0
+- Replaced `--max-rows-in-dataset` with `--max-bells-in-dataset` to prevent overfitting when
+  Wheatley is ringing most of the bells.
+- Group CLI args into groups for better readability of both code and help messages.
+- Overhaul help and debug messages to use `Wheatley` rather than `bot`.
+
 # 0.3.1
 - Hopefully fixed issue of Wheatley hanging forever when `Stand next` is called.
 - Re-add `--wait` flag, which does nothing but shows deprecation warning when used.

@@ -19,7 +19,8 @@ from wheatley.arg_parsing import parse_peal_speed, PealSpeedParseError, parse_ca
 from wheatley.row_generation import RowGenerator, ComplibCompositionGenerator
 from wheatley.row_generation import MethodPlaceNotationGenerator
 from wheatley.row_generation.complib_composition_generator import PrivateCompError, InvalidCompError
-from wheatley.row_generation.method_place_notation_generator import MethodNotFoundError, generator_from_special_title
+from wheatley.row_generation.method_place_notation_generator import MethodNotFoundError, \
+                                                                    generator_from_special_title
 
 
 def row_generator(args):
@@ -176,12 +177,12 @@ def main():
               '1.0'."
     )
     parser.add_argument(
-        "-X", "--max-rows-in-dataset",
-        type=float,
-        default=3.0,
-        help="Sets the maximum number of rows that Wheatley will store to determine the current \
+        "-X", "--max-bells-in-dataset",
+        type=int,
+        default=15,
+        help="Sets the maximum number of bells that Wheatley will store to determine the current \
               ringing speed.  If you make this larger, then will be more consistent but less \
-              quick to respond to changes in rhythm.  Defaults to '3.0'.  Setting both this and \
+              quick to respond to changes in rhythm.  Defaults to '15'.  Setting both this and \
               --inertia to a very small values could result in Wheatley ringing ridiculously \
               quickly."
     )

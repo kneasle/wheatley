@@ -1,7 +1,7 @@
 # 0.4.0
 - Replaced `--max-rows-in-dataset` with `--max-bells-in-dataset` to prevent overfitting when
   Wheatley is ringing most of the bells.
-- Renamed `BOT` to `[WHEATLEY]` in the logging output for unassigned bells
+- Overhaul help and debug messages to use `Wheatley` rather than `bot`.
 
 # 0.3.0
 - Made the `--wait` flag set by default, now has to be turned off with `--keep-going` or `-k`.

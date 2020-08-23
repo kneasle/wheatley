@@ -1,5 +1,6 @@
 # 0.3.1
 - Hopefully fixed issue of Wheatley hanging forever when `Stand next` is called.
+- Re-add `--wait` flag, which does nothing but shows deprecation warning when used.
 - Renamed `BOT` to `[WHEATLEY]` in the logging output for unassigned bells
 
 # 0.3.0

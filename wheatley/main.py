@@ -151,6 +151,12 @@ def main():
               rhythm."
     )
     parser.add_argument(
+        "-w", "--wait",
+        action="store_true",
+        help="Legacy parameter, which is now set by default. The previous default behaviour of not waiting \
+              can be set with '-k'/'--keep-going'."
+    )
+    parser.add_argument(
         "-I", "--inertia",
         type=float,
         default=0.5,
@@ -222,6 +228,9 @@ def main():
     )
 
     args = parser.parse_args()
+
+    if args.wait:
+        print("Deprecation warning: `--wait` has been replaced with `--keep-going`!")
 
     # Run the program
     configure_logging()

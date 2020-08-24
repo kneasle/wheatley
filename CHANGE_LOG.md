@@ -3,7 +3,7 @@
   Wheatley is ringing most of the bells.
 - Group CLI args into groups for better readability of both code and help messages.
 - Overhaul help and debug messages to use `Wheatley` rather than `bot`.
-- Added CLI arg (`-n` or `--name`) to tell Wheatley to ring bells assigned to a specific person.
+- Added CLI arg `--name` to tell Wheatley to ring bells assigned to a specific person.
 
 # 0.3.1
 - Hopefully fixed issue of Wheatley hanging forever when `Stand next` is called.

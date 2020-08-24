@@ -123,7 +123,7 @@ def main():
         help="The URL of the server to join (defaults to 'https://ringingroom.com')"
     )
     tower_group.add_argument(
-        "-n", "--name",
+        "--name",
         default=None,
         type=str,
         help="If set, then the bot will ring bells assigned to the given name. \

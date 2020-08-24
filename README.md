@@ -10,8 +10,6 @@ He'll ring all unassigned bells perfectly whilst fitting in with whatever you ar
 your changes in rhythm.
 He'll also never try to take control of the ringing by giving instructions or powering on with a
 different rhythm to everyone else (unless you tell him to).
-However, by default he'll adjust only to changes to overall rhythm – ignoring individual
-bells holding up and ringing in the 'right' place regardless.
 
 Only one ringer needs to run the command and Wheatley will ring with you after anyone calls
 `Look to` in Ringing Room.

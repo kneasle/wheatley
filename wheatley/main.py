@@ -23,7 +23,7 @@ from wheatley.row_generation.method_place_notation_generator import MethodNotFou
                                                                     generator_from_special_title
 
 
-def row_generator(args):
+def create_row_generator(args):
     """ Generates a row generator according to the given CLI arguments. """
 
     if "comp" in args and args.comp is not None:
@@ -53,7 +53,7 @@ def row_generator(args):
     return row_gen
 
 
-def rhythm(args):
+def create_rhythm(args):
     """ Generates a rhythm object according to the given CLI arguments. """
 
     try:
@@ -121,6 +121,13 @@ def main():
         default="https://ringingroom.com",
         type=str,
         help="The URL of the server to join (defaults to 'https://ringingroom.com')"
+    )
+    tower_group.add_argument(
+        "-n", "--name",
+        default=None,
+        type=str,
+        help="If set, then the bot will ring bells assigned to the given name. \
+             When not set, the bot rings unassigned bells."
     )
 
     # Row generation arguments
@@ -244,15 +251,17 @@ def main():
     configure_logging()
 
     try:
-        socket_url = get_load_balancing_url(args.room_id, args.url)
+        tower_url = get_load_balancing_url(args.room_id, args.url)
     except TowerNotFoundError as e:
         sys.exit(f"Bad value for 'room_id': {e}")
     except InvalidURLError as e:
         sys.exit(f"Bad value for '--url': {e}")
 
-    tower = RingingRoomTower(args.room_id, socket_url)
-    bot = Bot(tower, row_generator(args), args.use_up_down_in or args.handbell_style,
-              args.stop_at_rounds or args.handbell_style, rhythm=rhythm(args))
+    tower = RingingRoomTower(args.room_id, tower_url)
+    row_generator = create_row_generator(args)
+    rhythm = create_rhythm(args)
+    bot = Bot(tower, row_generator, args.use_up_down_in or args.handbell_style,
+              args.stop_at_rounds or args.handbell_style, rhythm, user_name=args.name)
 
     with tower:
         tower.wait_loaded()

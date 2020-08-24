@@ -152,11 +152,11 @@ class RingingRoomTower:
         bells_unassigned = []
 
         # Unassign all instances of that user
-        for i in self._assigned_users.keys():
-            if self._assigned_users[i] == user_that_left:
-                self._assigned_users[i] = None
+        for bell, user in self._assigned_users.items():
+            if user == user_that_left:
+                self._assigned_users[bell] = None
 
-                bells_unassigned.append(i.number)
+                bells_unassigned.append(str(bell))
 
         self.logger.info(f"RECEIVED: User {user_that_left} left from bells {bells_unassigned}.")
 

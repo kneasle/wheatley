@@ -15,10 +15,11 @@ Only one ringer needs to run the command and Wheatley will ring with you after a
 `Look to` in Ringing Room.
 He understands all Ringing Room calls – `Go`, `Look to`, `That's all` and `Stand next` will
 take effect the handstroke after they are called, and `Bob` and `Single` will result in `14` and
-`1234` lead end calls.
+`1234` lead end calls (unless otherwise specified).
 
 ### Notable features
 - Configurable rhythm detection that updates in real time
+- Holding up over people when they hesitate
 - Automatic correction for Ringing Room using multiple server URLs for load balancing
 - Very light resource footprint, as Wheatley doesn't interact with a browser to communicate with Ringing Room
 

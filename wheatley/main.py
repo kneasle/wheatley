@@ -65,7 +65,7 @@ def rhythm(args):
         args.inertia,
         handstroke_gap=args.handstroke_gap,
         peal_speed=peal_speed,
-        max_rows_in_dataset=args.max_rows_in_dataset
+        max_bells_in_dataset=args.max_bells_in_dataset
     )
 
     if not args.keep_going:

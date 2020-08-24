@@ -142,8 +142,23 @@ class RingingRoomTower:
         self._socket_io_client.on("s_size_change", self._on_size_change)
         self._socket_io_client.on("s_assign_user", self._on_assign_user)
         self._socket_io_client.on("s_call", self._on_call)
+        self._socket_io_client.on("s_user_left", self._on_user_leave)
 
         self._request_global_state()
+
+    def _on_user_leave(self, data):
+        user_that_left = data["user_name"]
+
+        bells_unassigned = []
+
+        # Unassign all instances of that user
+        for bell, user in self._assigned_users.items():
+            if user == user_that_left:
+                self._assigned_users[bell] = None
+
+                bells_unassigned.append(str(bell))
+
+        self.logger.info(f"RECEIVED: User {user_that_left} left from bells {bells_unassigned}.")
 
     def _join_tower(self):
         """ Joins the tower as an anonymous user. """

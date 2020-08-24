@@ -61,6 +61,9 @@ class Bell:
 
         return self._lookup_name[self.index]
 
+    def __repr__(self):
+        return str(self)
+
     def __eq__(self, other):
         """ Determines if two Bells are equal. """
 

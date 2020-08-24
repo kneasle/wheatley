@@ -3,6 +3,7 @@
   Wheatley is ringing most of the bells.
 - Group CLI args into groups for better readability of both code and help messages.
 - Overhaul help and debug messages to use `Wheatley` rather than `bot`.
+- Added CLI arg (`-n` or `--name`) to tell Wheatley to ring bells assigned to a specific person.
 
 # 0.3.1
 - Hopefully fixed issue of Wheatley hanging forever when `Stand next` is called.
@@ -27,7 +28,6 @@
 # 0.2.0
 - Added CLI arg for max rows stored in the regression dataset (`-X` or `--max-rows-in-dataset`)
 - Added CLI arg for handstroke gap (`-G` or `--handstroke-gap`)
-- Added CLI arg for specifying a user name (`-n` or `--name`) instead of ringin unassigned bells
 - Renamed shorthand for `--inertia` from `-i` to `-I` for consistency with the other regression
   args
 - Fixed incorrect import when running on Windows

@@ -9,7 +9,6 @@ def fill(index, item, length):
     """
     Make an array that contains `length` 0s, but with the value at `index` replaced with `item`.
     """
-
     a = [0 for _ in range(length)]
 
     a[index] = item
@@ -22,7 +21,6 @@ def calculate_regression(data_set):
     Calculates a weighted linear regression over the data given in data_set.
     Expects data_set to consist of 3-tuples of (blow_time, real_time, weight).
     """
-
     blow_times = [b for (b, r, w) in data_set]
     real_times = [r for (b, r, w) in data_set]
     weights = [w for (b, r, w) in data_set]

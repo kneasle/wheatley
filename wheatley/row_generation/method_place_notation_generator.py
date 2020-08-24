@@ -48,6 +48,7 @@ class MethodNotFoundError(ValueError):
 
     def __init__(self, name):
         super().__init__()
+
         self._name = name
 
     def __str__(self):
@@ -85,9 +86,11 @@ class MethodPlaceNotationGenerator(PlaceNotationGenerator):
         if len(symblock) != 0:
             notation = symblock[0].text
             lead_end = symblock[1].text
+
             return f"&{notation},&{lead_end}", stage
         elif len(block) != 0:
             notation = block[0].text
+
             return notation, stage
         else:
             raise Exception("Place notation not found")
@@ -97,4 +100,5 @@ class MethodPlaceNotationGenerator(PlaceNotationGenerator):
         params = {'title': method_title, 'fields': 'pn|stage'}
         source = requests.get('http://methods.ringing.org/cgi-bin/simple.pl', params=params)
         source.raise_for_status()
+
         return source.text

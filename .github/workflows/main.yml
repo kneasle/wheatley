@@ -12,7 +12,7 @@ on:
   
 
 jobs:
-  linter:
+  build:
     runs-on: ubuntu-latest
 
     steps:

@@ -1,0 +1,138 @@
+#!/usr/bin/env python3
+
+"""
+A shell-executable script to run all the commands contained in README.md or specified in EXTRA_TESTS and
+assert that Wheatley does not crash.  With decent test coverage, this prevents mistakes like silly crashes
+and argument errors.
+"""
+
+from subprocess import STDOUT, check_output, CalledProcessError, TimeoutExpired
+from shlex import split
+
+# ID of a tower that I made called 'DO NOT ENTER'
+ROOM_ID = "238915467"
+EXAMPLE_METHOD = "Plain Bob Major"
+
+
+# Tests that should be run on top of the examples from README.md
+EXTRA_TESTS = []
+
+
+def get_all_tests():
+    """ Get all commands that should be tested (these should start with 'wheatley [ID NUMBER]'). """
+
+    tests = []
+
+    readme = open("README.md")
+    with readme:
+        is_in_code = False
+
+        for i, l in enumerate(readme.read().split("\n")):
+            stripped_line = l.strip()
+
+            if stripped_line.startswith("```"):
+                # Alternate into or out of code blocks
+                is_in_code = not is_in_code
+
+                # Clear the ignore flag whenever we *finish* a code block
+                if not is_in_code:
+                    ignore_next_examples = False
+
+            if is_in_code and stripped_line.startswith("wheatley"):
+                tests.append(("README.md:" + str(i), stripped_line))
+
+    return tests + [(f"EXTRA_TESTS:{i}", cmd) for i, cmd in EXTRA_TESTS]
+
+
+def command_to_converted_args(location, command):
+    # Bit of a hack, but this will convert commands starting with 'wheatley' to start with './run-wheatley'
+    # and make sure that [ID NUMBER] is replaced with a valid room ID.  This way, the tests will run on the
+    # version contained in the current commit, rather than a release version.
+    edited_command = "./run-" + command.replace("[ID NUMBER]", ROOM_ID) \
+                                       .replace("[METHOD TITLE]", '"' + EXAMPLE_METHOD + '"')
+
+    args = split(edited_command)
+
+    args.insert(1, "integration-test")
+
+    return (args, location, edited_command)
+
+
+
+# I'm not sure how to do this in python.  I want `run_test` to return one of 3 types: an 'OK', a 'TIMEOUT'
+# or an 'ERROR' with a return code and an output.  These two classes and None are trying to represent the
+# enum:
+#
+# enum TestResult {
+#     Ok,
+#     Timeout,
+#     Error(usize, String),
+# }
+class Timeout:
+    def __init__(self):
+        pass
+
+    def result_text(self):
+        return "TIMEOUT"
+
+
+class CommandError:
+    def __init__(self, return_code, output):
+        self.return_code = return_code
+        self.output = output
+
+    def result_text(self):
+        return "ERROR"
+
+
+def run_test(args):
+    try:
+        check_output(args, stderr=STDOUT, timeout=5)
+    except CalledProcessError as e:
+        return CommandError(e.returncode, e.output.decode('utf-8'))
+    except TimeoutExpired:
+        return Timeout()
+
+
+def main():
+    """ Generate and run all the tests, asserting that Wheatley does not crash. """
+    errors = []
+
+    # Generate all the edited commands upfront, so that we can line up all the errors
+    converted_commands = [command_to_converted_args(location, cmd) for (location, cmd) in get_all_tests()]
+
+    max_command_length = max([len(cmd) for (_, _, cmd) in converted_commands])
+
+    for (args, location, edited_command) in converted_commands:
+        error = run_test(args)
+
+        result_text = "ok"
+
+        if error is not None:
+            errors.append((location, edited_command, error))
+
+            result_text = error.result_text()
+
+        print(edited_command + " " + "." * (max_command_length + 3 - len(edited_command)) + " " + result_text)
+
+    # Iterate over the errors
+    if len(errors) == 0:
+        print("ALL OK")
+        return
+
+    print("ERRORS FOUND:")
+    for (location, command, e) in errors:
+        print("\n")
+        print(f" >>> {location}: {command}")
+
+        if type(e) == CommandError:
+            print(f"RETURN CODE: {e.return_code}")
+            print(f"OUTPUT:\n{e.output}")
+        if type(e) == Timeout:
+            print("TIMED OUT")
+
+    exit(1)
+
+
+if __name__ == '__main__':
+    main()

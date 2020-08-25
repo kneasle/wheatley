@@ -90,7 +90,7 @@ def main(override_args=None, stop_on_join_tower=False):
     This parses the CLI arguments, creates the Rhythm, RowGenerator and Bot objects, then starts
     the bot's mainloop.
 
-    The two optional arguments are used by the integration tester to give Wheatley arteficial argument values
+    The two optional arguments are used by the integration tester to give Wheatley artificial argument values
     (override_args) and make Wheatley exit with error code 0 on joining a tower so that hanging forever
     can be differentiated from Wheatley's normal behaviour of sitting in an infinite loop waiting for input.
     """

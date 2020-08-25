@@ -84,11 +84,15 @@ def configure_logging():
     logging.getLogger(WaitForUserRhythm.logger_name).setLevel(logging.INFO)
 
 
-def main():
+def main(override_args=None, stop_on_join_tower=False):
     """
     The main function of the bot.
     This parses the CLI arguments, creates the Rhythm, RowGenerator and Bot objects, then starts
     the bot's mainloop.
+
+    The two optional arguments are used by the integration tester to give Wheatley artificial argument values
+    (override_args) and make Wheatley exit with error code 0 on joining a tower so that hanging forever
+    can be differentiated from Wheatley's normal behaviour of sitting in an infinite loop waiting for input.
     """
 
     # Try to read the file with the version number, if not print an error and set a poison value
@@ -243,7 +247,9 @@ def main():
     )
 
     # Parse arguments
-    args = parser.parse_args()
+    # `[1:]` is apparently needed, because sys.argv[0] is the working file of the Python interpreter
+    # which `parser.parse_args` does not want to see as an argument
+    args = parser.parse_args(sys.argv[1:] if override_args is None else override_args)
 
     # Deprecation warnings
     if args.wait:
@@ -270,7 +276,8 @@ def main():
 
         print("=== LOADED ===")
 
-        bot.main_loop()
+        if not stop_on_join_tower:
+            bot.main_loop()
 
 
 if __name__ == "__main__":

@@ -12,7 +12,7 @@ on:
   
 
 jobs:
-  linter:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -24,7 +24,9 @@ jobs:
           pip3 install pytest
       - name: Run linter
         run: pylint3 wheatley/**/*.py
-      - name: Run tests
+      - name: Run unit tests
         run: python3 -m pytest
+      - name: Run integration tests
+        run: ./doctests
       - name: Run fuzzer
         run: ./fuzz

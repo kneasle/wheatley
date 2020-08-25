@@ -1,5 +1,15 @@
 #!/usr/bin/env python3
 
 import wheatley.main
+import sys
 
-wheatley.main.main()
+# `[1:]` is apparently needed, because sys.argv[0] is the working file of the Python interpreter
+# which `argparse.Parser.parse_args` does not want to see as an argument
+args = sys.argv[1:]
+stop_on_join_tower = False
+
+if len(args) > 0 and args[0] == "integration-test":
+    del args[0]
+    stop_on_join_tower = True
+
+wheatley.main.main(args, stop_on_join_tower)

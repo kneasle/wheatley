@@ -4,6 +4,7 @@
 - Group CLI args into groups for better readability of both code and help messages.
 - Overhaul help and debug messages to use `Wheatley` rather than `bot`.
 - Added CLI arg `--name` to tell Wheatley to ring bells assigned to a specific person.
+- Fix all the examples in `README.md` and add integration tests to prevent breaking them again.
 
 # 0.3.1
 - Hopefully fixed issue of Wheatley hanging forever when `Stand next` is called.

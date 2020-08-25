@@ -7,11 +7,12 @@ and argument errors.
 """
 
 from subprocess import STDOUT, check_output, CalledProcessError, TimeoutExpired
-from shlex import split
+import shlex
 
 # ID of a tower that I made called 'DO NOT ENTER'
 ROOM_ID = "238915467"
 EXAMPLE_METHOD = "Plain Bob Major"
+IGNORE_STRING = "<!--- doctest-ignore -->"
 
 
 # Tests that should be run on top of the examples from README.md
@@ -23,12 +24,16 @@ def get_all_tests():
 
     tests = []
 
-    readme = open("README.md")
-    with readme:
+    with open("README.md") as readme:
         is_in_code = False
+        ignore_next_examples = False
 
         for i, l in enumerate(readme.read().split("\n")):
             stripped_line = l.strip()
+
+            # If we see the line IGNORE_STRING, we should ignore the next block of examples
+            if not is_in_code and stripped_line == IGNORE_STRING:
+                ignore_next_examples = True
 
             if stripped_line.startswith("```"):
                 # Alternate into or out of code blocks
@@ -38,8 +43,12 @@ def get_all_tests():
                 if not is_in_code:
                     ignore_next_examples = False
 
+            # If this is a code line that starts with `wheatley`, then it should be used as an example
             if is_in_code and stripped_line.startswith("wheatley"):
-                tests.append(("README.md:" + str(i), stripped_line))
+                if ignore_next_examples:
+                    print(f"Ignoring README.md:{i}: {stripped_line}")
+                else:
+                    tests.append((f"README.md:{i}", stripped_line))
 
     return tests + [(f"EXTRA_TESTS:{i}", cmd) for i, cmd in EXTRA_TESTS]
 
@@ -51,8 +60,7 @@ def command_to_converted_args(location, command):
     edited_command = "./run-" + command.replace("[ID NUMBER]", ROOM_ID) \
                                        .replace("[METHOD TITLE]", '"' + EXAMPLE_METHOD + '"')
 
-    args = split(edited_command)
-
+    args = shlex.split(edited_command)
     args.insert(1, "integration-test")
 
     return (args, location, edited_command)

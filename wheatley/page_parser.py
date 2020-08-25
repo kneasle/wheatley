@@ -13,6 +13,7 @@ class TowerNotFoundError(ValueError):
 
     def __init__(self, tower_id, url):
         super().__init__()
+
         self._id = tower_id
         self._url = url
 
@@ -24,6 +25,7 @@ class InvalidURLError(Exception):
 
     def __init__(self, url):
         super().__init__()
+
         self._url = url
 
     def __str__(self):
@@ -32,7 +34,6 @@ class InvalidURLError(Exception):
 
 def _fix_url(url):
     """ Add 'https://' to the start of a URL if necessary """
-
     corrected_url = url if url.startswith("http") else "https://" + url
 
     return corrected_url
@@ -44,7 +45,6 @@ def get_load_balancing_url(tower_id, unfixed_http_server_url):
     necessarily the same as the URL of the http server that people will put into their browser URL
     bars.
     """
-
     http_server_url = _fix_url(unfixed_http_server_url)
 
     # Trying to extract the following line in the rendered html:

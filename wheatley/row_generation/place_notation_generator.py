@@ -19,6 +19,7 @@ class PlaceNotationGenerator(RowGenerator):
     def __init__(self, stage: int, method: str, bob: Dict[int, str] = None,
                  single: Dict[int, str] = None):
         super(PlaceNotationGenerator, self).__init__(stage)
+
         if bob is None:
             bob = PlaceNotationGenerator.DefaultBob
         if single is None:
@@ -29,7 +30,6 @@ class PlaceNotationGenerator(RowGenerator):
 
         def parse_call_dict(unparsed_calls):
             """ Parse a dict of type `int => str` to `int => [PlaceNotation]`. """
-
             parsed_calls = {}
 
             for i, place_notation_str in unparsed_calls.items():
@@ -71,7 +71,6 @@ class PlaceNotationGenerator(RowGenerator):
     @staticmethod
     def grandsire(stage: int):
         """ Generates Grandsire on a given stage. """
-
         stage_bell = convert_to_bell_string(stage)
 
         cross_notation = stage_bell if stage % 2 else '-'
@@ -79,12 +78,12 @@ class PlaceNotationGenerator(RowGenerator):
         main_body = ["1" if i % 2 else cross_notation for i in range(2 * stage)]
         main_body[0] = "3"
         notation = ".".join(main_body)
+
         return PlaceNotationGenerator(stage, notation, bob={-1: "3"}, single={-1: "3.123"})
 
     @staticmethod
     def stedman(stage: int):
         """ Generates Stedman on a given stage (even bell Stedman will cause an exception). """
-
         assert stage % 2 == 1
 
         if stage == 5:
@@ -95,6 +94,7 @@ class PlaceNotationGenerator(RowGenerator):
         stage_bell_2 = convert_to_bell_string(stage - 2)
 
         notation = f"3.1.{stage_bell}.3.1.3.1.3.{stage_bell}.1.3.1"
+
         return PlaceNotationGenerator(stage, notation, bob={3: stage_bell_2, 9: stage_bell_2},
                                       single={3: f"{stage_bell_2}{stage_bell_1}{stage_bell}",
                                               9: f"{stage_bell_2}{stage_bell_1}{stage_bell}"})
@@ -102,6 +102,6 @@ class PlaceNotationGenerator(RowGenerator):
     @staticmethod
     def stedman_doubles():
         """ Generates Stedman on a given stage (even bell Stedman will cause an exception). """
-
         notation = "3.1.5.3.1.3.1.3.5.1.3.1"
+
         return PlaceNotationGenerator(5, notation, bob={}, single={6: "345", 12: "145"})

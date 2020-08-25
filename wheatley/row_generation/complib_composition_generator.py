@@ -54,9 +54,11 @@ class ComplibCompositionGenerator(RowGenerator):
         self.loaded_rows = [[Bell.from_str(bell) for bell in row] for row in split_rows]
 
         stage = len(self.loaded_rows[0])
+
         super().__init__(stage)
 
     def _gen_row(self, previous_row: List[Bell], is_handstroke: bool, index: int) -> List[Bell]:
         if index < len(self.loaded_rows):
             return self.loaded_rows[index]
+
         return self.rounds()

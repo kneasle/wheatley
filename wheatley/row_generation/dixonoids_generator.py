@@ -32,13 +32,14 @@ class DixonoidsGenerator(RowGenerator):
         :param single_rules: Dictionary of leading bell: [handstroke pn, backstroke pn]
                           Only include bells which lead when a single is rung
         """
-
         super(DixonoidsGenerator, self).__init__(stage)
 
         if plain_rules is None:
             plain_rules = self.DixonsRules
+
         if bob_rules is None:
             bob_rules = self.DefaultBob
+
         if single_rules is None:
             single_rules = self.DefaultSingle
 
@@ -52,10 +53,12 @@ class DixonoidsGenerator(RowGenerator):
 
         if self._has_bob and self.bob_rules.get(leading_bell):
             place_notation = self.bob_rules[leading_bell][pn_index]
+
             if not is_handstroke:
                 self.reset_calls()
         elif self._has_single and self.single_rules.get(leading_bell):
             place_notation = self.single_rules[leading_bell][pn_index]
+
             if not is_handstroke:
                 self.reset_calls()
         elif self.plain_rules.get(leading_bell):

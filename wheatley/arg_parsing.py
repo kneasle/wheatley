@@ -22,10 +22,8 @@ def parse_peal_speed(peal_speed: str):
     """
     Parses a peal speed written in the format /2h58(m?)/ or /XXX(m?)/ into a number of minutes.
     """
-
     def exit_with_message(error_text):
         """ Raise an exception with a useful error message. """
-
         raise PealSpeedParseError(peal_speed, error_text)
 
     # Strip whitespace from the argument, so that if the user is in fact insane enough to pad their
@@ -41,12 +39,10 @@ def parse_peal_speed(peal_speed: str):
         # Split the peal speed into its hour and minute components, and print a helpful message
         # if there are too many parts
         split_parts = stripped_peal_speed.split("h")
-
         if len(split_parts) > 2:
             exit_with_message("The peal speed should contain at most one 'h'.")
 
         hour_string, minute_string = split_parts
-
         # Strip the input values so that the user can put whitespace into the input if they want
         hour_string = hour_string.strip()
         minute_string = minute_string.strip()
@@ -68,7 +64,6 @@ def parse_peal_speed(peal_speed: str):
 
         if minutes < 0:
             exit_with_message(f"The minute value '{minute_string}' must be a positive integer.")
-
         if minutes > 59:
             exit_with_message(f"The minute value '{minute_string}' must be smaller than 60.")
 
@@ -105,10 +100,8 @@ class CallParseError(ValueError):
 
 def parse_call(input_string: str):
     """ Parse a call string into a dict of lead locations to place notation strings. """
-
     def exit_with_message(message):
         """ Raises a parse error with the given error message. """
-
         raise CallParseError(input_string, message)
 
     # A dictionary that will be filled with the parsed calls

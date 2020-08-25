@@ -25,7 +25,6 @@ from wheatley.row_generation.method_place_notation_generator import MethodNotFou
 
 def create_row_generator(args):
     """ Generates a row generator according to the given CLI arguments. """
-
     if "comp" in args and args.comp is not None:
         try:
             row_gen = ComplibCompositionGenerator(args.comp)
@@ -242,8 +241,11 @@ def main():
         action="version",
         version=f"Wheatley v{__version__}"
     )
+
+    # Parse arguments
     args = parser.parse_args()
 
+    # Deprecation warnings
     if args.wait:
         print("Deprecation warning: `--wait` has been replaced with `--keep-going`!")
 

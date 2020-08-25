@@ -52,24 +52,26 @@ Run the bot with `wheatley [ARGS]`.
 
 *   Ring 'up, down and in' rather than waiting for 'go':
     ```bash
-    wheatley --up-down-in --id [ID NUMBER] --method "Plain Bob Major"
+    wheatley [ID NUMBER] --use-up-down-in --method [METHOD TITLE]
     # or
-    wheatley [ID NUMBER] -u --method "Plain Bob Major"
+    wheatley [ID NUMBER] -u --method [METHOD TITLE]
     ```
 
 *   Ring full handbell style, i.e. 'up, down and in' and standing at rounds (`-H` is
     equivalent to `-us`):
     ```bash
-    wheatley [ID NUMBER] --up-down-in --stop-at-rounds --method "Plain Bob Major"
+    wheatley [ID NUMBER] --use-up-down-in --stop-at-rounds --method [METHOD TITLE]
     # or
-    wheatley [ID NUMBER] -us --method "Plain Bob Major"
+    wheatley [ID NUMBER] -us --method [METHOD TITLE]
     # or
-    wheatley [ID NUMBER] -H --method "Plain Bob Major"
+    wheatley [ID NUMBER] -H --method [METHOD TITLE]
     ```
 
 *   Join a server other than `ringingroom.com`:
+
+    <!--- doctest-ignore -->
     ```bash
-    wheatley [ID NUMBER] --url otherserver.com --method [METHOD TITLE]
+    wheatley [ID NUMBER] --url otherwebsite.com --method [METHOD TITLE]
     ```
 
 *   Ring rows taken from a (public) composition from [complib.org](http://complib.org/), in this
@@ -80,24 +82,24 @@ Run the bot with `wheatley [ARGS]`.
 
 *   Ring at a peal speed of 3 hours 30 minutes (i.e. quite slowly):
     ```bash
-    wheatley [ID NUMBER] --peal-speed 3h30
+    wheatley [ID NUMBER] --method [METHOD TITLE] --peal-speed 3h30
     # or
-    wheatley [ID NUMBER] -S 3h30
+    wheatley [ID NUMBER] --method [METHOD TITLE] -S 3h30
     ```
 
 *   Make Wheatley push on with the rhythm rather than waiting for people to ring.
     ```bash
-    wheatley [ID NUMBER] --method "Plain Bob Major" --keep-going
+    wheatley [ID NUMBER] --method [METHOD TITLE] --keep-going
     # or
-    wheatley [ID NUMBER] --method "Plain Bob Major" -k
+    wheatley [ID NUMBER] --method [METHOD TITLE] -k
     ```
 
-*   Completely ignore other users' changes in rhythm (useful if it's ringing most of
+*   Completely ignore other users' changes in rhythm (useful if he's ringing most of
     the bells and you don't want him to randomly change speed when you make mistakes):
     ```bash
-    wheatley [ID NUMBER] --method "Plain Bob Major" --inertia 1.0
+    wheatley [ID NUMBER] --method [METHOD TITLE] --inertia 1.0
     # or
-    wheatley [ID NUMBER] --method "Plain Bob Major" -I 1.0
+    wheatley [ID NUMBER] --method [METHOD TITLE] -I 1.0
     ```
 
 *   Print a nice help string:

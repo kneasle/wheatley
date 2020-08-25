@@ -275,7 +275,7 @@ def main(override_args=None, stop_on_join_tower=False):
     configure_logging()
 
     try:
-        url = "127.0.0.1:" + str(args.server_port) if args.server_mode else args.url
+        url = "http://127.0.0.1:" + str(args.server_port) if args.server_mode else args.url
         tower_url = get_load_balancing_url(args.room_id, url)
     except TowerNotFoundError as e:
         sys.exit(f"Bad value for 'room_id': {e}")

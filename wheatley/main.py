@@ -44,11 +44,6 @@ def create_row_generator(args):
         assert False, \
             "This shouldn't be possible because one of --method and --comp should always be defined"
 
-    # row_gen = PlainHuntGenerator(8)
-    # row_gen = PlaceNotationGenerator(8, "x1", bob={1: "6"})
-    # row_gen = DixonoidsGenerator(6, DixonoidsGenerator.DixonsRules)
-    # row_gen = PlaceNotationGenerator.stedman(11)
-
     return row_gen
 
 
@@ -77,7 +72,6 @@ def get_version_number():
     Try to read the file with the version number, if not print an error and set a poison value as the
     version.
     """
-
     try:
         version_file_path = os.path.join(os.path.split(__file__)[0], "version.txt")
 
@@ -89,7 +83,6 @@ def get_version_number():
 
 def configure_logging():
     """ Sets up the logging for the bot. """
-
     logging.basicConfig(level=logging.WARNING)
 
     logging.getLogger(RingingRoomTower.logger_name).setLevel(logging.INFO)
@@ -135,7 +128,6 @@ def main(override_args=None, stop_on_join_tower=False):
     (override_args) and make Wheatley exit with error code 0 on joining a tower so that hanging forever
     can be differentiated from Wheatley's normal behaviour of sitting in an infinite loop waiting for input.
     """
-
     __version__ = get_version_number()
 
     # PARSE THE ARGUMENTS

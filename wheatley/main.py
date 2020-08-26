@@ -49,11 +49,6 @@ def create_row_generator(args):
 
 def create_rhythm(peal_speed, inertia, max_bells_in_dataset, handstroke_gap, use_wait):
     """ Generates a rhythm object according to the given CLI arguments. """
-    try:
-        peal_speed = parse_peal_speed(peal_speed)
-    except PealSpeedParseError as e:
-        sys.exit(str(e))
-
     regression = RegressionRhythm(
         inertia,
         handstroke_gap=handstroke_gap,
@@ -293,7 +288,13 @@ def main(override_args=None, stop_on_join_tower=False):
 
     tower = RingingRoomTower(args.room_id, tower_url)
     row_generator = create_row_generator(args)
-    rhythm = create_rhythm(args.peal_speed, args.inertia, args.max_bells_in_dataset, args.handstroke_gap,
+
+    try:
+        peal_speed = parse_peal_speed(args.peal_speed)
+    except PealSpeedParseError as e:
+        sys.exit(str(e))
+
+    rhythm = create_rhythm(peal_speed, args.inertia, args.max_bells_in_dataset, args.handstroke_gap,
                            not args.keep_going)
     bot = Bot(tower, row_generator, args.use_up_down_in or args.handbell_style,
               args.stop_at_rounds or args.handbell_style, rhythm, user_name=args.name)

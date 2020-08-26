@@ -73,6 +73,21 @@ def create_rhythm(args):
     return regression
 
 
+def get_version_number():
+    """
+    Try to read the file with the version number, if not print an error and set a poison value as the
+    version.
+    """
+
+    try:
+        version_file_path = os.path.join(os.path.split(__file__)[0], "version.txt")
+
+        with open(version_file_path) as f:
+            return f.read()
+    except IOError:
+        return "<NO VERSION FILE FOUND>"
+
+
 def configure_logging():
     """ Sets up the logging for the bot. """
 
@@ -82,6 +97,33 @@ def configure_logging():
     logging.getLogger(RowGenerator.logger_name).setLevel(logging.INFO)
     logging.getLogger(RegressionRhythm.logger_name).setLevel(logging.INFO)
     logging.getLogger(WaitForUserRhythm.logger_name).setLevel(logging.INFO)
+
+
+def server_main(override_args=None, stop_on_join_tower=False):
+    """
+    The main function of Wheatley when spawned by the Ringing Room server.
+    This has many many fewer options than the standard `main` function, on the basis that this running mode
+    is designed to take its parameters over SocketIO whilst running, rather than the CLI args.
+    """
+    __version__ = get_version_number()
+
+    parser = argparse.ArgumentParser(
+        description="A bot to fill in bells during ringingroom.com practices"
+    )
+
+    # Misc arguments
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"Wheatley v{__version__}"
+    )
+
+    # Parse arguments
+    # `[1:]` is apparently needed, because sys.argv[0] is the working file of the Python interpreter
+    # which `parser.parse_args` does not want to see as an argument
+    args = parser.parse_args(sys.argv[1:] if override_args is None else override_args)
+
+    print(args)
 
 
 def main(override_args=None, stop_on_join_tower=False):
@@ -95,36 +137,12 @@ def main(override_args=None, stop_on_join_tower=False):
     can be differentiated from Wheatley's normal behaviour of sitting in an infinite loop waiting for input.
     """
 
-    # Try to read the file with the version number, if not print an error and set a poison value
-    # as the version
-    try:
-        version_file_path = os.path.join(os.path.split(__file__)[0], "version.txt")
-
-        with open(version_file_path) as f:
-            __version__ = f.read()
-    except IOError:
-        __version__ = "<NO VERSION FILE FOUND>"
+    __version__ = get_version_number()
 
     # PARSE THE ARGUMENTS
 
     parser = argparse.ArgumentParser(
         description="A bot to fill in bells during ringingroom.com practices"
-    )
-
-    # Set when Wheatley is spawned by the Ringing Room server to change the default values.
-    # Should never be set when running Wheatley straight from the command line."
-    parser.add_argument(
-        "--server-mode",
-        action="store_true",
-        help=argparse.SUPPRESS
-    )
-    # The port of the SocketIO server for wheatley to connect to.  This parameter should only be
-    # used when Wheatley is being spawned by the Ringing Room server.
-    parser.add_argument(
-        "--server-port",
-        type=int,
-        default=80,
-        help=argparse.SUPPRESS
     )
 
     # Tower arguments

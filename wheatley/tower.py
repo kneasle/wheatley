@@ -35,6 +35,7 @@ class RingingRoomTower:
         self.invoke_on_call: Dict[str, List[Callable[[], Any]]] = collections.defaultdict(list)
         self.invoke_on_reset: List[Callable[[], Any]] = []
         self.invoke_on_bell_rung: List[Callable[[int, bool], Any]] = []
+        self.invoke_on_setting_change: List[Callable[[str, Any], Any]] = []
 
         self._url = url
         self._socket_io_client: Optional[socketio.Client] = None
@@ -141,8 +142,16 @@ class RingingRoomTower:
         self._socket_io_client.on("s_assign_user", self._on_assign_user)
         self._socket_io_client.on("s_call", self._on_call)
         self._socket_io_client.on("s_user_left", self._on_user_leave)
+        self._socket_io_client.on("s_wheatley_setting", self._on_wheatley_setting_change)
 
         self._request_global_state()
+
+    def _on_wheatley_setting_change(self, data):
+        self.logger.info(f"RECEIVED: Settings changed: {data}")
+
+        for key, value in data.items():
+            for callback in self.invoke_on_setting_change:
+                callback(key, value)
 
     def _on_user_leave(self, data):
         user_that_left = data["user_name"]

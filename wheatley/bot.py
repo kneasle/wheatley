@@ -45,6 +45,7 @@ class Bot:
 
         self._tower.invoke_on_bell_rung.append(self._on_bell_ring)
         self._tower.invoke_on_reset.append(self._on_size_change)
+        self._tower.invoke_on_setting_change.append(self._on_setting_change)
 
         self._is_ringing = False
         self._is_ringing_rounds = True
@@ -71,6 +72,9 @@ class Bot:
         return self._tower.number_of_bells
 
     # Callbacks
+    def _on_setting_change(self, key, value):
+        self.logger.info(f"Changing setting - {key}: {value}")
+
     def _on_size_change(self):
         if not self.row_generator.is_tower_size_valid(self._tower.number_of_bells):
             self.logger.warning(f"Row generation requires {self.row_generator.number_of_bells} \

@@ -95,7 +95,19 @@ def server_main(override_args=None, stop_on_join_tower=False):
     __version__ = get_version_number()
 
     parser = argparse.ArgumentParser(
-        description="A bot to fill in bells during ringingroom.com practices"
+        description="A bot to fill in bells during ringingroom.com practices (server mode)."
+    )
+
+    parser.add_argument(
+        "room_id",
+        type=int,
+        help="The numerical ID of the tower to join, represented as a row on 9 bells, \
+              e.g. 763451928."
+    )
+    parser.add_argument(
+        "-p", "--port",
+        type=int,
+        help="The port of the SocketIO server (which must be hosted on localhost)."
     )
 
     # Misc arguments
@@ -111,6 +123,42 @@ def server_main(override_args=None, stop_on_join_tower=False):
     args = parser.parse_args(sys.argv[1:] if override_args is None else override_args)
 
     print(args)
+
+    # Run the program
+    configure_logging()
+
+    # Args that we are currently missing
+    use_up_down_in = True
+    stop_at_rounds = True
+    method_title = "Plain Bob Major"
+    peal_speed = 180
+    inertia = 0.5
+    max_bells_in_dataset = 15
+    handstroke_gap = 1
+    use_wait = True
+
+    try:
+        tower_url = "http://127.0.0.1:" + str(args.port)
+    except TowerNotFoundError as e:
+        sys.exit(f"Specified tower not found.")
+
+    tower = RingingRoomTower(args.room_id, tower_url)
+    row_generator = generator_from_special_title(method_title) or \
+                    MethodPlaceNotationGenerator(
+                        method_title,
+                        None,
+                        None
+                    )
+    rhythm = create_rhythm(peal_speed, inertia, max_bells_in_dataset, handstroke_gap, use_wait)
+    bot = Bot(tower, row_generator, use_up_down_in, stop_at_rounds, rhythm, user_name="Wheatley")
+
+    with tower:
+        tower.wait_loaded()
+
+        print("=== LOADED ===")
+
+        if not stop_on_join_tower:
+            bot.main_loop()
 
 
 def main(override_args=None, stop_on_join_tower=False):

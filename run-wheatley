@@ -9,6 +9,8 @@ args = sys.argv[1:]
 stop_on_join_tower = False
 server_mode = False
 
+# If the user adds 'server-mode' to the command, run the server-mode main function, and remove the
+# 'server-mode' argument
 if len(args) > 0 and args[0] == "server-mode":
     args = args[1:]
     server_mode = True

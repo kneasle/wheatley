@@ -73,7 +73,7 @@ class Bot:
 
     # Callbacks
     def _on_setting_change(self, key, value):
-        self.logger.info(f"Changing setting - {key}: {value}")
+        self._rhythm.change_setting(key, value)
 
     def _on_size_change(self):
         if not self.row_generator.is_tower_size_valid(self._tower.number_of_bells):
@@ -83,7 +83,6 @@ into changes unless something is done!")
 
     def _on_look_to(self):
         """ Callback called when a user calls 'Look To'. """
-
         treble = Bell.from_number(1)
 
         # Count number of user controlled bells

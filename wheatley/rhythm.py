@@ -14,6 +14,8 @@ from wheatley.bell import Bell
 from wheatley.regression import calculate_regression
 from wheatley.tower import HANDSTROKE, BACKSTROKE, stroke_to_string
 
+from typing import Any
+
 
 WEIGHT_REJECTION_THRESHOLD = 0.001
 
@@ -52,6 +54,11 @@ class Rhythm(metaclass=ABCMeta):
         _should_ have been in the ringing, and so can use that knowledge to inform the speed of the
         ringing.
         """
+
+    @abstractmethod
+    def change_setting(self, key: str, value: Any):
+        """ Called when the Ringing Room server asks Wheatley to change a setting. """
+        pass
 
     @abstractmethod
     def on_bell_ring(self, bell: Bell, stroke: bool, real_time: float):
@@ -126,6 +133,9 @@ class WaitForUserRhythm(Rhythm):
 
         if expected_bell not in self._early_bells[expected_stroke]:
             self._expected_bells[expected_stroke].add(expected_bell)
+
+    def change_setting(self, key, value):
+        self._inner_rhythm.change_setting(key, value)
 
     def on_bell_ring(self, bell, stroke, real_time):
         """
@@ -265,6 +275,24 @@ class RegressionRhythm(Rhythm):
         self.logger.debug(f"Expected bell {expected_bell} at index {row_number}:{place} at stroke"
                           + f"{expected_stroke}")
         self._expected_bells[(expected_bell, expected_stroke)] = (row_number, place)
+
+    def change_setting(self, key, value):
+        def log_warning(message):
+            self.logger.warning(f"Invalid value for setting '{key}': {message}")
+
+        if key == 'inertia':
+            try:
+                new_inertia = float(value)
+
+                if new_inertia > 1 or new_inertia < 0:
+                    log_warning(f"{new_inertia} is not between 0 and 1")
+                else:
+                    self._preferred_inertia = new_inertia
+
+                    self.logger.warning(f"Setting 'self._preferred_inertia' to '{value}'")
+            except ValueError:
+                log_warning(f"{value} is not an number")
+
 
     def on_bell_ring(self, bell, stroke, real_time):
         """

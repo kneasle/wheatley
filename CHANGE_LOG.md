@@ -1,4 +1,4 @@
-# 0.4.0
+# 0.4.0 (W.I.P.)
 - Replaced `--max-rows-in-dataset` with `--max-bells-in-dataset` to prevent overfitting when
   Wheatley is ringing most of the bells.
 - Group CLI args into groups for better readability of both code and help messages.

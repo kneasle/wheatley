@@ -90,7 +90,7 @@ def server_main(override_args=None, stop_on_join_tower=False):
     """
     The main function of Wheatley when spawned by the Ringing Room server.
     This has many many fewer options than the standard `main` function, on the basis that this running mode
-    is designed to take its parameters over SocketIO whilst running, rather than the CLI args.
+    is designed to take its parameters over SocketIO whilst running, rather than from the CLI args.
     """
     __version__ = get_version_number()
 

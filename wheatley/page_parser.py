@@ -55,8 +55,8 @@ def get_load_balancing_url(tower_id, unfixed_http_server_url):
 
     try:
         html = requests.get(url).text
-    except requests.exceptions.ConnectionError:
-        raise InvalidURLError(http_server_url)
+    except requests.exceptions.ConnectionError as e:
+        raise InvalidURLError(http_server_url) from e
 
     try:
         url_start_index = html.index("server_ip") + len('server_ip: "')
@@ -64,5 +64,5 @@ def get_load_balancing_url(tower_id, unfixed_http_server_url):
         load_balancing_url = string_that_starts_with_url[:string_that_starts_with_url.index('"')]
 
         return load_balancing_url
-    except ValueError:
-        raise TowerNotFoundError(tower_id, http_server_url)
+    except ValueError as e:
+        raise TowerNotFoundError(tower_id, http_server_url) from e

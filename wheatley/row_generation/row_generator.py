@@ -89,9 +89,9 @@ class RowGenerator(metaclass=ABCMeta):
             if i in places:
                 i += 1
                 continue
-            else:
-                # If not in place, must swap, index is 1 less than place
-                new_row[i - 1], new_row[i] = new_row[i], new_row[i - 1]
-                i += 2
+
+            # If not in place, must swap, index is 1 less than place
+            new_row[i - 1], new_row[i] = new_row[i], new_row[i - 1]
+            i += 2
 
         return new_row

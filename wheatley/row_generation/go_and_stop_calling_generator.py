@@ -26,7 +26,7 @@ class GoAndStopCallingGenerator(RowGenerator):
         if not self.called_go and not is_handstroke and random.choices([True, False], [1, 3]):
             self.tower.make_call(calls.GO)
 
-        return super(GoAndStopCallingGenerator, self).next_row(is_handstroke)
+        return super().next_row(is_handstroke)
 
     def _gen_row(self, previous_row: List[Bell], is_handstroke: bool, index: int) -> List[Bell]:
         next_row = self.generator._gen_row(previous_row, is_handstroke, index)

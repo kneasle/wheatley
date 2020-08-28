@@ -15,8 +15,8 @@ class Bell:
         """
         try:
             index = Bell._lookup_name.index(bell_str)
-        except ValueError:
-            raise ValueError(f"'{bell_str}' is not known bell symbol")
+        except ValueError as e:
+            raise ValueError(f"'{bell_str}' is not known bell symbol") from e
 
         return cls(index)
 

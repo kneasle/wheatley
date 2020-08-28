@@ -1,6 +1,6 @@
 [MESSAGES CONTROL]
 
-disable=broad-except,len-as-condition
+disable=broad-except,len-as-condition,logging-fstring-interpolation
 
 [FORMAT]
 
@@ -16,4 +16,5 @@ max-line-length=110
 
 max-args=10
 max-attributes=20
-max-branches = 15
+max-branches=15
+max-locals=20

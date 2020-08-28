@@ -33,7 +33,7 @@ def generator_from_special_title(method_title: str) -> Optional[RowGenerator]:
         return PlaceNotationGenerator.grandsire(stage)
     if method_name == "stedman" and stage % 2 and stage >= 5:
         return PlaceNotationGenerator.stedman(stage)
-    if method_name == "plain hunt" or method_name == "plain hunt on":
+    if method_name in ["plain hunt", "plain hunt on"]:
         return PlainHuntGenerator(stage)
     if method_name == "dixon's bob" and stage == 6:
         return DixonoidsGenerator(stage)
@@ -63,10 +63,10 @@ class MethodPlaceNotationGenerator(PlaceNotationGenerator):
 
         try:
             method_pn, stage = self._parse_xml(method_xml)
-        except AttributeError:
-            raise MethodNotFoundError(method_title)
+        except AttributeError as e:
+            raise MethodNotFoundError(method_title) from e
 
-        super(MethodPlaceNotationGenerator, self).__init__(
+        super().__init__(
             stage,
             method_pn,
             bob,
@@ -88,12 +88,13 @@ class MethodPlaceNotationGenerator(PlaceNotationGenerator):
             lead_end = symblock[1].text
 
             return f"&{notation},&{lead_end}", stage
-        elif len(block) != 0:
+
+        if len(block) != 0:
             notation = block[0].text
 
             return notation, stage
-        else:
-            raise Exception("Place notation not found")
+
+        raise Exception("Place notation not found")
 
     @staticmethod
     def _fetch_method(method_title):

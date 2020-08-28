@@ -13,6 +13,7 @@ from wheatley.row_generation import RowGenerator
 from wheatley.bell import Bell
 from wheatley.rhythm import Rhythm
 from wheatley.tower import RingingRoomTower
+from wheatley.arg_parsing import to_bool
 
 
 class Bot:
@@ -73,7 +74,23 @@ class Bot:
 
     # Callbacks
     def _on_setting_change(self, key, value):
-        self._rhythm.change_setting(key, value)
+        def log_warning(message):
+            self.logger.warning(f"Invalid value for {key}: {message}")
+
+        if key == 'use_up_down_in':
+            try:
+                self._do_up_down_in = to_bool(value)
+                self.logger.warning(f"Setting 'use_up_down_in' to {self._do_up_down_in}")
+            except ValueError:
+                log_warning(f"{value} cannot be converted into a bool")
+        elif key == 'stop_at_rounds':
+            try:
+                self._stop_at_rounds = to_bool(value)
+                self.logger.warning(f"Setting 'stop_at_rounds' to {value}")
+            except ValueError:
+                log_warning(f"{value} cannot be converted into a bool")
+        else:
+            self._rhythm.change_setting(key, value)
 
     def _on_size_change(self):
         if not self.row_generator.is_tower_size_valid(self._tower.number_of_bells):

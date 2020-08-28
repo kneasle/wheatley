@@ -147,3 +147,15 @@ def parse_call(input_string: str):
         parsed_calls[location] = place_notation_str
 
     return parsed_calls
+
+
+def to_bool(value):
+    """
+    Converts a string argument to the bool representation (or throws a ValueError if the value is not
+    one of '[Tt]rue' or '[Ff]alse'.
+    """
+    if value in ["True", "true", True]:
+        return True
+    if value in ["False", "false", False]:
+        return False
+    raise ValueError(f"Value {value} cannot be converted into a bool")

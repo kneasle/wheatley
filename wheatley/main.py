@@ -122,8 +122,6 @@ def server_main(override_args=None, stop_on_join_tower=False):
     # which `parser.parse_args` does not want to see as an argument
     args = parser.parse_args(sys.argv[1:] if override_args is None else override_args)
 
-    print(args)
-
     # Run the program
     configure_logging()
 

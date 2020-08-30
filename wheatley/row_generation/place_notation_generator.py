@@ -50,10 +50,6 @@ class PlaceNotationGenerator(RowGenerator):
 
     def _gen_row(self, previous_row: List[Bell], is_handstroke: bool, index: int) -> List[Bell]:
         lead_index = index % self.lead_len
-        # Apparently, people sometimes want to ring methods with odd lead lengths.  This causes the stroke
-        # of the lead head to alternate, and after a lead this assert gets incorrectly tripped, so it is
-        # commented out to prevent it being re-inserted
-        # assert lead_index % 2 != is_handstroke
 
         if self._has_bob and self.bobs_pn.get(lead_index):
             self._generating_call_pn = list(self.bobs_pn[lead_index])

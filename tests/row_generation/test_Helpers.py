@@ -39,60 +39,26 @@ class HelpersPlaceNotationTests(unittest.TestCase):
             place_notation = "&-A"
             convert_pn(place_notation)
 
-    def test_convert_pn_symmetric(self):
-        place_notation = "&-1"
-        result = convert_pn(place_notation)
-        self.assertEqual([_CROSS_PN, [1], _CROSS_PN], result)
+    def test_convert_pn(self):
+        test_cases = [
+            ("&-1", [_CROSS_PN, [1], _CROSS_PN]),
+            ("-1", [_CROSS_PN, [1]]),
+            ("-123-4", [_CROSS_PN, [1, 2, 3], _CROSS_PN, [4]]),
+            ("x1", [_CROSS_PN, [1]]),
+            ("x.1.-.", [_CROSS_PN, [1], _CROSS_PN]),
+            ("12.3-123", [[1, 2], [3], _CROSS_PN, [1, 2, 3]]),
+            ("&-1,&2.3", [_CROSS_PN, [1], _CROSS_PN, [2], [3], [2]]),
+            ("&-1,2.3", [_CROSS_PN, [1], _CROSS_PN, [2], [3]]),
+            ("-1,&2.3", [_CROSS_PN, [1], [2], [3], [2]]),
+            ("-1,2.3", [_CROSS_PN, [1], [2], [3]]),
+            ("-1,2.3,4", [_CROSS_PN, [1], [2], [3], [4]]),
+            ("---4", [_CROSS_PN, _CROSS_PN, _CROSS_PN, [4]]),
+            (".-.-.1.-.2", [_CROSS_PN, _CROSS_PN, [1], _CROSS_PN, [2]])
+        ]
 
-    def test_convert_pn_asymmetric(self):
-        place_notation = "-1"
-        result = convert_pn(place_notation)
-        self.assertEqual([_CROSS_PN, [1]], result)
-
-    def test_convert_pn_multiple_bells(self):
-        place_notation = "-123-4"
-        result = convert_pn(place_notation)
-        self.assertEqual([_CROSS_PN, [1, 2, 3], _CROSS_PN, [4]], result)
-
-    def test_convert_pn_x(self):
-        place_notation = "x1"
-        result = convert_pn(place_notation)
-        self.assertEqual([_CROSS_PN, [1]], result)
-
-    def test_convert_pn_dot(self):
-        place_notation = "x.1.-."
-        result = convert_pn(place_notation)
-        self.assertEqual([_CROSS_PN, [1], _CROSS_PN], result)
-
-    def test_convert_pn_multiple_bells_and_dots(self):
-        place_notation = "12.3-123"
-        result = convert_pn(place_notation)
-        self.assertEqual([[1, 2], [3], _CROSS_PN, [1, 2, 3]], result)
-
-    def test_convert_pn_multiple_sections_both_symmetric(self):
-        place_notation = "&-1,&2.3"
-        result = convert_pn(place_notation)
-        self.assertEqual([_CROSS_PN, [1], _CROSS_PN, [2], [3], [2]], result)
-
-    def test_convert_pn_multiple_sections_first_symmetric(self):
-        place_notation = "&-1,2.3"
-        result = convert_pn(place_notation)
-        self.assertEqual([_CROSS_PN, [1], _CROSS_PN, [2], [3]], result)
-
-    def test_convert_pn_multiple_sections_second_symmetric(self):
-        place_notation = "-1,&2.3"
-        result = convert_pn(place_notation)
-        self.assertEqual([_CROSS_PN, [1], [2], [3], [2]], result)
-
-    def test_convert_pn_multiple_sections_neither_symmetric(self):
-        place_notation = "-1,2.3"
-        result = convert_pn(place_notation)
-        self.assertEqual([_CROSS_PN, [1], [2], [3]], result)
-
-    def test_convert_pn_multiple_sections_3(self):
-        place_notation = "-1,2.3,4"
-        result = convert_pn(place_notation)
-        self.assertEqual([_CROSS_PN, [1], [2], [3], [4]], result)
+        for (input_pn, expected_output_pn) in test_cases:
+            with self.subTest(input_pn=input_pn, expected_output_pn=expected_output_pn):
+                self.assertEqual(convert_pn(input_pn), expected_output_pn)
 
 
 if __name__ == '__main__':

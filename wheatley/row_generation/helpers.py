@@ -29,10 +29,14 @@ def convert_pn(pn_str: str) -> List[List[int]]:
 
     symmetric = pn_str.startswith('&')
 
-    cleaned = re.sub("[.]*[x-][.]*", ".-.", pn_str).strip('.& ').split('.')
+    # Assumes a valid place notation string is delimited by `.`
+    # These can optionally be ommitted around an `-` or `x`
+    # We substitute to ensure `-` is surrounded by `.` and replace any `..` caused by `--` => `.-..-.
+    dot_delimited_string = re.sub("[.]*[x-][.]*", ".-.", pn_str).strip('.& ')
+    deduplicated_string = dot_delimited_string.replace('..', '.').split('.')
 
     converted = [[convert_bell_string(y) for y in place] if place != '-' else _CROSS_PN
-                 for place in cleaned]
+                 for place in deduplicated_string]
 
     if symmetric:
         return converted + list(reversed(converted[:-1]))

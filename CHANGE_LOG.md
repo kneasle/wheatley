@@ -5,6 +5,8 @@
 - Overhaul help and debug messages to use `Wheatley` rather than `bot`.
 - Added CLI arg `--name` to tell Wheatley to ring bells assigned to a specific person.
 - Fix all the examples in `README.md` and add integration tests to prevent breaking them again.
+- Fix `assert` being tripped by methods with an odd lead length
+- Fix incorrect expansion of multiple `x`s in Place Notation
 
 # 0.3.1
 - Hopefully fixed issue of Wheatley hanging forever when `Stand next` is called.

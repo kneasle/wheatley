@@ -8,10 +8,12 @@ import math
 import time
 
 from abc import ABCMeta, abstractmethod
+from typing import Any
 
 from wheatley.bell import Bell
 from wheatley.regression import calculate_regression
 from wheatley.tower import HANDSTROKE, BACKSTROKE, stroke_to_string
+
 
 WEIGHT_REJECTION_THRESHOLD = 0.001
 
@@ -41,7 +43,6 @@ class Rhythm(metaclass=ABCMeta):
     def wait_for_bell_time(self, current_time: float, bell: Bell, row_number: int, place: int,
                            user_controlled: bool, stroke: bool):
         """ Sleeps the thread until a given Bell should have rung. """
-        pass
 
     @abstractmethod
     def expect_bell(self, expected_bell: Bell, row_number: int, place: int, expected_stroke: bool):
@@ -51,22 +52,19 @@ class Rhythm(metaclass=ABCMeta):
         _should_ have been in the ringing, and so can use that knowledge to inform the speed of the
         ringing.
         """
-        pass
 
     @abstractmethod
     def on_bell_ring(self, bell: Bell, stroke: bool, real_time: float):
         """
         Called when a bell is rung at a given stroke.  Used as a callback from the Tower class.
         """
-        pass
 
     @abstractmethod
     def initialise_line(self, stage: int, user_controls_treble: bool, start_time: float,
                         number_of_user_controlled_bells: int):
         """ Allow the Rhythm object to initialise itself when 'Look to' is called. """
-        pass
 
-    def sleep(self, seconds: float):
+    def sleep(self, seconds: float): #  pylint: disable=no-self-use
         """ Sleeps for given number of seconds. Allows mocking in tests"""
         time.sleep(seconds)
 
@@ -238,12 +236,12 @@ class RegressionRhythm(Rhythm):
     def wait_for_bell_time(self, current_time, bell, row_number, place, user_controlled, stroke):
         """ Sleeps the thread until a given Bell should have rung. """
         if user_controlled and self._start_time == float('inf'):
-            self.logger.debug(f"Waiting for pull off")
+            self.logger.debug("Waiting for pull off")
 
             while self._start_time == float('inf'):
                 self.sleep(0.01)
 
-            self.logger.debug(f"Pulled off")
+            self.logger.debug("Pulled off")
 
             return
 

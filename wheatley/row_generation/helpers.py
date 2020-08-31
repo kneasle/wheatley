@@ -48,8 +48,8 @@ def convert_bell_string(bell: str) -> int:
     """ Convert a single-char string representing a bell into an integer. """
     try:
         return _LOOKUP_NAME.index(bell)
-    except ValueError:
-        raise ValueError(f"'{bell}' is not known bell symbol")
+    except ValueError as e:
+        raise ValueError(f"'{bell}' is not known bell symbol") from e
 
 
 def convert_to_bell_string(bell: int) -> str:

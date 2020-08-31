@@ -147,7 +147,8 @@ class RingingRoomTower:
         self._request_global_state()
 
     def _on_wheatley_setting_change(self, data):
-        self.logger.info(f"RECEIVED: Settings changed: {data}")
+        self.logger.info(f"RECEIVED: Settings changed: {data}\
+{' (ignoring)' if len(self.invoke_on_setting_change) == 0 else ''}")
 
         for key, value in data.items():
             for callback in self.invoke_on_setting_change:

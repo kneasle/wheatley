@@ -25,7 +25,7 @@ class Bot:
     logger_name = "BOT"
 
     def __init__(self, tower: RingingRoomTower, row_generator: RowGenerator, do_up_down_in: bool,
-                 stop_at_rounds: bool, rhythm: Rhythm, user_name: Optional[str] = None):
+                 stop_at_rounds: bool, rhythm: Rhythm, user_name: Optional[str] = None, server_mode = False):
         """ Initialise a Bot with all the parts it needs to run. """
         self._rhythm = rhythm
 
@@ -46,7 +46,9 @@ class Bot:
 
         self._tower.invoke_on_bell_rung.append(self._on_bell_ring)
         self._tower.invoke_on_reset.append(self._on_size_change)
-        self._tower.invoke_on_setting_change.append(self._on_setting_change)
+
+        if server_mode:
+            self._tower.invoke_on_setting_change.append(self._on_setting_change)
 
         self._is_ringing = False
         self._is_ringing_rounds = True

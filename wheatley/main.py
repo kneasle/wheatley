@@ -148,7 +148,8 @@ def server_main(override_args=None, stop_on_join_tower=False):
                         None
                     )
     rhythm = create_rhythm(peal_speed, inertia, max_bells_in_dataset, handstroke_gap, use_wait)
-    bot = Bot(tower, row_generator, use_up_down_in, stop_at_rounds, rhythm, user_name="Wheatley")
+    bot = Bot(tower, row_generator, use_up_down_in, stop_at_rounds, rhythm, user_name="Wheatley",
+              server_mode=True)
 
     with tower:
         tower.wait_loaded()

@@ -2,6 +2,9 @@
 A module to contain all the functions that parse command line arguments, and their error classes.
 """
 
+from wheatley.row_generation.place_notation_generator import PlaceNotationGenerator
+
+
 class PealSpeedParseError(ValueError):
     """
     An error thrown with a helpful error message when the user inputs a peal speed string that

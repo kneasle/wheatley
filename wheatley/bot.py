@@ -13,7 +13,7 @@ from wheatley.row_generation import RowGenerator
 from wheatley.bell import Bell
 from wheatley.rhythm import Rhythm
 from wheatley.tower import RingingRoomTower
-from wheatley.arg_parsing import to_bool
+from wheatley.parsing import to_bool
 
 
 class Bot:

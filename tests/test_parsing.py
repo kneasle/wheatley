@@ -1,9 +1,9 @@
 import unittest
 
-from wheatley.arg_parsing import parse_peal_speed, PealSpeedParseError, parse_call, CallParseError
+from wheatley.parsing import parse_peal_speed, PealSpeedParseError, parse_call, CallParseError
 
 
-class ArgParseTests(unittest.TestCase):
+class ParseTests(unittest.TestCase):
 
     def test_peal_speed_parsing(self):
         test_cases = [("3h04m", 184),

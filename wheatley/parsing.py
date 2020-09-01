@@ -152,6 +152,46 @@ def parse_call(input_string: str):
     return parsed_calls
 
 
+class RowGenParseError(ValueError):
+    """ A class to encapsulate an error generated when parsing an RowGenerator from JSON. """
+    def __init__(self, json, field, message):
+        super().__init__()
+
+        self.json = json
+        self.field = field
+        self.message = message
+
+    def __str__(self):
+        return f"Error parsing RowGen json '{self.json}' in field '{self.field}': {self.message}"
+
+    def __repr__(self):
+        return str(self)
+
+
+def json_to_row_generator(json):
+    """ Takes a JSON message from SocketIO and convert it to a RowGenerator or throw an exception. """
+    def raise_error(field, message, parent_error = None):
+        if parent_error is None:
+            raise RowGenParseError(json, field, message)
+        raise RowGenParseError(json, field, message) from parent_error
+
+    if 'type' not in json:
+        raise_error('type', "'type' is not defined")
+
+    if json['type'] == 'method':
+        try:
+            stage = int(json['stage'])
+        except KeyError as e:
+            raise_error('stage', "'stage' is not defined", e)
+        except ValueError as e:
+            raise_error('stage', f"'{json[stage]}' is not a valid integer", e)
+        return PlaceNotationGenerator(stage, json['notation'])
+    if json['type'] == "composition":
+        print("IS COMP")
+    else:
+        raise_error('type', f"{json['type']} is not one of 'method' or 'composition'")
+
+
 def to_bool(value):
     """
     Converts a string argument to the bool representation (or throws a ValueError if the value is not

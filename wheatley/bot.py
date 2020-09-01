@@ -13,7 +13,7 @@ from wheatley.row_generation import RowGenerator
 from wheatley.bell import Bell
 from wheatley.rhythm import Rhythm
 from wheatley.tower import RingingRoomTower
-from wheatley.parsing import to_bool
+from wheatley.parsing import to_bool, json_to_row_generator, RowGenParseError
 
 
 class Bot:
@@ -34,6 +34,9 @@ class Bot:
         self._user_name = user_name
 
         self.row_generator = row_generator
+        # This is the row generator that will be used after 'Look to' is called for the next time, allowing
+        # for changing the method or composition whilst Wheatley is running.
+        self.next_row_generator = None
 
         self._tower = tower
 
@@ -49,6 +52,7 @@ class Bot:
 
         if server_mode:
             self._tower.invoke_on_setting_change.append(self._on_setting_change)
+            self._tower.invoke_on_row_gen_change.append(self._on_row_gen_change)
 
         self._is_ringing = False
         self._is_ringing_rounds = True
@@ -94,6 +98,14 @@ class Bot:
         else:
             self._rhythm.change_setting(key, value)
 
+    def _on_row_gen_change(self, row_gen_json):
+        try:
+            self.next_row_generator = json_to_row_generator(row_gen_json)
+
+            self.logger.info("Successfully updated next row gen")
+        except RowGenParseError as e:
+            self.logger.warning(e)
+
     def _on_size_change(self):
         if not self.row_generator.is_tower_size_valid(self._tower.number_of_bells):
             self.logger.warning(f"Row generation requires {self.row_generator.number_of_bells} \
@@ -112,6 +124,10 @@ into changes unless something is done!")
 
         self._rhythm.initialise_line(self.stage, self._user_assigned_bell(treble),
                                      time.time() + 3, number_of_user_controlled_bells)
+
+        # Move to the next row generator if it's defined
+        self.row_generator = self.next_row_generator or self.row_generator
+        self.next_row_generator = None
 
         # Clear all the flags
         self._should_stand = False

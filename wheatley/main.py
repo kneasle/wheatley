@@ -80,6 +80,7 @@ def configure_logging():
     """ Sets up the logging for the bot. """
     logging.basicConfig(level=logging.WARNING)
 
+    logging.getLogger(Bot.logger_name).setLevel(logging.INFO)
     logging.getLogger(RingingRoomTower.logger_name).setLevel(logging.INFO)
     logging.getLogger(RowGenerator.logger_name).setLevel(logging.INFO)
     logging.getLogger(RegressionRhythm.logger_name).setLevel(logging.INFO)

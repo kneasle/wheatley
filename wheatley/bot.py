@@ -86,13 +86,13 @@ class Bot:
         if key == 'use_up_down_in':
             try:
                 self._do_up_down_in = to_bool(value)
-                self.logger.warning(f"Setting 'use_up_down_in' to {self._do_up_down_in}")
+                self.logger.info(f"Setting 'use_up_down_in' to {self._do_up_down_in}")
             except ValueError:
                 log_warning(f"{value} cannot be converted into a bool")
         elif key == 'stop_at_rounds':
             try:
                 self._stop_at_rounds = to_bool(value)
-                self.logger.warning(f"Setting 'stop_at_rounds' to {value}")
+                self.logger.info(f"Setting 'stop_at_rounds' to {value}")
             except ValueError:
                 log_warning(f"{value} cannot be converted into a bool")
         else:

@@ -137,8 +137,8 @@ def server_main(override_args=None, stop_on_join_tower=False):
 
     try:
         tower_url = "http://127.0.0.1:" + str(args.port)
-    except TowerNotFoundError as e:
-        sys.exit(f"Specified tower not found.")
+    except TowerNotFoundError:
+        sys.exit("Specified tower not found.")
 
     tower = RingingRoomTower(args.room_id, tower_url)
     row_generator = generator_from_special_title(method_title) or \

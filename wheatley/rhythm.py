@@ -14,8 +14,6 @@ from wheatley.bell import Bell
 from wheatley.regression import calculate_regression
 from wheatley.tower import HANDSTROKE, BACKSTROKE, stroke_to_string
 
-from typing import Any
-
 
 WEIGHT_REJECTION_THRESHOLD = 0.001
 
@@ -58,7 +56,6 @@ class Rhythm(metaclass=ABCMeta):
     @abstractmethod
     def change_setting(self, key: str, value: Any):
         """ Called when the Ringing Room server asks Wheatley to change a setting. """
-        pass
 
     @abstractmethod
     def on_bell_ring(self, bell: Bell, stroke: bool, real_time: float):

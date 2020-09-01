@@ -2,7 +2,7 @@
 
 from random import choice, randint
 
-from wheatley.arg_parsing import parse_peal_speed, PealSpeedParseError
+from wheatley.parsing import parse_peal_speed, PealSpeedParseError
 
 from .fuzz_utils import fuzz_for_unwrapped_errors
 

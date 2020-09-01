@@ -126,7 +126,7 @@ def server_main(override_args=None, stop_on_join_tower=False):
     # Run the program
     configure_logging()
 
-    # Args that we are currently missing
+    # Args that we are currently 'missing'
     use_up_down_in = True
     stop_at_rounds = True
     method_title = "Plain Bob Major"

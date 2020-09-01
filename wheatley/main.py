@@ -347,7 +347,7 @@ def main(override_args=None, stop_on_join_tower=False):
     try:
         peal_speed = parse_peal_speed(args.peal_speed)
     except PealSpeedParseError as e:
-        sys.exit(str(e))
+        sys.exit(f"{e}")
 
     rhythm = create_rhythm(peal_speed, args.inertia, args.max_bells_in_dataset, args.handstroke_gap,
                            not args.keep_going)

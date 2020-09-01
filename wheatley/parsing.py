@@ -3,6 +3,8 @@ A module to contain all the functions that parse command line arguments, and the
 """
 
 from wheatley.row_generation.place_notation_generator import PlaceNotationGenerator
+from wheatley.row_generation.complib_composition_generator import ComplibCompositionGenerator, \
+                                                                  PrivateCompError, InvalidCompError
 
 
 class PealSpeedParseError(ValueError):
@@ -186,10 +188,24 @@ def json_to_row_generator(json):
         except ValueError as e:
             raise_error('stage', f"'{json[stage]}' is not a valid integer", e)
         return PlaceNotationGenerator(stage, json['notation'])
+
     if json['type'] == "composition":
-        print("IS COMP")
-    else:
-        raise_error('type', f"{json['type']} is not one of 'method' or 'composition'")
+        try:
+            comp_id = int(json['id'])
+        except KeyError as e:
+            raise_error('id', "'id' is not defined", e)
+        except ValueError as e:
+            raise_error('id', f"'{json[id]}' is not a valid integer", e)
+
+        try:
+            row_gen = ComplibCompositionGenerator(comp_id)
+        except PrivateCompError as e:
+            raise_error('complib request', "Comp id '{comp_id}' is private", e)
+        except InvalidCompError as e:
+            raise_error('complib request', "No composition with id '{comp_id}' found", e)
+        return row_gen
+
+    raise_error('type', f"{json['type']} is not one of 'method' or 'composition'")
 
 
 def to_bool(value):

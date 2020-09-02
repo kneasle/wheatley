@@ -218,9 +218,13 @@ class RingingRoomTower:
 
         if "wheatley_settings" in data:
             self._on_setting_change(data["wheatley_settings"])
+        else:
+            self.logger.warning("Settings not found in the global state")
 
         if "wheatley_row_gen" in data:
             self._on_row_gen_change(data["wheatley_row_gen"])
+        else:
+            self.logger.warning("Row gen type not found in the global state")
 
         self.logger.debug(f"RECEIVED: Bells '{['H' if x else 'B' for x in bell_state]}'")
 

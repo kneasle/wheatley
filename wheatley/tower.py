@@ -202,19 +202,23 @@ class RingingRoomTower:
 
     def _on_bell_rung(self, data):
         """ Callback called when the client receives a signal that a bell has been rung. """
-        self._on_global_bell_state(data)
+        self._update_bell_state(data["global_bell_state"])
 
         who_rang = Bell.from_number(data["who_rang"])
         for bell_ring_callback in self.invoke_on_bell_rung:
             bell_ring_callback(who_rang, self.get_stroke(who_rang))
+
+    def _update_bell_state(self, bell_state):
+        self._bell_state = bell_state
+
+        self.logger.debug(f"RECEIVED: Bells '{['H' if x else 'B' for x in bell_state]}'")
 
     def _on_global_bell_state(self, data):
         """
         Callback called when receiving an update to the global tower state.
         Cannot have further callbacks assigned to it.
         """
-        bell_state = data["global_bell_state"]
-        self._bell_state = bell_state
+        self._update_bell_state(data["global_bell_state"])
 
         if "wheatley_settings" in data:
             self._on_setting_change(data["wheatley_settings"])
@@ -225,8 +229,6 @@ class RingingRoomTower:
             self._on_row_gen_change(data["wheatley_row_gen"])
         else:
             self.logger.warning("Row gen type not found in the global state")
-
-        self.logger.debug(f"RECEIVED: Bells '{['H' if x else 'B' for x in bell_state]}'")
 
         for invoke_callback in self.invoke_on_reset:
             invoke_callback()

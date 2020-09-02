@@ -216,6 +216,12 @@ class RingingRoomTower:
         bell_state = data["global_bell_state"]
         self._bell_state = bell_state
 
+        if "wheatley_settings" in data:
+            self._on_wheatley_setting_change(data["wheatley_settings"])
+
+        if "wheatley_row_gen" in data:
+            self._on_wheatley_row_gen_change(data["wheatley_row_gen"])
+
         self.logger.debug(f"RECEIVED: Bells '{['H' if x else 'B' for x in bell_state]}'")
 
         for invoke_callback in self.invoke_on_reset:

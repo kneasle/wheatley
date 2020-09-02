@@ -21,6 +21,7 @@ from wheatley.row_generation import MethodPlaceNotationGenerator
 from wheatley.row_generation.complib_composition_generator import PrivateCompError, InvalidCompError
 from wheatley.row_generation.method_place_notation_generator import MethodNotFoundError, \
                                                                     generator_from_special_title
+from wheatley.row_generation.place_holder_generator import PlaceHolderGenerator
 
 
 def create_row_generator(args):
@@ -129,7 +130,6 @@ def server_main(override_args=None, stop_on_join_tower=False):
     # Args that we are currently 'missing'
     use_up_down_in = True
     stop_at_rounds = True
-    method_title = "Plain Bob Major"
     peal_speed = 180
     inertia = 0.5
     max_bells_in_dataset = 15
@@ -142,14 +142,8 @@ def server_main(override_args=None, stop_on_join_tower=False):
         sys.exit("Specified tower not found.")
 
     tower = RingingRoomTower(args.room_id, tower_url)
-    row_generator = generator_from_special_title(method_title) or \
-                    MethodPlaceNotationGenerator(
-                        method_title,
-                        None,
-                        None
-                    )
     rhythm = create_rhythm(peal_speed, inertia, max_bells_in_dataset, handstroke_gap, use_wait)
-    bot = Bot(tower, row_generator, use_up_down_in, stop_at_rounds, rhythm, user_name="Wheatley",
+    bot = Bot(tower, PlaceHolderGenerator(), use_up_down_in, stop_at_rounds, rhythm, user_name="Wheatley",
               server_mode=True)
 
     with tower:

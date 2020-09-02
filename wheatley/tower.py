@@ -144,12 +144,12 @@ class RingingRoomTower:
         self._socket_io_client.on("s_assign_user", self._on_assign_user)
         self._socket_io_client.on("s_call", self._on_call)
         self._socket_io_client.on("s_user_left", self._on_user_leave)
-        self._socket_io_client.on("s_wheatley_setting", self._on_wheatley_setting_change)
-        self._socket_io_client.on("s_wheatley_row_gen", self._on_wheatley_row_gen_change)
+        self._socket_io_client.on("s_wheatley_setting", self._on_setting_change)
+        self._socket_io_client.on("s_wheatley_row_gen", self._on_row_gen_change)
 
         self._request_global_state()
 
-    def _on_wheatley_setting_change(self, data):
+    def _on_setting_change(self, data):
         self.logger.info(f"RECEIVED: Settings changed: {data}\
 {' (ignoring)' if len(self.invoke_on_setting_change) == 0 else ''}")
 
@@ -157,7 +157,7 @@ class RingingRoomTower:
             for callback in self.invoke_on_setting_change:
                 callback(key, value)
 
-    def _on_wheatley_row_gen_change(self, data):
+    def _on_row_gen_change(self, data):
         self.logger.info(f"RECEIVED: Row gen changed: {data}\
 {' (ignoring)' if len(self.invoke_on_row_gen_change) == 0 else ''}")
 
@@ -217,10 +217,10 @@ class RingingRoomTower:
         self._bell_state = bell_state
 
         if "wheatley_settings" in data:
-            self._on_wheatley_setting_change(data["wheatley_settings"])
+            self._on_setting_change(data["wheatley_settings"])
 
         if "wheatley_row_gen" in data:
-            self._on_wheatley_row_gen_change(data["wheatley_row_gen"])
+            self._on_row_gen_change(data["wheatley_row_gen"])
 
         self.logger.debug(f"RECEIVED: Bells '{['H' if x else 'B' for x in bell_state]}'")
 

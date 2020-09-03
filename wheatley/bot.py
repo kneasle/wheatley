@@ -100,7 +100,7 @@ class Bot:
 
     def _on_row_gen_change(self, row_gen_json):
         try:
-            self.next_row_generator = json_to_row_generator(row_gen_json)
+            self.next_row_generator = json_to_row_generator(row_gen_json, self.logger)
 
             self.logger.info("Successfully updated next row gen")
         except RowGenParseError as e:

@@ -170,12 +170,28 @@ class RowGenParseError(ValueError):
         return str(self)
 
 
-def json_to_row_generator(json):
+def json_to_row_generator(json, logger):
     """ Takes a JSON message from SocketIO and convert it to a RowGenerator or throw an exception. """
     def raise_error(field, message, parent_error = None):
+        """ A helper function to raise a `RowGenParseError` with a helpful error message. """
         if parent_error is None:
             raise RowGenParseError(json, field, message)
         raise RowGenParseError(json, field, message) from parent_error
+
+    def json_to_call(name):
+        """ Helper function to generate a call with a given name from the json. """
+        if name not in json:
+            logger.warning(f"No field '{name}' in the row generator JSON")
+            return None
+
+        call = {}
+        for key, value in json[name].items():
+            try:
+                index = int(key)
+            except ValueError as e:
+                raise_error(name, f"Call index '{key}' is not a valid integer", e)
+            call[index] = value
+        return call
 
     if 'type' not in json:
         raise_error('type', "'type' is not defined")
@@ -187,7 +203,7 @@ def json_to_row_generator(json):
             raise_error('stage', "'stage' is not defined", e)
         except ValueError as e:
             raise_error('stage', f"'{json[stage]}' is not a valid integer", e)
-        return PlaceNotationGenerator(stage, json['notation'])
+        return PlaceNotationGenerator(stage, json['notation'], json_to_call('bob'), json_to_call('single'))
 
     if json['type'] == "composition":
         try:

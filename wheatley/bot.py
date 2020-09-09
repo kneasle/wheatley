@@ -129,11 +129,9 @@ into changes unless something is done!")
 
     def _on_bell_ring(self, bell, stroke):
         """ Callback called when the Tower receives a signal that a bell has been rung. """
-        if self._user_assigned_bell(bell):
-            # This will give us the stroke _after_ the bell rings, we have to invert it, because
-            # otherwise this will always expect the bells on the wrong stroke and no ringing will
-            # ever happen
-            self._rhythm.on_bell_ring(bell, not stroke, time.time())
+        # This will give us the stroke _after_ the bell rings, we have to invert it, because otherwise this
+        # will always expect the bells on the wrong stroke and no ringing will ever happen
+        self._rhythm.on_bell_ring(bell, not stroke, time.time(), self._user_assigned_bell(bell))
 
     # Mainloop and helper methods
     def expect_bell(self, index, bell):

@@ -65,6 +65,10 @@ def create_rhythm(args):
     # Wheatley more sensitive to user's pull-off speed.  If this is larger than `--max_bells_in_dataset`,
     # this will be clamped to fit.
     min_bells_in_dataset = 4
+    # Tells Wheatley whether or not to use his own bells to gauge the ringing speed.  By default, Wheatley
+    # *does* store use his own ringing because doing so makes the ringing much more stable regardless of the
+    # proportion of user-controlled bells."
+    include_own_bells = True
 
     # Clamp min_bells_in_dataset to not be bigger than max_bells_in_dataset
     min_bells_in_dataset = min(min_bells_in_dataset, args.max_bells_in_dataset)
@@ -74,7 +78,8 @@ def create_rhythm(args):
         handstroke_gap=args.handstroke_gap,
         peal_speed=peal_speed,
         min_bells_in_dataset=min_bells_in_dataset,
-        max_bells_in_dataset=args.max_bells_in_dataset
+        max_bells_in_dataset=args.max_bells_in_dataset,
+        include_own_bells=include_own_bells
     )
 
     if not args.keep_going:

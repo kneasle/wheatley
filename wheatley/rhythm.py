@@ -44,7 +44,8 @@ class Rhythm(metaclass=ABCMeta):
         """ Sleeps the thread until a given Bell should have rung. """
 
     @abstractmethod
-    def expect_bell(self, expected_bell: Bell, row_number: int, place: int, expected_stroke: bool):
+    def expect_bell(self, expected_bell: Bell, row_number: int, place: int, expected_stroke: bool,
+                    user_controlled: bool):
         """
         Indicates that a given Bell is expected to be rung at a given row, place and stroke.
         Used by the rhythm so that when that bell is rung later, it can tell where that bell
@@ -109,14 +110,18 @@ class WaitForUserRhythm(Rhythm):
                 self.delay += delay_for_user
                 self.logger.info(f"Delayed for {delay_for_user}")
 
-    def expect_bell(self, expected_bell, row_number, place, expected_stroke):
+    def expect_bell(self, expected_bell, row_number, place, expected_stroke, user_controlled):
         """
         Indicates that a given Bell is expected to be rung at a given row, place and stroke.
         Used by the rhythm so that when that bell is rung later, it can tell where that bell
         _should_ have been in the ringing, and so can use that knowledge to inform the speed of the
         ringing.
         """
-        self._inner_rhythm.expect_bell(expected_bell, row_number, place, expected_stroke)
+        self._inner_rhythm.expect_bell(expected_bell, row_number, place, expected_stroke, user_controlled)
+
+        # We don't need to keep track of Wheatley's bells, so just return in that case
+        if not user_controlled:
+            return
 
         if expected_stroke != self._current_stroke:
             self._current_stroke = expected_stroke
@@ -176,7 +181,7 @@ class RegressionRhythm(Rhythm):
     logger_name = "RHYTHM:Regression"
 
     def __init__(self, inertia, peal_speed=178, handstroke_gap=1, min_bells_in_dataset=4,
-                 max_bells_in_dataset=15):
+                 max_bells_in_dataset=15, include_own_bells=True):
         """
         Initialises a new RegressionRhythm with a given default peal speed and handstroke gap.
         `peal_speed` is the number of minutes in a peal of 5040 changes, and `handstroke_gap`
@@ -192,6 +197,7 @@ class RegressionRhythm(Rhythm):
         self._handstroke_gap = handstroke_gap
         self._min_bells_in_dataset = min_bells_in_dataset
         self._max_bells_in_dataset = max_bells_in_dataset
+        self._include_own_bells = include_own_bells
 
         self.stage = 0
         self._start_time = 0
@@ -256,13 +262,18 @@ class RegressionRhythm(Rhythm):
             # Slow the ticks slightly
             self.sleep(0.01)
 
-    def expect_bell(self, expected_bell, row_number, place, expected_stroke):
+    def expect_bell(self, expected_bell, row_number, place, expected_stroke, user_controlled):
         """
         Indicates that a given Bell is expected to be rung at a given row, place and stroke.
         Used by the rhythm so that when that bell is rung later, it can tell where that bell
         _should_ have been in the ringing, and so can use that knowledge to inform the speed of the
         ringing.
         """
+        # If we're not including Wheatley's bells in the dataset and this bell is not user controlled,
+        # then return early
+        if not user_controlled and not self._include_own_bells:
+            return
+
         self.logger.debug(f"Expected bell {expected_bell} at index {row_number}:{place} at stroke"
                           + f"{expected_stroke}")
         self._expected_bells[(expected_bell, expected_stroke)] = (row_number, place)

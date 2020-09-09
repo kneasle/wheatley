@@ -64,6 +64,7 @@ def create_rhythm(args):
         args.inertia,
         handstroke_gap=args.handstroke_gap,
         peal_speed=peal_speed,
+        min_bells_in_dataset=args.min_bells_in_dataset,
         max_bells_in_dataset=args.max_bells_in_dataset
     )
 
@@ -229,14 +230,23 @@ def main(override_args=None, stop_on_join_tower=False):
               '1.0'."
     )
     rhythm_group.add_argument(
+        "-N", "--min-bells-in-dataset",
+        type=int,
+        default=4,
+        help="Sets the minimum number of bells that Wheatley will use in order to deduce a rhythm. \
+              Setting this to larger numbers will make Wheatley more stable during the pull-off, whereas \
+              smaller numbers will make Wheatley more sensitive to user's pull-off speed.  This must be \
+              less than or equal to '--max-bells-in-dataset'.  Defaults to 4."
+    )
+    rhythm_group.add_argument(
         "-X", "--max-bells-in-dataset",
         type=int,
         default=15,
         help="Sets the maximum number of bells that Wheatley will store to determine the current \
               ringing speed.  If you make this larger, then he will be more consistent but less \
-              quick to respond to changes in rhythm.  Defaults to '15'.  Setting both this and \
+              quick to respond to changes in rhythm.  Setting both this and \
               --inertia to a very small values could result in Wheatley ringing ridiculously \
-              quickly."
+              quickly.  This must be greater than or equal to '--min-bells-in-dataset'.  Defaults to '15'."
     )
 
     # Misc arguments
@@ -254,6 +264,10 @@ def main(override_args=None, stop_on_join_tower=False):
     # Deprecation warnings
     if args.wait:
         print("Deprecation warning: `--wait` has been replaced with `--keep-going`!")
+
+    if args.min_bells_in_dataset > args.max_bells_in_dataset:
+        sys.exit(f"'--min-bells-in-dataset' ({args.min_bells_in_dataset}) must be smaller than \
+'--max-bells-in-dataset' ({args.max_bells_in_dataset}).")
 
     # Run the program
     configure_logging()

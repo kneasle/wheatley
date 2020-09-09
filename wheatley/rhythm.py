@@ -8,7 +8,6 @@ import math
 import time
 
 from abc import ABCMeta, abstractmethod
-from typing import Any
 
 from wheatley.bell import Bell
 from wheatley.regression import calculate_regression
@@ -176,7 +175,8 @@ class RegressionRhythm(Rhythm):
 
     logger_name = "RHYTHM:Regression"
 
-    def __init__(self, inertia, peal_speed=178, handstroke_gap=1, max_bells_in_dataset=15):
+    def __init__(self, inertia, peal_speed=178, handstroke_gap=1, min_bells_in_dataset=4,
+                 max_bells_in_dataset=15):
         """
         Initialises a new RegressionRhythm with a given default peal speed and handstroke gap.
         `peal_speed` is the number of minutes in a peal of 5040 changes, and `handstroke_gap`
@@ -190,6 +190,7 @@ class RegressionRhythm(Rhythm):
 
         self._peal_speed = peal_speed
         self._handstroke_gap = handstroke_gap
+        self._min_bells_in_dataset = min_bells_in_dataset
         self._max_bells_in_dataset = max_bells_in_dataset
 
         self.stage = 0
@@ -212,7 +213,7 @@ class RegressionRhythm(Rhythm):
 
         # Only calculate the regression line if there are at least two datapoints, otherwise
         # just store the datapoint
-        if len(self.data_set) >= 2:
+        if len(self.data_set) >= self._min_bells_in_dataset:
             (new_start_time, new_blow_interval) = calculate_regression(self.data_set)
 
             # Lerp between the new times and the old times, according to the desired inertia

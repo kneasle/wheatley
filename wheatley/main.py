@@ -111,6 +111,12 @@ def server_main(override_args=None, stop_on_join_tower=False):
         type=int,
         help="The port of the SocketIO server (which must be hosted on localhost)."
     )
+    parser.add_argument(
+        "-l", "--look-to-time",
+        type=float,
+        help="Set to the time when 'Look to' was called if Wheatley was spawned because 'look to' was \
+              called and Wheatley is needed."
+    )
 
     # Misc arguments
     parser.add_argument(
@@ -150,6 +156,9 @@ def server_main(override_args=None, stop_on_join_tower=False):
         tower.wait_loaded()
 
         print("=== LOADED ===")
+
+        if args.look_to_time is not None:
+            bot.look_to_has_been_called(args.look_to_time)
 
         if not stop_on_join_tower:
             bot.main_loop()

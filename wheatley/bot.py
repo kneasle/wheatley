@@ -118,6 +118,10 @@ bells, but the current tower has {self._tower.number_of_bells}.  Wheatley will c
 into changes unless something is done!")
 
     def _on_look_to(self):
+        self.look_to_has_been_called(time.time())
+
+    # This has to be made public, because the server's main function might have to call it
+    def look_to_has_been_called(self, call_time):
         """ Callback called when a user calls 'Look To'. """
         self._rhythm.return_to_mainloop()
 
@@ -130,7 +134,7 @@ into changes unless something is done!")
                 number_of_user_controlled_bells += 1
 
         self._rhythm.initialise_line(self.stage, self._user_assigned_bell(treble),
-                                     time.time() + 3, number_of_user_controlled_bells)
+                                     call_time + 3, number_of_user_controlled_bells)
 
         # Move to the next row generator if it's defined
         self.row_generator = self.next_row_generator or self.row_generator

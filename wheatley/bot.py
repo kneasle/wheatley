@@ -27,8 +27,8 @@ class Bot:
     def __init__(self, tower: RingingRoomTower, row_generator: RowGenerator, do_up_down_in: bool,
                  stop_at_rounds: bool, rhythm: Rhythm, user_name: Optional[str] = None, server_mode = False):
         """ Initialise a Bot with all the parts it needs to run. """
+        self._server_mode = server_mode
         self._rhythm = rhythm
-
         self._do_up_down_in = do_up_down_in
         self._stop_at_rounds = stop_at_rounds
         self._user_name = user_name
@@ -50,7 +50,7 @@ class Bot:
         self._tower.invoke_on_bell_rung.append(self._on_bell_ring)
         self._tower.invoke_on_reset.append(self._on_size_change)
 
-        if server_mode:
+        if self._server_mode:
             self._tower.invoke_on_setting_change.append(self._on_setting_change)
             self._tower.invoke_on_row_gen_change.append(self._on_row_gen_change)
 
@@ -270,10 +270,20 @@ into changes unless something is done!")
         The main thread will get stuck forever in this function whilst the bot rings.
         """
         while True:
-            if self._is_ringing:
-                self.tick()
+            while not self._is_ringing:
+                time.sleep(0.01)
 
-            time.sleep(0.01)
+            self.logger.info("Starting to ring!")
+            if self._server_mode:
+                self._tower.set_is_ringing(True)
+
+            while self._is_ringing:
+                self.tick()
+                time.sleep(0.01)
+
+            self.logger.info("Stopping ringing!")
+            if self._server_mode:
+                self._tower.set_is_ringing(False)
 
     def _user_assigned_bell(self, bell: Bell):
         """ True when the bell is assigned to a different user name than given to the bot """

@@ -117,6 +117,14 @@ class RingingRoomTower:
             f"Set number of bells '{number}'"
         )
 
+    def set_is_ringing(self, value: bool):
+        """ Broadcast to all the users that Wheatley has started or stopped ringing. """
+        self._emit(
+            "c_wheatley_is_ringing",
+            {"is_ringing": value, "tower_id": self.tower_id},
+            f"Setting is ringing to {value}"
+        )
+
     def wait_loaded(self):
         """ Pause the thread until the socket-io connection is open and stable. """
         if self._socket_io_client is None:

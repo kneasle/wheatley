@@ -137,7 +137,7 @@ def server_main(override_args=None, stop_on_join_tower=False):
     use_up_down_in = True
     stop_at_rounds = True
     peal_speed = 180
-    inertia = 0.5
+    inertia = 1
     max_bells_in_dataset = 15
     handstroke_gap = 1
     use_wait = True

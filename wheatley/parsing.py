@@ -203,7 +203,8 @@ def json_to_row_generator(json, logger):
             raise_error('stage', "'stage' is not defined", e)
         except ValueError as e:
             raise_error('stage', f"'{json[stage]}' is not a valid integer", e)
-        return PlaceNotationGenerator(stage, json['notation'], json_to_call('bob'), json_to_call('single'))
+        return PlaceNotationGenerator(stage, "&" + json['notation'], json_to_call('bob'),
+                                      json_to_call('single'))
 
     if json['type'] == "composition":
         try:

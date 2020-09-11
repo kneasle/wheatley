@@ -40,6 +40,14 @@ class Rhythm(metaclass=ABCMeta):
     """
 
     @abstractmethod
+    def return_to_mainloop(self):
+        """
+        When called, this function requires that Wheatley's main thread should return from
+        wait_for_bell_time and give control back to the mainloop within a reasonable amount of time
+        (i.e. 1/10 of a second is acceptable, but anything approacing a second is not)
+        """
+
+    @abstractmethod
     def wait_for_bell_time(self, current_time: float, bell: Bell, row_number: int, place: int,
                            user_controlled: bool, stroke: bool):
         """ Sleeps the thread until a given Bell should have rung. """
@@ -95,6 +103,17 @@ class WaitForUserRhythm(Rhythm):
 
         self.logger = logging.getLogger(self.logger_name)
 
+        self._should_return_to_mainloop = False
+
+    def return_to_mainloop(self):
+        """
+        When called, this function requires that Wheatley's main thread should return from
+        wait_for_bell_time and give control back to the mainloop within a reasonable amount of time
+        (i.e. 1/10 of a second is acceptable, but anything approacing a second is not)
+        """
+        self._should_return_to_mainloop = True
+        self._inner_rhythm.return_to_mainloop()
+
     def wait_for_bell_time(self, current_time, bell, row_number, place, user_controlled, stroke):
         """ Sleeps the thread until a given Bell should have rung. """
         if stroke != self._current_stroke:
@@ -109,10 +128,15 @@ class WaitForUserRhythm(Rhythm):
                 self.sleep(self.sleep_time)
                 delay_for_user += self.sleep_time
                 self.logger.debug(f"Waiting for {bell}")
+                if self._should_return_to_mainloop:
+                    break
 
             if delay_for_user:
                 self.delay += delay_for_user
                 self.logger.info(f"Delayed for {delay_for_user}")
+
+        # Reset the flag to say that we've returned to the mainloop
+        self._should_return_to_mainloop = False
 
     def expect_bell(self, expected_bell, row_number, place, expected_stroke):
         """
@@ -212,6 +236,8 @@ class RegressionRhythm(Rhythm):
 
         self.logger = logging.getLogger(self.logger_name)
 
+        self._should_return_to_mainloop = False
+
     def _add_data_point(self, row_number, place, real_time, weight):
         blow_time = self.index_to_blow_time(row_number, place)
 
@@ -243,6 +269,14 @@ class RegressionRhythm(Rhythm):
             if len(self.data_set) >= self._max_bells_in_dataset:
                 del self.data_set[0]
 
+    def return_to_mainloop(self):
+        """
+        When called, this function requires that Wheatley's main thread should return from
+        wait_for_bell_time and give control back to the mainloop within a reasonable amount of time
+        (i.e. 1/10 of a second is acceptable, but anything approacing a second is not)
+        """
+        self._should_return_to_mainloop = True
+
     def wait_for_bell_time(self, current_time, bell, row_number, place, user_controlled, stroke):
         """ Sleeps the thread until a given Bell should have rung. """
         if user_controlled and self._start_time == float('inf'):
@@ -264,6 +298,8 @@ class RegressionRhythm(Rhythm):
         else:
             # Slow the ticks slightly
             self.sleep(0.01)
+
+        self._should_return_to_mainloop = False
 
     def expect_bell(self, expected_bell, row_number, place, expected_stroke):
         """

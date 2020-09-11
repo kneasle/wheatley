@@ -38,6 +38,7 @@ class RingingRoomTower:
         self.invoke_on_bell_rung: List[Callable[[int, bool], Any]] = []
         self.invoke_on_setting_change: List[Callable[[str, Any], Any]] = []
         self.invoke_on_row_gen_change: List[Callable[[Any], Any]] = []
+        self.invoke_on_stop_touch: List[Callable[[], Any]] = []
 
         self._url = url
         self._socket_io_client: Optional[socketio.Client] = None
@@ -154,6 +155,7 @@ class RingingRoomTower:
         self._socket_io_client.on("s_user_left", self._on_user_leave)
         self._socket_io_client.on("s_wheatley_setting", self._on_setting_change)
         self._socket_io_client.on("s_wheatley_row_gen", self._on_row_gen_change)
+        self._socket_io_client.on("s_wheatley_stop_touch", self._on_stop_touch)
 
         self._request_global_state()
 
@@ -171,6 +173,12 @@ class RingingRoomTower:
 
         for callback in self.invoke_on_row_gen_change:
             callback(data)
+
+    def _on_stop_touch(self, data):
+        self.logger.info(f"RECEIVED: Stop touch: {data}.")
+
+        for callback in self.invoke_on_stop_touch:
+            callback()
 
     def _on_user_leave(self, data):
         user_that_left = data["user_name"]

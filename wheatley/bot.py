@@ -53,6 +53,7 @@ class Bot:
         if self._server_mode:
             self._tower.invoke_on_setting_change.append(self._on_setting_change)
             self._tower.invoke_on_row_gen_change.append(self._on_row_gen_change)
+            self._tower.invoke_on_stop_touch.append(self._on_stop_touch)
 
         self._is_ringing = False
         self._is_ringing_rounds = True
@@ -114,6 +115,8 @@ into changes unless something is done!")
 
     def _on_look_to(self):
         """ Callback called when a user calls 'Look To'. """
+        self._rhythm.return_to_mainloop()
+
         treble = Bell.from_number(1)
 
         # Count number of user controlled bells
@@ -172,6 +175,11 @@ into changes unless something is done!")
             # otherwise this will always expect the bells on the wrong stroke and no ringing will
             # ever happen
             self._rhythm.on_bell_ring(bell, not stroke, time.time())
+
+    def _on_stop_touch(self):
+        self.logger.info("Got to callback for stop touch")
+        self._is_ringing = False
+        self._rhythm.return_to_mainloop()
 
     # Mainloop and helper methods
     def expect_bell(self, index, bell):

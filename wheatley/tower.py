@@ -235,17 +235,6 @@ class RingingRoomTower:
         Cannot have further callbacks assigned to it.
         """
         self._update_bell_state(data["global_bell_state"])
-
-        if "wheatley_settings" in data:
-            self._on_setting_change(data["wheatley_settings"])
-        else:
-            self.logger.warning("Settings not found in the global state")
-
-        if "wheatley_row_gen" in data:
-            self._on_row_gen_change(data["wheatley_row_gen"])
-        else:
-            self.logger.warning("Row gen type not found in the global state")
-
         for invoke_callback in self.invoke_on_reset:
             invoke_callback()
 

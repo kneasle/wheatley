@@ -16,6 +16,11 @@ from wheatley.tower import RingingRoomTower
 from wheatley.parsing import to_bool, json_to_row_generator, RowGenParseError
 
 
+# Number of seconds that Wheatley is not ringing before Wheatley will return from the mainloop
+# Only applies when Wheatley is running in server mode
+INACTIVITY_EXIT_TIME = 300
+
+
 class Bot:
     """
     A class to hold all the information that the bot will use to glue together the rhythm,
@@ -28,6 +33,8 @@ class Bot:
                  stop_at_rounds: bool, rhythm: Rhythm, user_name: Optional[str] = None, server_mode = False):
         """ Initialise a Bot with all the parts it needs to run. """
         self._server_mode = server_mode
+        self._last_activity_time = time.time()
+
         self._rhythm = rhythm
         self._do_up_down_in = do_up_down_in
         self._stop_at_rounds = stop_at_rounds
@@ -46,10 +53,8 @@ class Bot:
         self._tower.invoke_on_call[calls.SINGLE].append(self._on_single)
         self._tower.invoke_on_call[calls.THATS_ALL].append(self._on_thats_all)
         self._tower.invoke_on_call[calls.STAND].append(self._on_stand_next)
-
         self._tower.invoke_on_bell_rung.append(self._on_bell_ring)
         self._tower.invoke_on_reset.append(self._on_size_change)
-
         if self._server_mode:
             self._tower.invoke_on_setting_change.append(self._on_setting_change)
             self._tower.invoke_on_row_gen_change.append(self._on_row_gen_change)
@@ -57,7 +62,6 @@ class Bot:
 
         self._is_ringing = False
         self._is_ringing_rounds = True
-
         self._should_start_method = False
         self._should_start_ringing_rounds = False
         self._should_stand = False
@@ -278,8 +282,14 @@ into changes unless something is done!")
         The main thread will get stuck forever in this function whilst the bot rings.
         """
         while True:
+            # Sit in an infinite loop whilst we're not ringing, and exit Wheatley if enough time
+            # has passed
+            self._last_activity_time = time.time()
             while not self._is_ringing:
                 time.sleep(0.01)
+                if self._server_mode and time.time() > self._last_activity_time + INACTIVITY_EXIT_TIME:
+                    self.logger.log(f"Timed out - no activity for {INACTIVITY_EXIT_TIME}s. Exiting.")
+                    return
 
             self.logger.info("Starting to ring!")
             if self._server_mode:

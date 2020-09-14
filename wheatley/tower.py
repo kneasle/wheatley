@@ -32,6 +32,8 @@ class RingingRoomTower:
 
         self._bell_state = []
         self._assigned_users = {}
+        # A map from user IDs to the corresponding user name
+        self._user_list: Dict[int, str] = {}
 
         self.invoke_on_call: Dict[str, List[Callable[[], Any]]] = collections.defaultdict(list)
         self.invoke_on_reset: List[Callable[[], Any]] = []
@@ -90,9 +92,27 @@ class RingingRoomTower:
             self.logger.error(e)
             return False
 
-    def is_bell_assigned_to(self, bell: Bell, user: Optional[str]):
+    def is_bell_assigned_to(self, bell: Bell, user_name: Optional[str]):
         """ Returns true if a given bell is assigned to the given user name. """
-        return self._assigned_users.get(bell, None) == user
+        try:
+            return self.user_name_from_id(self._assigned_users.get(bell, None)) == user_name
+        except KeyError:
+            return False
+
+    def user_name_from_id(self, user_id: int) -> str:
+        """
+        Converts a numerical user ID into the corresponding user name, throwing a KeyError if not found.
+        """
+        return self._user_list[user_id]
+
+    def user_id_from_name(self, user_name: int) -> str:
+        """
+        Converts a numerical user ID into the corresponding user name, throwing a KeyError if not found.
+        """
+        for u_id, name in self._user_list:
+            if name == user_name:
+                return u_id
+        raise KeyError(f"No user ID found corresponding to {user_name}")
 
     def get_stroke(self, bell: Bell):
         """ Returns the stroke of a given bell. """
@@ -145,10 +165,11 @@ class RingingRoomTower:
         self._socket_io_client = socketio.Client()
         self._socket_io_client.connect(self._url)
         self.logger.info(f"Connected to {self._url}")
-        self._join_tower()
 
         self._socket_io_client.on("s_bell_rung", self._on_bell_rung)
         self._socket_io_client.on("s_global_state", self._on_global_bell_state)
+        self._socket_io_client.on("s_user_entered", self._on_user_entered)
+        self._socket_io_client.on("s_set_userlist", self._on_user_list)
         self._socket_io_client.on("s_size_change", self._on_size_change)
         self._socket_io_client.on("s_assign_user", self._on_assign_user)
         self._socket_io_client.on("s_call", self._on_call)
@@ -157,6 +178,7 @@ class RingingRoomTower:
         self._socket_io_client.on("s_wheatley_row_gen", self._on_row_gen_change)
         self._socket_io_client.on("s_wheatley_stop_touch", self._on_stop_touch)
 
+        self._join_tower()
         self._request_global_state()
 
     def _on_setting_change(self, data):
@@ -181,18 +203,41 @@ class RingingRoomTower:
             callback()
 
     def _on_user_leave(self, data):
-        user_that_left = data["user_name"]
+        user_id_that_left = data["user_id"]
+        user_name_that_left = data["username"]
+
+        # Remove the user ID that left from our user list
+        if user_id_that_left not in self._user_list:
+            self.logger.warning(
+                f"User #{user_id_that_left}:'{user_name_that_left}' left, but wasn't in the user list."
+            )
+        elif self._user_list[user_id_that_left] != data['username']:
+            self.logger.warning(f"User #{user_id_that_left}:'{user_name_that_left}' left, but that ID was \
+logged in as '{self._user_list[user_id_that_left]}'.")
+            del self._user_list[user_id_that_left]
 
         bells_unassigned = []
 
         # Unassign all instances of that user
         for bell, user in self._assigned_users.items():
-            if user == user_that_left:
+            if user == user_id_that_left:
                 self._assigned_users[bell] = None
 
-                bells_unassigned.append(str(bell))
+                bells_unassigned.append(bell)
 
-        self.logger.info(f"RECEIVED: User {user_that_left} left from bells {bells_unassigned}.")
+        self.logger.info(
+            f"RECEIVED: User #{user_id_that_left}:'{user_name_that_left}' left from bells {bells_unassigned}."
+        )
+
+    def _on_user_entered(self, data):
+        """ Called when the server receives a uew user so we can update our user list. """
+        # Add the new user to the user list, so we can match up their ID with their username
+        self._user_list[data['user_id']] = data['username']
+
+    def _on_user_list(self, user_list):
+        """ Called when the server broadcasts a user list when Wheatley joins a tower. """
+        for user in user_list['user_list']:
+            self._user_list[user['user_id']] = user['username']
 
     def _join_tower(self):
         """ Joins the tower as an anonymous user. """
@@ -256,7 +301,7 @@ class RingingRoomTower:
         self._assigned_users[bell] = user
 
         if user:
-            self.logger.info(f"RECEIVED: Assigned bell '{bell}' to '{user or '[WHEATLEY]'}'")
+            self.logger.info(f"RECEIVED: Assigned bell '{bell}' to '{self.user_name_from_id(user)}'")
         else:
             self.logger.info(f"RECEIVED: Unassigned bell '{bell}'")
 

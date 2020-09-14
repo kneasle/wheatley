@@ -292,7 +292,7 @@ into changes unless something is done!")
             while not self._is_ringing:
                 time.sleep(0.01)
                 if self._server_mode and time.time() > self._last_activity_time + INACTIVITY_EXIT_TIME:
-                    self.logger.log(f"Timed out - no activity for {INACTIVITY_EXIT_TIME}s. Exiting.")
+                    self.logger.info(f"Timed out - no activity for {INACTIVITY_EXIT_TIME}s. Exiting.")
                     return
 
             self.logger.info("Starting to ring!")

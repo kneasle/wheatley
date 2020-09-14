@@ -186,6 +186,7 @@ into changes unless something is done!")
 
     def _on_stop_touch(self):
         self.logger.info("Got to callback for stop touch")
+        self._tower.set_is_ringing(False)
         self._is_ringing = False
         self._rhythm.return_to_mainloop()
 

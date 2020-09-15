@@ -88,7 +88,7 @@ def configure_logging():
     logging.getLogger(WaitForUserRhythm.logger_name).setLevel(logging.INFO)
 
 
-def server_main(override_args=None, stop_on_join_tower=False):
+def server_main(override_args, stop_on_join_tower):
     """
     The main function of Wheatley when spawned by the Ringing Room server.
     This has many many fewer options than the standard `main` function, on the basis that this running mode
@@ -164,7 +164,7 @@ def server_main(override_args=None, stop_on_join_tower=False):
             bot.main_loop()
 
 
-def main(override_args=None, stop_on_join_tower=False):
+def console_main(override_args, stop_on_join_tower):
     """
     The main function of the bot.
     This parses the CLI arguments, creates the Rhythm, RowGenerator and Bot objects, then starts
@@ -174,16 +174,6 @@ def main(override_args=None, stop_on_join_tower=False):
     (override_args) and make Wheatley exit with error code 0 on joining a tower so that hanging forever
     can be differentiated from Wheatley's normal behaviour of sitting in an infinite loop waiting for input.
     """
-    # If the user adds 'server-mode' to the command, run the server-mode main function instead of this one,
-    # and remove the 'server-mode' argument
-    unparsed_args = override_args or sys.argv[1:]
-    if len(unparsed_args) > 1 and unparsed_args[0] == "server-mode":
-        del unparsed_args[0]
-        server_main(unparsed_args, stop_on_join_tower)
-        # The `server_main` function shouldn't return, but if it does somehow manage to do so return instead
-        # of running the standard main function as well
-        return
-
     __version__ = get_version_number()
 
     # PARSE THE ARGUMENTS
@@ -327,8 +317,11 @@ def main(override_args=None, stop_on_join_tower=False):
         version=f"Wheatley v{__version__}"
     )
 
+
     # Parse arguments
-    args = parser.parse_args(unparsed_args)
+    # `[1:]` is apparently needed, because sys.argv[0] is the working file of the Python interpreter
+    # which `parser.parse_args` does not want to see as an argument
+    args = parser.parse_args(sys.argv[1:] if override_args is None else override_args)
 
     # Deprecation warnings
     if args.wait:
@@ -364,6 +357,24 @@ def main(override_args=None, stop_on_join_tower=False):
 
         if not stop_on_join_tower:
             bot.main_loop()
+
+def main(override_args=None, stop_on_join_tower=False):
+    """
+    The root main function for Wheatley.  If the first argument given to Wheatley is 'server-mode', then
+    this will run `server_main` (the main function for running Wheatley on RR's servers) otherwise it will
+    run `console_main` (the main function for running Wheatley from the Command Line).
+    """
+    # If the user adds 'server-mode' to the command, run the server-mode main function instead of this one,
+    # and remove the 'server-mode' argument
+    unparsed_args = override_args or sys.argv[1:]
+    if len(unparsed_args) > 1 and unparsed_args[0] == "server-mode":
+        del unparsed_args[0]
+        server_main(unparsed_args, stop_on_join_tower)
+        # The `server_main` function shouldn't return, but if it does somehow manage to do so return instead
+        # of running the standard main function as well
+    else:
+        console_main(unparsed_args, stop_on_join_tower)
+
 
 
 if __name__ == "__main__":

@@ -118,13 +118,6 @@ def server_main(override_args, stop_on_join_tower):
               called and Wheatley is needed."
     )
 
-    # Misc arguments
-    parser.add_argument(
-        "--version",
-        action="version",
-        version=f"Wheatley v{__version__}"
-    )
-
     # Parse arguments
     # `[1:]` is apparently needed, because sys.argv[0] is the working file of the Python interpreter
     # which `parser.parse_args` does not want to see as an argument
@@ -132,6 +125,9 @@ def server_main(override_args, stop_on_join_tower):
 
     # Run the program
     configure_logging()
+
+    # Log the version string to 'DEBUG'
+    logging.debug(f"Running Wheatley v{__version__}")
 
     # Args that we are currently 'missing'
     use_up_down_in = True

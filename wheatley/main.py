@@ -26,7 +26,12 @@ from wheatley.row_generation.place_holder_generator import PlaceHolderGenerator
 
 def create_row_generator(args):
     """ Generates a row generator according to the given CLI arguments. """
-    if "comp" in args and args.comp is not None:
+    if "comp_url" in args and args.comp_url is not None:
+        try:
+            row_gen = ComplibCompositionGenerator.from_url(args.comp_url)
+        except (PrivateCompError, InvalidCompError) as e:
+            sys.exit(f"Bad value for '--comp': {e}")
+    elif "comp" in args and args.comp is not None:
         try:
             row_gen = ComplibCompositionGenerator(args.comp)
         except (PrivateCompError, InvalidCompError) as e:
@@ -209,6 +214,11 @@ def console_main(override_args, stop_on_join_tower):
         "-c", "--comp",
         type=int,
         help="The ID of the complib composition you want to ring"
+    )
+    comp_method_group.add_argument(
+        "--comp-url",
+        type=str,
+        help="The URL of the complib composition you want to ring"
     )
     comp_method_group.add_argument(
         "-m", "--method",

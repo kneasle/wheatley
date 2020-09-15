@@ -208,18 +208,16 @@ def json_to_row_generator(json, logger):
 
     if json['type'] == "composition":
         try:
-            comp_id = int(json['id'])
+            comp_url = json['url']
         except KeyError as e:
-            raise_error('id', "'id' is not defined", e)
-        except ValueError as e:
-            raise_error('id', f"'{json[id]}' is not a valid integer", e)
+            raise_error('url', "'url' is not defined", e)
 
         try:
-            row_gen = ComplibCompositionGenerator(comp_id)
+            row_gen = ComplibCompositionGenerator.from_url(comp_url)
         except PrivateCompError as e:
-            raise_error('complib request', "Comp id '{comp_id}' is private", e)
+            raise_error('complib request', "Comp id '{comp_url}' is private", e)
         except InvalidCompError as e:
-            raise_error('complib request', "No composition with id '{comp_id}' found", e)
+            raise_error('complib request', "No composition with id '{comp_url}' found", e)
         return row_gen
 
     raise_error('type', f"{json['type']} is not one of 'method' or 'composition'")

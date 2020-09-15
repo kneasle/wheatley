@@ -158,9 +158,6 @@ class WaitForUserRhythm(Rhythm):
     def change_setting(self, key, value):
         self._inner_rhythm.change_setting(key, value)
 
-        if key == "sensitivity":
-            self.logger.warning(f"NOT IMPLEMENTED: setting sensitivity to {value}.")
-
     def on_bell_ring(self, bell, stroke, real_time):
         """
         Called when a bell is rung at a given stroke.  Used as a callback from the Tower class.

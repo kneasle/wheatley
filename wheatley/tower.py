@@ -32,7 +32,7 @@ class RingingRoomTower:
         self._bell_state = []
         self._assigned_users = {}
         # A map from user IDs to the corresponding user name
-        self._user_list: Dict[int, str] = {}
+        self._user_name_map: Dict[int, str] = {}
 
         self.invoke_on_call: Dict[str, List[Callable[[], Any]]] = collections.defaultdict(list)
         self.invoke_on_reset: List[Callable[[], Any]] = []
@@ -103,7 +103,7 @@ class RingingRoomTower:
         Converts a numerical user ID into the corresponding user name, returning None if user_id is not in
         the tower.
         """
-        return self._user_list.get(user_id)
+        return self._user_name_map.get(user_id)
 
     def get_stroke(self, bell: Bell):
         """ Returns the stroke of a given bell. """
@@ -166,14 +166,14 @@ class RingingRoomTower:
         user_name_that_left = data["username"]
 
         # Remove the user ID that left from our user list
-        if user_id_that_left not in self._user_list:
+        if user_id_that_left not in self._user_name_map:
             self.logger.warning(
                 f"User #{user_id_that_left}:'{user_name_that_left}' left, but wasn't in the user list."
             )
-        elif self._user_list[user_id_that_left] != data['username']:
+        elif self._user_name_map[user_id_that_left] != data['username']:
             self.logger.warning(f"User #{user_id_that_left}:'{user_name_that_left}' left, but that ID was \
-logged in as '{self._user_list[user_id_that_left]}'.")
-            del self._user_list[user_id_that_left]
+logged in as '{self._user_name_map[user_id_that_left]}'.")
+            del self._user_name_map[user_id_that_left]
 
         bells_unassigned = []
 
@@ -191,12 +191,12 @@ logged in as '{self._user_list[user_id_that_left]}'.")
     def _on_user_entered(self, data):
         """ Called when the server receives a uew user so we can update our user list. """
         # Add the new user to the user list, so we can match up their ID with their username
-        self._user_list[data['user_id']] = data['username']
+        self._user_name_map[data['user_id']] = data['username']
 
     def _on_user_list(self, user_list):
         """ Called when the server broadcasts a user list when Wheatley joins a tower. """
         for user in user_list['user_list']:
-            self._user_list[user['user_id']] = user['username']
+            self._user_name_map[user['user_id']] = user['username']
 
     def _join_tower(self):
         """ Joins the tower as an anonymous user. """

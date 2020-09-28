@@ -60,11 +60,17 @@ def create_rhythm(args):
     except PealSpeedParseError as e:
         sys.exit(str(e))
 
+    # Sets the minimum number of bells that Wheatley will use in order to deduce a rhythm.  Setting this to
+    # larger numbers will make Wheatley more stable during the pull-off, whereas smaller numbers will make
+    # Wheatley more sensitive to user's pull-off speed.  This must be less than or equal to
+    # '--max-bells-in-dataset'.
+    min_bells_in_dataset = 4
+
     regression = RegressionRhythm(
         args.inertia,
         handstroke_gap=args.handstroke_gap,
         peal_speed=peal_speed,
-        min_bells_in_dataset=args.min_bells_in_dataset,
+        min_bells_in_dataset=min_bells_in_dataset,
         max_bells_in_dataset=args.max_bells_in_dataset
     )
 
@@ -228,15 +234,6 @@ def main(override_args=None, stop_on_join_tower=False):
         default=1.0,
         help="Sets the handstroke gap as a factor of the space between two bells.  Defaults to \
               '1.0'."
-    )
-    rhythm_group.add_argument(
-        "-N", "--min-bells-in-dataset",
-        type=int,
-        default=4,
-        help="Sets the minimum number of bells that Wheatley will use in order to deduce a rhythm. \
-              Setting this to larger numbers will make Wheatley more stable during the pull-off, whereas \
-              smaller numbers will make Wheatley more sensitive to user's pull-off speed.  This must be \
-              less than or equal to '--max-bells-in-dataset'.  Defaults to 4."
     )
     rhythm_group.add_argument(
         "-X", "--max-bells-in-dataset",

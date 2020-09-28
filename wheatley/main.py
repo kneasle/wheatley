@@ -62,9 +62,12 @@ def create_rhythm(args):
 
     # Sets the minimum number of bells that Wheatley will use in order to deduce a rhythm.  Setting this to
     # larger numbers will make Wheatley more stable during the pull-off, whereas smaller numbers will make
-    # Wheatley more sensitive to user's pull-off speed.  This must be less than or equal to
-    # '--max-bells-in-dataset'.
+    # Wheatley more sensitive to user's pull-off speed.  If this is larger than `--max_bells_in_dataset`,
+    # this will be clamped to fit.
     min_bells_in_dataset = 4
+
+    # Clamp min_bells_in_dataset to not be bigger than max_bells_in_dataset
+    min_bells_in_dataset = min(min_bells_in_dataset, args.max_bells_in_dataset)
 
     regression = RegressionRhythm(
         args.inertia,
@@ -243,7 +246,7 @@ def main(override_args=None, stop_on_join_tower=False):
               ringing speed.  If you make this larger, then he will be more consistent but less \
               quick to respond to changes in rhythm.  Setting both this and \
               --inertia to a very small values could result in Wheatley ringing ridiculously \
-              quickly.  This must be greater than or equal to '--min-bells-in-dataset'.  Defaults to '15'."
+              quickly.  Defaults to '15'."
     )
 
     # Misc arguments
@@ -261,10 +264,6 @@ def main(override_args=None, stop_on_join_tower=False):
     # Deprecation warnings
     if args.wait:
         print("Deprecation warning: `--wait` has been replaced with `--keep-going`!")
-
-    if args.min_bells_in_dataset > args.max_bells_in_dataset:
-        sys.exit(f"'--min-bells-in-dataset' ({args.min_bells_in_dataset}) must be smaller than \
-'--max-bells-in-dataset' ({args.max_bells_in_dataset}).")
 
     # Run the program
     configure_logging()

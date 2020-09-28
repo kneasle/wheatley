@@ -97,9 +97,10 @@ class RingingRoomTower:
 
     def user_name_from_id(self, user_id: int) -> str:
         """
-        Converts a numerical user ID into the corresponding user name, throwing a KeyError if not found.
+        Converts a numerical user ID into the corresponding user name, returning None if user_id is not in
+        the tower.
         """
-        return self._user_list[user_id]
+        return self._user_list.get(user_id)
 
     def get_stroke(self, bell: Bell):
         """ Returns the stroke of a given bell. """

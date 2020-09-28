@@ -91,7 +91,10 @@ class RingingRoomTower:
     def is_bell_assigned_to(self, bell: Bell, user_name: Optional[str]):
         """ Returns true if a given bell is assigned to the given user name. """
         try:
-            return self.user_name_from_id(self._assigned_users.get(bell, None)) == user_name
+            assigned_user_id = self._assigned_users.get(bell, None)
+            if assigned_user_id is None and user_name is None:
+                return True
+            return self.user_name_from_id(assigned_user_id) == user_name
         except KeyError:
             return False
 

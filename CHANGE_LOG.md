@@ -1,13 +1,13 @@
 # 0.4.0 (W.I.P.)
 - Replaced `--max-rows-in-dataset` with `--max-bells-in-dataset` to prevent overfitting when
-  Wheatley is ringing most of the bells.
+  Wheatley is ringing most of the bells
 - Keep Wheatley's behaviour consistent with Ringing Room's when tower sizes are changed
-- Change the minimum number of bells required for regression from `2` to defaulting to `4`.
-- Group CLI args into groups for better readability of both code and help messages.
-- Overhaul help and debug messages to use `Wheatley` rather than `bot`.
-- Added CLI arg `--name` to tell Wheatley to ring bells assigned to a specific person.
+- Change the minimum number of bells required for regression from `2` to defaulting to `4`
 - Make Wheatley add his own bells to the regression dataset whilst ringing (this improves the
   stability of the ringing speed when Wheatley is ringing nearly all the bells)
+- Group CLI args into groups for better readability of both code and help messages
+- Overhaul help and debug messages to use `Wheatley` rather than `bot`
+- Added CLI arg `--name` to tell Wheatley to ring bells assigned to a specific person
 - Fix all the examples in `README.md` and add integration tests to prevent breaking them again.
 - Fix `assert` being tripped by methods with an odd lead length
 - Fix incorrect expansion of multiple `x`s in Place Notation

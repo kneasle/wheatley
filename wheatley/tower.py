@@ -258,6 +258,9 @@ logged in as '{self._user_name_map[user_id_that_left]}'.")
 
         self._assigned_users[bell] = user
 
+        assert isinstance(user, int) or user is None, \
+               f"User ID {user} is not an integer (it has type {type(user)})."
+
         if user:
             self.logger.info(f"RECEIVED: Assigned bell '{bell}' to '{self.user_name_from_id(user)}'")
         else:

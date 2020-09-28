@@ -6,6 +6,8 @@
 - Group CLI args into groups for better readability of both code and help messages.
 - Overhaul help and debug messages to use `Wheatley` rather than `bot`.
 - Added CLI arg `--name` to tell Wheatley to ring bells assigned to a specific person.
+- Make Wheatley add his own bells to the regression dataset whilst ringing (this improves the
+  stability of the ringing speed when Wheatley is ringing nearly all the bells)
 - Fix all the examples in `README.md` and add integration tests to prevent breaking them again.
 - Fix `assert` being tripped by methods with an odd lead length
 - Fix incorrect expansion of multiple `x`s in Place Notation

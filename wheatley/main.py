@@ -60,10 +60,20 @@ def create_rhythm(args):
     except PealSpeedParseError as e:
         sys.exit(str(e))
 
+    # Sets the minimum number of bells that Wheatley will use in order to deduce a rhythm.  Setting this to
+    # larger numbers will make Wheatley more stable during the pull-off, whereas smaller numbers will make
+    # Wheatley more sensitive to user's pull-off speed.  If this is larger than `--max_bells_in_dataset`,
+    # this will be clamped to fit.
+    min_bells_in_dataset = 4
+
+    # Clamp min_bells_in_dataset to not be bigger than max_bells_in_dataset
+    min_bells_in_dataset = min(min_bells_in_dataset, args.max_bells_in_dataset)
+
     regression = RegressionRhythm(
         args.inertia,
         handstroke_gap=args.handstroke_gap,
         peal_speed=peal_speed,
+        min_bells_in_dataset=min_bells_in_dataset,
         max_bells_in_dataset=args.max_bells_in_dataset
     )
 
@@ -234,9 +244,9 @@ def main(override_args=None, stop_on_join_tower=False):
         default=15,
         help="Sets the maximum number of bells that Wheatley will store to determine the current \
               ringing speed.  If you make this larger, then he will be more consistent but less \
-              quick to respond to changes in rhythm.  Defaults to '15'.  Setting both this and \
+              quick to respond to changes in rhythm.  Setting both this and \
               --inertia to a very small values could result in Wheatley ringing ridiculously \
-              quickly."
+              quickly.  Defaults to '15'."
     )
 
     # Misc arguments

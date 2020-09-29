@@ -1,6 +1,7 @@
 # 0.4.0 (W.I.P.)
 - Replaced `--max-rows-in-dataset` with `--max-bells-in-dataset` to prevent overfitting when
   Wheatley is ringing most of the bells.
+- Keep Wheatley's behaviour consistent with Ringing Room's when tower sizes are changed
 - Change the minimum number of bells required for regression from `2` to defaulting to `4`.
 - Group CLI args into groups for better readability of both code and help messages.
 - Overhaul help and debug messages to use `Wheatley` rather than `bot`.

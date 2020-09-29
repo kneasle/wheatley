@@ -8,6 +8,7 @@ import math
 import time
 
 from abc import ABCMeta, abstractmethod
+from typing import Any
 
 from wheatley.bell import Bell
 from wheatley.regression import calculate_regression

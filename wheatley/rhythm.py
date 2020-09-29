@@ -207,17 +207,20 @@ class RegressionRhythm(Rhythm):
 
     logger_name = "RHYTHM:Regression"
 
-    def __init__(self, inertia, peal_speed=178, handstroke_gap=1, max_bells_in_dataset=15):
+    def __init__(self, inertia, peal_speed=178, handstroke_gap=1, max_bells_in_dataset=15,
+                 initial_inertia=0):
         """
         Initialises a new RegressionRhythm with a given default peal speed and handstroke gap.
         `peal_speed` is the number of minutes in a peal of 5040 changes, and `handstroke_gap`
-        measures how many places long the handstroke gap is.
+        measures how many places long the handstroke gap is.  `initial_inertia` sets the inertia for only
+        the first row, to aid with a smooth pulloff.
         """
         # An inertia-like coefficient designed to allow the regression finder to slowly adjust to
         # a new rhythm
         # 0.0 means that a new regression line will take effect instantly
         # 1.0 means that no effect is made at all
         self._preferred_inertia = inertia
+        self._initial_inertia = initial_inertia
 
         self._peal_speed = peal_speed
         self._handstroke_gap = handstroke_gap
@@ -251,7 +254,8 @@ class RegressionRhythm(Rhythm):
             # Lerp between the new times and the old times, according to the desired inertia
             # The inertia is set to 0 for the first change, to make sure that there's a smooth
             # pullof
-            regression_preferred_inertia = self._preferred_inertia if row_number > 0 else 0.0
+            regression_preferred_inertia = self._preferred_inertia if row_number > 0 else \
+                                           self._initial_inertia
 
             self._start_time = lerp(new_start_time, self._start_time, regression_preferred_inertia)
             self._blow_interval = lerp(new_blow_interval, self._blow_interval,

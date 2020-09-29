@@ -53,13 +53,14 @@ def create_row_generator(args):
     return row_gen
 
 
-def create_rhythm(peal_speed, inertia, max_bells_in_dataset, handstroke_gap, use_wait):
+def create_rhythm(peal_speed, inertia, max_bells_in_dataset, handstroke_gap, use_wait, initial_inertia=None):
     """ Generates a rhythm object according to the given CLI arguments. """
     regression = RegressionRhythm(
         inertia,
         handstroke_gap=handstroke_gap,
         peal_speed=peal_speed,
-        max_bells_in_dataset=max_bells_in_dataset
+        max_bells_in_dataset=max_bells_in_dataset,
+        initial_inertia=initial_inertia
     )
 
     if use_wait:
@@ -139,6 +140,7 @@ def server_main(override_args, stop_on_join_tower):
     stop_at_rounds = True
     peal_speed = 180
     inertia = 1
+    initial_inertia = 1
     max_bells_in_dataset = 15
     handstroke_gap = 1
     use_wait = True
@@ -149,7 +151,8 @@ def server_main(override_args, stop_on_join_tower):
         sys.exit("Specified tower not found.")
 
     tower = RingingRoomTower(args.room_id, tower_url)
-    rhythm = create_rhythm(peal_speed, inertia, max_bells_in_dataset, handstroke_gap, use_wait)
+    rhythm = create_rhythm(peal_speed, inertia, max_bells_in_dataset, handstroke_gap, use_wait,
+                           initial_inertia)
     bot = Bot(tower, PlaceHolderGenerator(), use_up_down_in, stop_at_rounds, rhythm, user_name="Wheatley",
               server_mode=True)
 

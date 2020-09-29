@@ -247,13 +247,8 @@ logged in as '{self._user_name_map[user_id_that_left]}'.")
         if new_size != self.number_of_bells:
             # Remove the user who's bells have been removed (so that returning to a stage doesn't make
             # Wheatley think the bells are still assigned)
-            bells_to_unassign = []
-            for bell in self._assigned_users:
-                if bell.number > new_size:
-                    bells_to_unassign.append(bell)
-            for b in bells_to_unassign:
-                del self._assigned_users[b]
-            print(self._assigned_users)
+            self._assigned_users = {bell: user for (bell, user) in self._assigned_users.items()
+                                               if bell.number <= new_size}
             # Set the bells at handstroke
             self._bell_state = self._bells_set_at_hand(new_size)
             # Handle all the callbacks

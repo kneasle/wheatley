@@ -155,10 +155,7 @@ def server_main(override_args, stop_on_join_tower):
     handstroke_gap = 1
     use_wait = True
 
-    try:
-        tower_url = "http://127.0.0.1:" + str(args.port)
-    except TowerNotFoundError:
-        sys.exit("Specified tower not found.")
+    tower_url = "http://127.0.0.1:" + str(args.port)
 
     tower = RingingRoomTower(args.room_id, tower_url)
     rhythm = create_rhythm(peal_speed, inertia, max_bells_in_dataset, handstroke_gap, use_wait,

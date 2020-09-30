@@ -12,6 +12,9 @@ treble = Bell.from_number(1)
 second = Bell.from_number(2)
 
 
+USER_CONTROLLED = True
+
+
 class WaitForUserRhythmTests(unittest.TestCase):
     def setUp(self):
         self.mock_inner_rhythm = Mock(spec=Rhythm)
@@ -75,14 +78,14 @@ class WaitForUserRhythmTests(unittest.TestCase):
         self._return_from_sleep = False
 
     def test_on_bell_ring__no_initial_delay(self):
-        self.wait_rhythm.expect_bell(treble, 1, 1, HANDSTROKE, True)
+        self.wait_rhythm.expect_bell(treble, 1, 1, HANDSTROKE, USER_CONTROLLED)
 
         self.wait_rhythm.on_bell_ring(treble, HANDSTROKE, 0.5)
 
         self.mock_inner_rhythm.on_bell_ring.assert_called_once_with(treble, HANDSTROKE, 0.5)
 
     def test_on_bell_ring__subtracts_existing_delay(self):
-        self.wait_rhythm.expect_bell(treble, 1, 1, HANDSTROKE, True)
+        self.wait_rhythm.expect_bell(treble, 1, 1, HANDSTROKE, USER_CONTROLLED)
         self.wait_rhythm.delay = 10
 
         self.wait_rhythm.on_bell_ring(treble, HANDSTROKE, 10.5)
@@ -95,7 +98,7 @@ class WaitForUserRhythmTests(unittest.TestCase):
         expected_time = 11
         actual_time = 11.1
 
-        self.wait_rhythm.expect_bell(treble, 1, 1, HANDSTROKE, True)
+        self.wait_rhythm.expect_bell(treble, 1, 1, HANDSTROKE, USER_CONTROLLED)
         self.wait_rhythm.delay = initial_delay
 
         # Start waiting for treble
@@ -121,7 +124,7 @@ class WaitForUserRhythmTests(unittest.TestCase):
         actual_time = 10.5
 
         self.wait_rhythm.delay = initial_delay
-        self.wait_rhythm.expect_bell(treble, 1, 1, HANDSTROKE, True)
+        self.wait_rhythm.expect_bell(treble, 1, 1, HANDSTROKE, USER_CONTROLLED)
 
         # Treble rung by user
         self.wait_rhythm.on_bell_ring(treble, HANDSTROKE, actual_time)
@@ -143,8 +146,8 @@ class WaitForUserRhythmTests(unittest.TestCase):
         expected_first_bell_time = 1
         expected_second_bell_time = 2
 
-        self.wait_rhythm.expect_bell(treble, 1, 1, HANDSTROKE, True)
-        self.wait_rhythm.expect_bell(second, 1, 2, HANDSTROKE, True)
+        self.wait_rhythm.expect_bell(treble, 1, 1, HANDSTROKE, USER_CONTROLLED)
+        self.wait_rhythm.expect_bell(second, 1, 2, HANDSTROKE, USER_CONTROLLED)
         self.wait_rhythm.delay = initial_delay
 
         # Start waiting for treble
@@ -180,7 +183,7 @@ class WaitForUserRhythmTests(unittest.TestCase):
         expected_first_time = 1
         expected_second_time = 2
 
-        self.wait_rhythm.expect_bell(treble, 1, 1, HANDSTROKE, True)
+        self.wait_rhythm.expect_bell(treble, 1, 1, HANDSTROKE, USER_CONTROLLED)
         self.wait_rhythm.delay = initial_delay
 
         # Treble rung by user twice, so is now on wrong stroke
@@ -192,7 +195,7 @@ class WaitForUserRhythmTests(unittest.TestCase):
         self.assert_not_waiting_for_bell_time()
 
         # Next row, treble is already rung BACKSTROKE
-        self.wait_rhythm.expect_bell(treble, 2, 1, BACKSTROKE, True)
+        self.wait_rhythm.expect_bell(treble, 2, 1, BACKSTROKE, USER_CONTROLLED)
 
         self.start_wait_for_bell_time_thread(current_time=expected_second_time, bell=treble, row_number=2,
                                              place=1, user_controlled=True, stroke=BACKSTROKE)
@@ -209,7 +212,7 @@ class WaitForUserRhythmTests(unittest.TestCase):
         expected_first_time = 1
         expected_second_time = 2
 
-        self.wait_rhythm.expect_bell(treble, 1, 1, HANDSTROKE, True)
+        self.wait_rhythm.expect_bell(treble, 1, 1, HANDSTROKE, USER_CONTROLLED)
 
         # Treble rung by user
         self.wait_rhythm.on_bell_ring(treble, HANDSTROKE, 1)
@@ -223,7 +226,7 @@ class WaitForUserRhythmTests(unittest.TestCase):
 
         self.assert_not_waiting_for_bell_time()
 
-        self.wait_rhythm.expect_bell(treble, 2, 1, BACKSTROKE, True)
+        self.wait_rhythm.expect_bell(treble, 2, 1, BACKSTROKE, USER_CONTROLLED)
 
         self.start_wait_for_bell_time_thread(current_time=expected_second_time, bell=treble, row_number=2,
                                              place=1, user_controlled=True, stroke=BACKSTROKE)

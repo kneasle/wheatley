@@ -136,13 +136,8 @@ into changes unless something is done!")
     # Mainloop and helper methods
     def expect_bell(self, index, bell):
         """ Called to let the rhythm expect a user-controlled bell at a certain time and stroke. """
-        if self._user_assigned_bell(bell):
-            self._rhythm.expect_bell(
-                bell,
-                self._row_number,
-                index,
-                self.is_handstroke
-            )
+        self._rhythm.expect_bell(bell, self._row_number, index, self.is_handstroke,
+                                 self._user_assigned_bell(bell))
 
     def start_next_row(self):
         """

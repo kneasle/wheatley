@@ -30,8 +30,7 @@ class WaitForUserRhythmTests(unittest.TestCase):
         self._finished_test = True
 
     def _patched_sleep(self, seconds):
-        """
-        Replacement sleep function that loops until advance_patched_sleep() is called.
+        """ Replacement sleep function that loops until advance_patched_sleep() is called.
         Allows controlling how many times sleep() returns.
         """
         self._sleeping = True
@@ -51,8 +50,7 @@ class WaitForUserRhythmTests(unittest.TestCase):
             self._return_from_sleep = True
 
     def start_wait_for_bell_time_thread(self, current_time, bell, row_number, place, user_controlled, stroke):
-        """
-        Runs wait_for_bell_time() on a different thread, as it should loop until on_bell_ring() is called
+        """ Runs wait_for_bell_time() on a different thread, as it should loop until on_bell_ring() is called
         """
 
         def _wait_for_bell_time():

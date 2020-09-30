@@ -245,8 +245,13 @@ logged in as '{self._user_name_map[user_id_that_left]}'.")
         """ Callback called when the number of bells in the room changes. """
         new_size = data["size"]
         if new_size != self.number_of_bells:
-            self._assigned_users = {}
+            # Remove the user who's bells have been removed (so that returning to a stage doesn't make
+            # Wheatley think the bells are still assigned)
+            self._assigned_users = {bell: user for (bell, user) in self._assigned_users.items()
+                                               if bell.number <= new_size}
+            # Set the bells at handstroke
             self._bell_state = self._bells_set_at_hand(new_size)
+            # Handle all the callbacks
             self.logger.info(f"RECEIVED: New tower size '{new_size}'")
             for invoke_callback in self.invoke_on_reset:
                 invoke_callback()

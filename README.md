@@ -33,16 +33,16 @@ If you have any issues/suggestions, either
 
 ## Quickstart
 ### Installation (using Pip)
-1. Run the following command to install or update to the
+Run the following command to install or update to the
 [latest version of Wheatley](https://pypi.org/project/wheatley/):
    ```bash
    pip install --upgrade wheatley
    ```
 
-2. Pick an example below to run Wheatley!
-
 ## Examples
-Run the bot with `wheatley [ARGS]`.
+Pick an example below to run Wheatley!
+
+For help with what parameters Wheatley has and what they do, type `wheatley --help`.
 
 *   Join a `ringingroom.com` tower with (9 digit) ID `[ID NUMBER]` and ring Plain Bob Major (tower
     bell style – wait for `Go` and `That's all`):
@@ -100,11 +100,4 @@ Run the bot with `wheatley [ARGS]`.
     wheatley [ID NUMBER] --method [METHOD TITLE] --inertia 1.0
     # or
     wheatley [ID NUMBER] --method [METHOD TITLE] -I 1.0
-    ```
-
-*   Print a nice help string:
-    ```bash
-    wheatley --help
-    # or
-    wheatley -h
     ```

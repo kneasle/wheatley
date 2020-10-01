@@ -1,4 +1,5 @@
-# 0.4.0 (W.I.P.)
+# 0.4.0
+- Corrected for Ringing Room internally changing how bells are assigned to users.
 - Replaced `--max-rows-in-dataset` with `--max-bells-in-dataset` to prevent overfitting when
   Wheatley is ringing most of the bells.
 - Keep Wheatley's behaviour consistent with Ringing Room's when tower sizes are changed

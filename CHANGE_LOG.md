@@ -1,4 +1,4 @@
-# 0.4.1
+# 0.5.0
 - Add mode for running Wheatley on a Ringing Room server.
 
 # 0.4.0

@@ -8,6 +8,7 @@ import math
 import time
 
 from abc import ABCMeta, abstractmethod
+from typing import Any
 
 from wheatley.bell import Bell
 from wheatley.regression import calculate_regression
@@ -39,6 +40,14 @@ class Rhythm(metaclass=ABCMeta):
     """
 
     @abstractmethod
+    def return_to_mainloop(self):
+        """
+        When called, this function requires that Wheatley's main thread should return from
+        wait_for_bell_time and give control back to the mainloop within a reasonable amount of time
+        (i.e. 1/10 of a second is acceptable, but anything approacing a second is not)
+        """
+
+    @abstractmethod
     def wait_for_bell_time(self, current_time: float, bell: Bell, row_number: int, place: int,
                            user_controlled: bool, stroke: bool):
         """ Sleeps the thread until a given Bell should have rung. """
@@ -51,6 +60,10 @@ class Rhythm(metaclass=ABCMeta):
         _should_ have been in the ringing, and so can use that knowledge to inform the speed of the
         ringing.
         """
+
+    @abstractmethod
+    def change_setting(self, key: str, value: Any):
+        """ Called when the Ringing Room server asks Wheatley to change a setting. """
 
     @abstractmethod
     def on_bell_ring(self, bell: Bell, stroke: bool, real_time: float):
@@ -90,6 +103,17 @@ class WaitForUserRhythm(Rhythm):
 
         self.logger = logging.getLogger(self.logger_name)
 
+        self._should_return_to_mainloop = False
+
+    def return_to_mainloop(self):
+        """
+        When called, this function requires that Wheatley's main thread should return from
+        wait_for_bell_time and give control back to the mainloop within a reasonable amount of time
+        (i.e. 1/10 of a second is acceptable, but anything approacing a second is not)
+        """
+        self._should_return_to_mainloop = True
+        self._inner_rhythm.return_to_mainloop()
+
     def wait_for_bell_time(self, current_time, bell, row_number, place, user_controlled, stroke):
         """ Sleeps the thread until a given Bell should have rung. """
         if stroke != self._current_stroke:
@@ -104,10 +128,15 @@ class WaitForUserRhythm(Rhythm):
                 self.sleep(self.sleep_time)
                 delay_for_user += self.sleep_time
                 self.logger.debug(f"Waiting for {bell}")
+                if self._should_return_to_mainloop:
+                    break
 
             if delay_for_user:
                 self.delay += delay_for_user
                 self.logger.info(f"Delayed for {delay_for_user}")
+
+        # Reset the flag to say that we've returned to the mainloop
+        self._should_return_to_mainloop = False
 
     def expect_bell(self, expected_bell, row_number, place, expected_stroke):
         """
@@ -125,6 +154,9 @@ class WaitForUserRhythm(Rhythm):
 
         if expected_bell not in self._early_bells[expected_stroke]:
             self._expected_bells[expected_stroke].add(expected_bell)
+
+    def change_setting(self, key, value):
+        self._inner_rhythm.change_setting(key, value)
 
     def on_bell_ring(self, bell, stroke, real_time):
         """
@@ -176,17 +208,19 @@ class RegressionRhythm(Rhythm):
     logger_name = "RHYTHM:Regression"
 
     def __init__(self, inertia, peal_speed=178, handstroke_gap=1, min_bells_in_dataset=4,
-                 max_bells_in_dataset=15):
+                 max_bells_in_dataset=15, initial_inertia=0):
         """
         Initialises a new RegressionRhythm with a given default peal speed and handstroke gap.
         `peal_speed` is the number of minutes in a peal of 5040 changes, and `handstroke_gap`
-        measures how many places long the handstroke gap is.
+        measures how many places long the handstroke gap is.  `initial_inertia` sets the inertia for only
+        the first row, to aid with a smooth pulloff.
         """
         # An inertia-like coefficient designed to allow the regression finder to slowly adjust to
         # a new rhythm
         # 0.0 means that a new regression line will take effect instantly
         # 1.0 means that no effect is made at all
         self._preferred_inertia = inertia
+        self._initial_inertia = initial_inertia
 
         self._peal_speed = peal_speed
         self._handstroke_gap = handstroke_gap
@@ -202,6 +236,8 @@ class RegressionRhythm(Rhythm):
         self.data_set = []
 
         self.logger = logging.getLogger(self.logger_name)
+
+        self._should_return_to_mainloop = False
 
     def _add_data_point(self, row_number, place, real_time, weight):
         blow_time = self.index_to_blow_time(row_number, place)
@@ -219,7 +255,8 @@ class RegressionRhythm(Rhythm):
             # Lerp between the new times and the old times, according to the desired inertia
             # The inertia is set to 0 for the first change, to make sure that there's a smooth
             # pullof
-            regression_preferred_inertia = self._preferred_inertia if row_number > 0 else 0.0
+            regression_preferred_inertia = self._preferred_inertia if row_number > 0 else \
+                                           self._initial_inertia
 
             self._start_time = lerp(new_start_time, self._start_time, regression_preferred_inertia)
             self._blow_interval = lerp(new_blow_interval, self._blow_interval,
@@ -233,6 +270,14 @@ class RegressionRhythm(Rhythm):
             # Eventually forget about datapoints
             if len(self.data_set) >= self._max_bells_in_dataset:
                 del self.data_set[0]
+
+    def return_to_mainloop(self):
+        """
+        When called, this function requires that Wheatley's main thread should return from
+        wait_for_bell_time and give control back to the mainloop within a reasonable amount of time
+        (i.e. 1/10 of a second is acceptable, but anything approacing a second is not)
+        """
+        self._should_return_to_mainloop = True
 
     def wait_for_bell_time(self, current_time, bell, row_number, place, user_controlled, stroke):
         """ Sleeps the thread until a given Bell should have rung. """
@@ -256,6 +301,8 @@ class RegressionRhythm(Rhythm):
             # Slow the ticks slightly
             self.sleep(0.01)
 
+        self._should_return_to_mainloop = False
+
     def expect_bell(self, expected_bell, row_number, place, expected_stroke):
         """
         Indicates that a given Bell is expected to be rung at a given row, place and stroke.
@@ -266,6 +313,27 @@ class RegressionRhythm(Rhythm):
         self.logger.debug(f"Expected bell {expected_bell} at index {row_number}:{place} at stroke"
                           + f"{expected_stroke}")
         self._expected_bells[(expected_bell, expected_stroke)] = (row_number, place)
+
+    def change_setting(self, key, value):
+        def log_warning(message):
+            self.logger.warning(f"Invalid value for setting '{key}': {message}")
+
+        if key == "sensitivity":
+            self.logger.warning(f"NOT IMPLEMENTED: setting sensitivity to {value}.")
+
+        if key == 'inertia':
+            try:
+                new_inertia = float(value)
+
+                if new_inertia > 1 or new_inertia < 0:
+                    log_warning(f"{new_inertia} is not between 0 and 1")
+                else:
+                    self._preferred_inertia = new_inertia
+
+                    self.logger.warning(f"Setting 'self._preferred_inertia' to '{value}'")
+            except ValueError:
+                log_warning(f"{value} is not an number")
+
 
     def on_bell_ring(self, bell, stroke, real_time):
         """

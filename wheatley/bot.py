@@ -13,6 +13,12 @@ from wheatley.row_generation import RowGenerator
 from wheatley.bell import Bell
 from wheatley.rhythm import Rhythm
 from wheatley.tower import RingingRoomTower
+from wheatley.parsing import to_bool, json_to_row_generator, RowGenParseError
+
+
+# Number of seconds that Wheatley is not ringing before Wheatley will return from the mainloop
+# Only applies when Wheatley is running in server mode
+INACTIVITY_EXIT_TIME = 300
 
 
 class Bot:
@@ -24,15 +30,20 @@ class Bot:
     logger_name = "BOT"
 
     def __init__(self, tower: RingingRoomTower, row_generator: RowGenerator, do_up_down_in: bool,
-                 stop_at_rounds: bool, rhythm: Rhythm, user_name: Optional[str] = None):
+                 stop_at_rounds: bool, rhythm: Rhythm, user_name: Optional[str] = None, server_mode = False):
         """ Initialise a Bot with all the parts it needs to run. """
-        self._rhythm = rhythm
+        self._server_mode = server_mode
+        self._last_activity_time = time.time()
 
+        self._rhythm = rhythm
         self._do_up_down_in = do_up_down_in
         self._stop_at_rounds = stop_at_rounds
         self._user_name = user_name
 
         self.row_generator = row_generator
+        # This is the row generator that will be used after 'Look to' is called for the next time, allowing
+        # for changing the method or composition whilst Wheatley is running.
+        self.next_row_generator = None
 
         self._tower = tower
 
@@ -42,13 +53,15 @@ class Bot:
         self._tower.invoke_on_call[calls.SINGLE].append(self._on_single)
         self._tower.invoke_on_call[calls.THATS_ALL].append(self._on_thats_all)
         self._tower.invoke_on_call[calls.STAND].append(self._on_stand_next)
-
         self._tower.invoke_on_bell_rung.append(self._on_bell_ring)
         self._tower.invoke_on_reset.append(self._on_size_change)
+        if self._server_mode:
+            self._tower.invoke_on_setting_change.append(self._on_setting_change)
+            self._tower.invoke_on_row_gen_change.append(self._on_row_gen_change)
+            self._tower.invoke_on_stop_touch.append(self._on_stop_touch)
 
         self._is_ringing = False
         self._is_ringing_rounds = True
-
         self._should_start_method = False
         self._should_start_ringing_rounds = False
         self._should_stand = False
@@ -71,6 +84,33 @@ class Bot:
         return self._tower.number_of_bells
 
     # Callbacks
+    def _on_setting_change(self, key, value):
+        def log_invalid_key(message):
+            self.logger.warning(f"Invalid value for {key}: {message}")
+
+        if key == 'use_up_down_in':
+            try:
+                self._do_up_down_in = to_bool(value)
+                self.logger.info(f"Setting 'use_up_down_in' to {self._do_up_down_in}")
+            except ValueError:
+                log_invalid_key(f"{value} cannot be converted into a bool")
+        elif key == 'stop_at_rounds':
+            try:
+                self._stop_at_rounds = to_bool(value)
+                self.logger.info(f"Setting 'stop_at_rounds' to {value}")
+            except ValueError:
+                log_invalid_key(f"{value} cannot be converted into a bool")
+        else:
+            self._rhythm.change_setting(key, value)
+
+    def _on_row_gen_change(self, row_gen_json):
+        try:
+            self.next_row_generator = json_to_row_generator(row_gen_json, self.logger)
+
+            self.logger.info("Successfully updated next row gen")
+        except RowGenParseError as e:
+            self.logger.warning(e)
+
     def _on_size_change(self):
         if not self.row_generator.is_tower_size_valid(self._tower.number_of_bells):
             self.logger.warning(f"Row generation requires {self.row_generator.number_of_bells} \
@@ -78,7 +118,12 @@ bells, but the current tower has {self._tower.number_of_bells}.  Wheatley will c
 into changes unless something is done!")
 
     def _on_look_to(self):
+        self.look_to_has_been_called(time.time())
+
+    # This has to be made public, because the server's main function might have to call it
+    def look_to_has_been_called(self, call_time):
         """ Callback called when a user calls 'Look To'. """
+        self._rhythm.return_to_mainloop()
 
         treble = Bell.from_number(1)
 
@@ -89,7 +134,11 @@ into changes unless something is done!")
                 number_of_user_controlled_bells += 1
 
         self._rhythm.initialise_line(self.stage, self._user_assigned_bell(treble),
-                                     time.time() + 3, number_of_user_controlled_bells)
+                                     call_time + 3, number_of_user_controlled_bells)
+
+        # Move to the next row generator if it's defined
+        self.row_generator = self.next_row_generator or self.row_generator
+        self.next_row_generator = None
 
         # Clear all the flags
         self._should_stand = False
@@ -134,6 +183,12 @@ into changes unless something is done!")
             # otherwise this will always expect the bells on the wrong stroke and no ringing will
             # ever happen
             self._rhythm.on_bell_ring(bell, not stroke, time.time())
+
+    def _on_stop_touch(self):
+        self.logger.info("Got to callback for stop touch")
+        self._tower.set_is_ringing(False)
+        self._is_ringing = False
+        self._rhythm.return_to_mainloop()
 
     # Mainloop and helper methods
     def expect_bell(self, index, bell):
@@ -232,10 +287,26 @@ into changes unless something is done!")
         The main thread will get stuck forever in this function whilst the bot rings.
         """
         while True:
-            if self._is_ringing:
-                self.tick()
+            # Sit in an infinite loop whilst we're not ringing, and exit Wheatley if enough time
+            # has passed
+            self._last_activity_time = time.time()
+            while not self._is_ringing:
+                time.sleep(0.01)
+                if self._server_mode and time.time() > self._last_activity_time + INACTIVITY_EXIT_TIME:
+                    self.logger.info(f"Timed out - no activity for {INACTIVITY_EXIT_TIME}s. Exiting.")
+                    return
 
-            time.sleep(0.01)
+            self.logger.info("Starting to ring!")
+            if self._server_mode:
+                self._tower.set_is_ringing(True)
+
+            while self._is_ringing:
+                self.tick()
+                time.sleep(0.01)
+
+            self.logger.info("Stopping ringing!")
+            if self._server_mode:
+                self._tower.set_is_ringing(False)
 
     def _user_assigned_bell(self, bell: Bell):
         """ True when the bell is assigned to a different user name than given to the bot """

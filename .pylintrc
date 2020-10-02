@@ -18,3 +18,4 @@ max-args=10
 max-attributes=20
 max-branches=15
 max-locals=20
+max-statements=60

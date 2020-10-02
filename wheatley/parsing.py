@@ -2,6 +2,11 @@
 A module to contain all the functions that parse command line arguments, and their error classes.
 """
 
+from wheatley.row_generation.place_notation_generator import PlaceNotationGenerator
+from wheatley.row_generation.complib_composition_generator import ComplibCompositionGenerator, \
+                                                                  PrivateCompError, InvalidCompError
+
+
 class PealSpeedParseError(ValueError):
     """
     An error thrown with a helpful error message when the user inputs a peal speed string that
@@ -147,3 +152,84 @@ def parse_call(input_string: str):
         parsed_calls[location] = place_notation_str
 
     return parsed_calls
+
+
+class RowGenParseError(ValueError):
+    """ A class to encapsulate an error generated when parsing an RowGenerator from JSON. """
+    def __init__(self, json, field, message):
+        super().__init__()
+
+        self.json = json
+        self.field = field
+        self.message = message
+
+    def __str__(self):
+        return f"Error parsing RowGen json '{self.json}' in field '{self.field}': {self.message}"
+
+    def __repr__(self):
+        return str(self)
+
+
+def json_to_row_generator(json, logger):
+    """ Takes a JSON message from SocketIO and convert it to a RowGenerator or throw an exception. """
+    def raise_error(field, message, parent_error = None):
+        """ A helper function to raise a `RowGenParseError` with a helpful error message. """
+        if parent_error is None:
+            raise RowGenParseError(json, field, message)
+        raise RowGenParseError(json, field, message) from parent_error
+
+    def json_to_call(name):
+        """ Helper function to generate a call with a given name from the json. """
+        if name not in json:
+            logger.warning(f"No field '{name}' in the row generator JSON")
+            return None
+
+        call = {}
+        for key, value in json[name].items():
+            try:
+                index = int(key)
+            except ValueError as e:
+                raise_error(name, f"Call index '{key}' is not a valid integer", e)
+            call[index] = value
+        return call
+
+    if 'type' not in json:
+        raise_error('type', "'type' is not defined")
+
+    if json['type'] == 'method':
+        try:
+            stage = int(json['stage'])
+        except KeyError as e:
+            raise_error('stage', "'stage' is not defined", e)
+        except ValueError as e:
+            raise_error('stage', f"'{json[stage]}' is not a valid integer", e)
+        return PlaceNotationGenerator(stage, "&" + json['notation'], json_to_call('bob'),
+                                      json_to_call('single'))
+
+    if json['type'] == "composition":
+        try:
+            comp_url = json['url']
+        except KeyError as e:
+            raise_error('url', "'url' is not defined", e)
+
+        try:
+            row_gen = ComplibCompositionGenerator.from_url(comp_url)
+        except PrivateCompError as e:
+            raise_error('complib request', "Comp id '{comp_url}' is private", e)
+        except InvalidCompError as e:
+            raise_error('complib request', "No composition with id '{comp_url}' found", e)
+        return row_gen
+
+    raise_error('type', f"{json['type']} is not one of 'method' or 'composition'")
+
+
+def to_bool(value):
+    """
+    Converts a string argument to the bool representation (or throws a ValueError if the value is not
+    one of '[Tt]rue' or '[Ff]alse'.
+    """
+    if value in ["True", "true", True]:
+        return True
+    if value in ["False", "false", False]:
+        return False
+    raise ValueError(f"Value {value} cannot be converted into a bool")

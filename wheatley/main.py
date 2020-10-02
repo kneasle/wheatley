@@ -14,18 +14,24 @@ from wheatley.rhythm import RegressionRhythm, WaitForUserRhythm
 from wheatley.tower import RingingRoomTower
 from wheatley.bot import Bot
 from wheatley.page_parser import get_load_balancing_url, TowerNotFoundError, InvalidURLError
-from wheatley.arg_parsing import parse_peal_speed, PealSpeedParseError, parse_call
+from wheatley.parsing import parse_peal_speed, PealSpeedParseError, parse_call
 
 from wheatley.row_generation import RowGenerator, ComplibCompositionGenerator
 from wheatley.row_generation import MethodPlaceNotationGenerator
 from wheatley.row_generation.complib_composition_generator import PrivateCompError, InvalidCompError
 from wheatley.row_generation.method_place_notation_generator import MethodNotFoundError, \
                                                                     generator_from_special_title
+from wheatley.row_generation.place_holder_generator import PlaceHolderGenerator
 
 
 def create_row_generator(args):
     """ Generates a row generator according to the given CLI arguments. """
-    if "comp" in args and args.comp is not None:
+    if "comp_url" in args and args.comp_url is not None:
+        try:
+            row_gen = ComplibCompositionGenerator.from_url(args.comp_url)
+        except (PrivateCompError, InvalidCompError) as e:
+            sys.exit(f"Bad value for '--comp': {e}")
+    elif "comp" in args and args.comp is not None:
         try:
             row_gen = ComplibCompositionGenerator(args.comp)
         except (PrivateCompError, InvalidCompError) as e:
@@ -44,22 +50,11 @@ def create_row_generator(args):
         assert False, \
             "This shouldn't be possible because one of --method and --comp should always be defined"
 
-    # row_gen = PlainHuntGenerator(8)
-    # row_gen = PlaceNotationGenerator(8, "x1", bob={1: "6"})
-    # row_gen = DixonoidsGenerator(6, DixonoidsGenerator.DixonsRules)
-    # row_gen = PlaceNotationGenerator.stedman(11)
-
     return row_gen
 
 
-def create_rhythm(args):
+def create_rhythm(peal_speed, inertia, max_bells_in_dataset, handstroke_gap, use_wait, initial_inertia=None):
     """ Generates a rhythm object according to the given CLI arguments. """
-
-    try:
-        peal_speed = parse_peal_speed(args.peal_speed)
-    except PealSpeedParseError as e:
-        sys.exit(str(e))
-
     # Sets the minimum number of bells that Wheatley will use in order to deduce a rhythm.  Setting this to
     # larger numbers will make Wheatley more stable during the pull-off, whereas smaller numbers will make
     # Wheatley more sensitive to user's pull-off speed.  If this is larger than `--max_bells_in_dataset`,
@@ -67,34 +62,120 @@ def create_rhythm(args):
     min_bells_in_dataset = 4
 
     # Clamp min_bells_in_dataset to not be bigger than max_bells_in_dataset
-    min_bells_in_dataset = min(min_bells_in_dataset, args.max_bells_in_dataset)
+    min_bells_in_dataset = min(min_bells_in_dataset, max_bells_in_dataset)
 
     regression = RegressionRhythm(
-        args.inertia,
-        handstroke_gap=args.handstroke_gap,
+        inertia,
+        handstroke_gap=handstroke_gap,
         peal_speed=peal_speed,
         min_bells_in_dataset=min_bells_in_dataset,
-        max_bells_in_dataset=args.max_bells_in_dataset
+        max_bells_in_dataset=max_bells_in_dataset,
+        initial_inertia=initial_inertia
     )
 
-    if not args.keep_going:
+    if use_wait:
         return WaitForUserRhythm(regression)
 
     return regression
 
 
+def get_version_number():
+    """
+    Try to read the file with the version number, if not print an error and set a poison value as the
+    version.
+    """
+    try:
+        version_file_path = os.path.join(os.path.split(__file__)[0], "version.txt")
+
+        with open(version_file_path) as f:
+            return f.read()
+    except IOError:
+        return "<NO VERSION FILE FOUND>"
+
+
 def configure_logging():
     """ Sets up the logging for the bot. """
-
     logging.basicConfig(level=logging.WARNING)
 
+    logging.getLogger(Bot.logger_name).setLevel(logging.INFO)
     logging.getLogger(RingingRoomTower.logger_name).setLevel(logging.INFO)
     logging.getLogger(RowGenerator.logger_name).setLevel(logging.INFO)
     logging.getLogger(RegressionRhythm.logger_name).setLevel(logging.INFO)
     logging.getLogger(WaitForUserRhythm.logger_name).setLevel(logging.INFO)
 
 
-def main(override_args=None, stop_on_join_tower=False):
+def server_main(override_args, stop_on_join_tower):
+    """
+    The main function of Wheatley when spawned by the Ringing Room server.
+    This has many many fewer options than the standard `main` function, on the basis that this running mode
+    is designed to take its parameters over SocketIO whilst running, rather than from the CLI args.
+    """
+    __version__ = get_version_number()
+
+    parser = argparse.ArgumentParser(
+        description="A bot to fill in bells during ringingroom.com practices (server mode)."
+    )
+
+    parser.add_argument(
+        "room_id",
+        type=int,
+        help="The numerical ID of the tower to join, represented as a row on 9 bells, \
+              e.g. 763451928."
+    )
+    parser.add_argument(
+        "-p", "--port",
+        type=int,
+        help="The port of the SocketIO server (which must be hosted on localhost)."
+    )
+    parser.add_argument(
+        "-l", "--look-to-time",
+        type=float,
+        help="Set to the time when 'Look to' was called if Wheatley was spawned because 'look to' was \
+              called and Wheatley is needed."
+    )
+
+    # Parse arguments
+    # `[1:]` is apparently needed, because sys.argv[0] is the working file of the Python interpreter
+    # which `parser.parse_args` does not want to see as an argument
+    args = parser.parse_args(sys.argv[1:] if override_args is None else override_args)
+
+    # Run the program
+    configure_logging()
+
+    # Log the version string to 'DEBUG'
+    logging.debug(f"Running Wheatley v{__version__}")
+
+    # Args that we are currently 'missing'
+    use_up_down_in = True
+    stop_at_rounds = True
+    peal_speed = 180
+    inertia = 1
+    initial_inertia = 1
+    max_bells_in_dataset = 15
+    handstroke_gap = 1
+    use_wait = True
+
+    tower_url = "http://127.0.0.1:" + str(args.port)
+
+    tower = RingingRoomTower(args.room_id, tower_url)
+    rhythm = create_rhythm(peal_speed, inertia, max_bells_in_dataset, handstroke_gap, use_wait,
+                           initial_inertia)
+    bot = Bot(tower, PlaceHolderGenerator(), use_up_down_in, stop_at_rounds, rhythm, user_name="Wheatley",
+              server_mode=True)
+
+    with tower:
+        tower.wait_loaded()
+
+        print("=== LOADED ===")
+
+        if args.look_to_time is not None:
+            bot.look_to_has_been_called(args.look_to_time)
+
+        if not stop_on_join_tower:
+            bot.main_loop()
+
+
+def console_main(override_args, stop_on_join_tower):
     """
     The main function of the bot.
     This parses the CLI arguments, creates the Rhythm, RowGenerator and Bot objects, then starts
@@ -104,16 +185,7 @@ def main(override_args=None, stop_on_join_tower=False):
     (override_args) and make Wheatley exit with error code 0 on joining a tower so that hanging forever
     can be differentiated from Wheatley's normal behaviour of sitting in an infinite loop waiting for input.
     """
-
-    # Try to read the file with the version number, if not print an error and set a poison value
-    # as the version
-    try:
-        version_file_path = os.path.join(os.path.split(__file__)[0], "version.txt")
-
-        with open(version_file_path) as f:
-            __version__ = f.read()
-    except IOError:
-        __version__ = "<NO VERSION FILE FOUND>"
+    __version__ = get_version_number()
 
     # PARSE THE ARGUMENTS
 
@@ -152,6 +224,11 @@ def main(override_args=None, stop_on_join_tower=False):
         "-c", "--comp",
         type=int,
         help="The ID of the complib composition you want to ring"
+    )
+    comp_method_group.add_argument(
+        "--comp-url",
+        type=str,
+        help="The URL of the complib composition you want to ring"
     )
     comp_method_group.add_argument(
         "-m", "--method",
@@ -256,6 +333,7 @@ def main(override_args=None, stop_on_join_tower=False):
         version=f"Wheatley v{__version__}"
     )
 
+
     # Parse arguments
     # `[1:]` is apparently needed, because sys.argv[0] is the working file of the Python interpreter
     # which `parser.parse_args` does not want to see as an argument
@@ -277,7 +355,14 @@ def main(override_args=None, stop_on_join_tower=False):
 
     tower = RingingRoomTower(args.room_id, tower_url)
     row_generator = create_row_generator(args)
-    rhythm = create_rhythm(args)
+
+    try:
+        peal_speed = parse_peal_speed(args.peal_speed)
+    except PealSpeedParseError as e:
+        sys.exit(f"{e}")
+
+    rhythm = create_rhythm(peal_speed, args.inertia, args.max_bells_in_dataset, args.handstroke_gap,
+                           not args.keep_going)
     bot = Bot(tower, row_generator, args.use_up_down_in or args.handbell_style,
               args.stop_at_rounds or args.handbell_style, rhythm, user_name=args.name)
 
@@ -288,6 +373,24 @@ def main(override_args=None, stop_on_join_tower=False):
 
         if not stop_on_join_tower:
             bot.main_loop()
+
+def main(override_args=None, stop_on_join_tower=False):
+    """
+    The root main function for Wheatley.  If the first argument given to Wheatley is 'server-mode', then
+    this will run `server_main` (the main function for running Wheatley on RR's servers) otherwise it will
+    run `console_main` (the main function for running Wheatley from the Command Line).
+    """
+    # If the user adds 'server-mode' to the command, run the server-mode main function instead of this one,
+    # and remove the 'server-mode' argument
+    unparsed_args = override_args or sys.argv[1:]
+    if len(unparsed_args) > 1 and unparsed_args[0] == "server-mode":
+        del unparsed_args[0]
+        server_main(unparsed_args, stop_on_join_tower)
+        # The `server_main` function shouldn't return, but if it does somehow manage to do so return instead
+        # of running the standard main function as well
+    else:
+        console_main(unparsed_args, stop_on_join_tower)
+
 
 
 if __name__ == "__main__":

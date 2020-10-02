@@ -11,6 +11,7 @@ import socketio
 
 from wheatley.bell import Bell
 
+
 HANDSTROKE = True
 BACKSTROKE = False
 
@@ -37,6 +38,9 @@ class RingingRoomTower:
         self.invoke_on_call: Dict[str, List[Callable[[], Any]]] = collections.defaultdict(list)
         self.invoke_on_reset: List[Callable[[], Any]] = []
         self.invoke_on_bell_rung: List[Callable[[int, bool], Any]] = []
+        self.invoke_on_setting_change: List[Callable[[str, Any], Any]] = []
+        self.invoke_on_row_gen_change: List[Callable[[Any], Any]] = []
+        self.invoke_on_stop_touch: List[Callable[[], Any]] = []
 
         self._url = url
         self._socket_io_client: Optional[socketio.Client] = None
@@ -129,6 +133,14 @@ class RingingRoomTower:
             f"Set number of bells '{number}'"
         )
 
+    def set_is_ringing(self, value: bool):
+        """ Broadcast to all the users that Wheatley has started or stopped ringing. """
+        self._emit(
+            "c_wheatley_is_ringing",
+            {"is_ringing": value, "tower_id": self.tower_id},
+            f"Setting is ringing to {value}"
+        )
+
     def wait_loaded(self):
         """ Pause the thread until the socket-io connection is open and stable. """
         if self._socket_io_client is None:
@@ -157,9 +169,33 @@ class RingingRoomTower:
         self._socket_io_client.on("s_assign_user", self._on_assign_user)
         self._socket_io_client.on("s_call", self._on_call)
         self._socket_io_client.on("s_user_left", self._on_user_leave)
+        self._socket_io_client.on("s_wheatley_setting", self._on_setting_change)
+        self._socket_io_client.on("s_wheatley_row_gen", self._on_row_gen_change)
+        self._socket_io_client.on("s_wheatley_stop_touch", self._on_stop_touch)
 
         self._join_tower()
         self._request_global_state()
+
+    def _on_setting_change(self, data):
+        self.logger.info(f"RECEIVED: Settings changed: {data}\
+{' (ignoring)' if len(self.invoke_on_setting_change) == 0 else ''}")
+
+        for key, value in data.items():
+            for callback in self.invoke_on_setting_change:
+                callback(key, value)
+
+    def _on_row_gen_change(self, data):
+        self.logger.info(f"RECEIVED: Row gen changed: {data}\
+{' (ignoring)' if len(self.invoke_on_row_gen_change) == 0 else ''}")
+
+        for callback in self.invoke_on_row_gen_change:
+            callback(data)
+
+    def _on_stop_touch(self, data):
+        self.logger.info(f"RECEIVED: Stop touch: {data}.")
+
+        for callback in self.invoke_on_stop_touch:
+            callback()
 
     def _on_user_leave(self, data):
         user_id_that_left = data["user_id"]
@@ -222,22 +258,23 @@ logged in as '{self._user_name_map[user_id_that_left]}'.")
 
     def _on_bell_rung(self, data):
         """ Callback called when the client receives a signal that a bell has been rung. """
-        self._on_global_bell_state(data)
+        self._update_bell_state(data["global_bell_state"])
 
         who_rang = Bell.from_number(data["who_rang"])
         for bell_ring_callback in self.invoke_on_bell_rung:
             bell_ring_callback(who_rang, self.get_stroke(who_rang))
+
+    def _update_bell_state(self, bell_state):
+        self._bell_state = bell_state
+
+        self.logger.debug(f"RECEIVED: Bells '{['H' if x else 'B' for x in bell_state]}'")
 
     def _on_global_bell_state(self, data):
         """
         Callback called when receiving an update to the global tower state.
         Cannot have further callbacks assigned to it.
         """
-        bell_state = data["global_bell_state"]
-        self._bell_state = bell_state
-
-        self.logger.debug(f"RECEIVED: Bells '{['H' if x else 'B' for x in bell_state]}'")
-
+        self._update_bell_state(data["global_bell_state"])
         for invoke_callback in self.invoke_on_reset:
             invoke_callback()
 

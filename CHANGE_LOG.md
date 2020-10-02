@@ -1,3 +1,6 @@
+# 0.4.1
+- Add mode for running Wheatley on a Ringing Room server.
+
 # 0.4.0
 - Corrected for Ringing Room internally changing how bells are assigned to users.
 - Replaced `--max-rows-in-dataset` with `--max-bells-in-dataset` to prevent overfitting when

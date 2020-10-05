@@ -1,4 +1,7 @@
 # 0.5.0
+- Fix invalid initial inertia.
+
+# 0.5.0
 - Add mode for running Wheatley on a Ringing Room server.
 
 # 0.4.0

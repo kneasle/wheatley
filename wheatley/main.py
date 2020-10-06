@@ -53,7 +53,7 @@ def create_row_generator(args):
     return row_gen
 
 
-def create_rhythm(peal_speed, inertia, max_bells_in_dataset, handstroke_gap, use_wait, initial_inertia=None):
+def create_rhythm(peal_speed, inertia, max_bells_in_dataset, handstroke_gap, use_wait, initial_inertia=0):
     """ Generates a rhythm object according to the given CLI arguments. """
     # Sets the minimum number of bells that Wheatley will use in order to deduce a rhythm.  Setting this to
     # larger numbers will make Wheatley more stable during the pull-off, whereas smaller numbers will make

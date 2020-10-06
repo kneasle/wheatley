@@ -1,4 +1,4 @@
-# 0.5.0
+# 0.5.1
 - Fix invalid initial inertia.
 
 # 0.5.0

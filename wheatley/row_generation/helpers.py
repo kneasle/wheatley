@@ -6,7 +6,7 @@ import itertools
 import re
 
 _CROSS_PN = []
-_LOOKUP_NAME = "!1234567890ET"
+_LOOKUP_NAME = "!1234567890ETABCD"
 
 STAGES = {
     "singles": 3,
@@ -18,7 +18,11 @@ STAGES = {
     "caters": 9,
     "royal": 10,
     "cinques": 11,
-    "maximus": 12
+    "maximus": 12,
+    "thirteen": 13,
+    "fourteen": 14,
+    "fifteen": 15,
+    "sixteen": 16,
 }
 
 

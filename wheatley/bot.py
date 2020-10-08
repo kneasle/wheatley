@@ -106,16 +106,16 @@ class Bot:
     def _on_row_gen_change(self, row_gen_json):
         try:
             self.next_row_generator = json_to_row_generator(row_gen_json, self.logger)
+            self.next_row_generator.set_tower_size(self._tower.number_of_bells)
 
             self.logger.info("Successfully updated next row gen")
         except RowGenParseError as e:
             self.logger.warning(e)
 
     def _on_size_change(self):
-        if not self.row_generator.is_tower_size_valid(self._tower.number_of_bells):
-            self.logger.warning(f"Row generation requires {self.row_generator.number_of_bells} \
-bells, but the current tower has {self._tower.number_of_bells}.  Wheatley will crash when you go \
-into changes unless something is done!")
+        self.row_generator.set_tower_size(self._tower.number_of_bells)
+        if self.next_row_generator:
+            self.next_row_generator.set_tower_size(self._tower.number_of_bells)
 
     def _on_look_to(self):
         self.look_to_has_been_called(time.time())
@@ -219,8 +219,8 @@ into changes unless something is done!")
         Called when the ringing is about to go into changes.
         Resets the row_generator and starts the next row.
         """
-        assert self.row_generator.number_of_bells == self._tower.number_of_bells, \
-            f"{self.row_generator.number_of_bells} != {self._tower.number_of_bells}"
+        assert self.row_generator.stage <= self._tower.number_of_bells, \
+            f"{self.row_generator.stage} <= {self._tower.number_of_bells}"
 
         self.row_generator.reset()
         self.start_next_row()

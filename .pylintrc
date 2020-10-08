@@ -1,6 +1,6 @@
 [MESSAGES CONTROL]
 
-disable=broad-except,len-as-condition,logging-fstring-interpolation
+disable=broad-except,len-as-condition,logging-fstring-interpolation,logging-not-lazy
 
 [FORMAT]
 

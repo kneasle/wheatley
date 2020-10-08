@@ -16,7 +16,7 @@ class RowGenerator(metaclass=ABCMeta):
         self.stage = stage
         self.logger = logging.getLogger(self.logger_name)
 
-        # Ensure there is a cover bell
+        # Guess there is a cover bell
         self.number_of_bells = self.stage + 1 if self.stage % 2 else self.stage
 
         self._has_bob = False
@@ -24,9 +24,16 @@ class RowGenerator(metaclass=ABCMeta):
         self._index = 0
         self._row = self.rounds()
 
-    def is_tower_size_valid(self, tower_size) -> bool:
-        """ Returns True if the row_generator can generate rows correctly for a given tower size. """
-        return tower_size == self.number_of_bells
+    def set_tower_size(self, tower_size):
+        """Set number of bells and warns if doesn't match the stage"""
+        if tower_size < self.stage:
+            self.logger.warning(f"Row generation requires at least {self.stage} bells, "
+                                + f"but the current tower has {tower_size}. "
+                                + "Wheatley will crash when you go into changes unless something is done!")
+        elif tower_size > self.stage + 1:
+            self.logger.info(f"Current tower has more bells ({tower_size}) than row generation requires "
+                             + f"({self.stage} bells). Wheatley will add extra cover bells.")
+        self.number_of_bells = tower_size
 
     def reset(self):
         """ Reset the row generator. """
@@ -69,8 +76,8 @@ class RowGenerator(metaclass=ABCMeta):
         return [Bell.from_number(i) for i in range(1, self.number_of_bells + 1)]
 
     def _add_cover_if_required(self):
-        if len(self._row) == self.number_of_bells - 1:
-            self._row.append(Bell.from_number(self.number_of_bells))
+        for i in range(len(self._row), self.number_of_bells):
+            self._row.append(Bell.from_index(i))
 
     @abstractmethod
     def _gen_row(self, previous_row: List[Bell], is_handstroke: bool, index: int) -> List[Bell]:

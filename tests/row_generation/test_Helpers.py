@@ -12,10 +12,14 @@ class HelpersBellStringTests(unittest.TestCase):
         self.assertEqual(10, convert_bell_string("0"))
         self.assertEqual(11, convert_bell_string("E"))
         self.assertEqual(12, convert_bell_string("T"))
+        self.assertEqual(13, convert_bell_string("A"))
+        self.assertEqual(14, convert_bell_string("B"))
+        self.assertEqual(15, convert_bell_string("C"))
+        self.assertEqual(16, convert_bell_string("D"))
 
     def test_convert_bell_string_not_found(self):
-        with self.assertRaisesRegex(ValueError, "'A' is not known bell symbol"):
-            convert_bell_string("A")
+        with self.assertRaisesRegex(ValueError, "'F' is not known bell symbol"):
+            convert_bell_string("F")
 
     def test_convert_to_bell_string(self):
         self.assertEqual("1", convert_to_bell_string(1))
@@ -24,19 +28,23 @@ class HelpersBellStringTests(unittest.TestCase):
         self.assertEqual("0", convert_to_bell_string(10))
         self.assertEqual("E", convert_to_bell_string(11))
         self.assertEqual("T", convert_to_bell_string(12))
+        self.assertEqual("A", convert_to_bell_string(13))
+        self.assertEqual("B", convert_to_bell_string(14))
+        self.assertEqual("C", convert_to_bell_string(15))
+        self.assertEqual("D", convert_to_bell_string(16))
 
     def test_convert_to_bell_string_not_found(self):
         with self.assertRaisesRegex(ValueError, "'0' is not known bell number"):
             convert_to_bell_string(0)
 
-        with self.assertRaisesRegex(ValueError, "'13' is not known bell number"):
-            convert_to_bell_string(13)
+        with self.assertRaisesRegex(ValueError, "'17' is not known bell number"):
+            convert_to_bell_string(17)
 
 
 class HelpersPlaceNotationTests(unittest.TestCase):
     def test_convert_pn_unknown_bell(self):
-        with self.assertRaisesRegex(ValueError, "'A' is not known bell symbol"):
-            place_notation = "&-A"
+        with self.assertRaisesRegex(ValueError, "'F' is not known bell symbol"):
+            place_notation = "&-F"
             convert_pn(place_notation)
 
     def test_convert_pn(self):

@@ -26,11 +26,9 @@ class PlaceHolderGenerator(RowGenerator):
         # Make the stage 0
         super().__init__(0)
 
-    # We need to override this method because the stage of a NullGenerator is not defined.  It is also
-    # intended only to be used as a place holder (set by server_main to allow Wheatley to hold a RowGenerator
-    # while it waits for the server to give it the RowGenerator for the first method).
-    def is_tower_size_valid(self, tower_size) -> bool:
-        return True
-
     def _gen_row(self, previous_row: List[Bell], is_handstroke: bool, index: int) -> List[Bell]:
         raise NullRowGenError()
+
+    # Override as warnings make no sense from this place holder
+    def set_tower_size(self, tower_size):
+        pass

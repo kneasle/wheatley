@@ -1,3 +1,6 @@
+# 0.6.0 (W.I.P.)
+- Change place notation parsing to comply with the CompLib and the XML specification.
+
 # 0.5.1
 - Fix invalid initial inertia.
 

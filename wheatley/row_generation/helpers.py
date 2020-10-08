@@ -22,17 +22,20 @@ STAGES = {
 }
 
 
-def convert_pn(pn_str: str) -> List[List[int]]:
+def convert_pn(pn_str: str, expect_symmetric=False) -> List[List[int]]:
     """ Convert a place notation string into a list of places. """
     if "," in pn_str:
-        return list(itertools.chain.from_iterable(convert_pn(part) for part in pn_str.split(",")))
+        return list(itertools.chain.from_iterable(convert_pn(part, True) for part in pn_str.split(",")))
 
-    symmetric = pn_str.startswith('&')
+    if expect_symmetric:
+        symmetric = not pn_str.startswith('+')
+    else:
+        symmetric = pn_str.startswith('&')
 
     # Assumes a valid place notation string is delimited by `.`
-    # These can optionally be ommitted around an `-` or `x`
+    # These can optionally be omitted around an `-` or `x`
     # We substitute to ensure `-` is surrounded by `.` and replace any `..` caused by `--` => `.-..-.
-    dot_delimited_string = re.sub("[.]*[x-][.]*", ".-.", pn_str).strip('.& ')
+    dot_delimited_string = re.sub("[.]*[x-][.]*", ".-.", pn_str).strip('.&+ ')
     deduplicated_string = dot_delimited_string.replace('..', '.').split('.')
 
     converted = [[convert_bell_string(y) for y in place] if place != '-' else _CROSS_PN

@@ -6,7 +6,7 @@ program.
 
 import time
 import logging
-from typing import Optional
+from typing import Optional, List
 
 from wheatley import calls
 from wheatley.row_generation import RowGenerator
@@ -68,7 +68,7 @@ class Bot:
 
         self._row_number = 0
         self._place = 0
-        self._row = None
+        self._row: Optional[List[Bell]] = None
 
         self.logger = logging.getLogger(self.logger_name)
 
@@ -79,7 +79,7 @@ class Bot:
         return self._row_number % 2 == 0
 
     @property
-    def stage(self):
+    def number_of_bells(self):
         """ Convenient property to find the number of bells in the current tower. """
         return self._tower.number_of_bells
 
@@ -106,16 +106,23 @@ class Bot:
     def _on_row_gen_change(self, row_gen_json):
         try:
             self.next_row_generator = json_to_row_generator(row_gen_json, self.logger)
-            self.next_row_generator.set_tower_size(self._tower.number_of_bells)
 
             self.logger.info("Successfully updated next row gen")
         except RowGenParseError as e:
             self.logger.warning(e)
 
     def _on_size_change(self):
-        self.row_generator.set_tower_size(self._tower.number_of_bells)
-        if self.next_row_generator:
-            self.next_row_generator.set_tower_size(self._tower.number_of_bells)
+        if self._tower.number_of_bells < self.row_generator.stage:
+            self.logger.warning(f"Row generation requires at least {self.row_generator.stage} bells, "
+                                + f"but the current tower has {self._tower.number_of_bells}. "
+                                + "Bells will be omitted!")
+        elif self._tower.number_of_bells > self.row_generator.stage + 1:
+            if self.row_generator.stage % 2:
+                expected = self.row_generator.stage + 1
+            else:
+                expected = self.row_generator.stage
+            self.logger.info(f"Current tower has more bells ({self._tower.number_of_bells}) than expected "
+                             + f"({expected}). Wheatley will add extra cover bells.")
 
     def _on_look_to(self):
         self.look_to_has_been_called(time.time())
@@ -129,11 +136,11 @@ class Bot:
 
         # Count number of user controlled bells
         number_of_user_controlled_bells = 0
-        for i in range(self.stage):
+        for i in range(self.number_of_bells):
             if self._user_assigned_bell(Bell.from_index(i)):
                 number_of_user_controlled_bells += 1
 
-        self._rhythm.initialise_line(self.stage, self._user_assigned_bell(treble),
+        self._rhythm.initialise_line(self.number_of_bells, self._user_assigned_bell(treble),
                                      call_time + 3, number_of_user_controlled_bells)
 
         # Move to the next row generator if it's defined
@@ -206,7 +213,7 @@ class Bot:
         Creates a new row from the row generator and tells the rhythm to expect the new bells.
         """
         if self._is_ringing_rounds:
-            for index in range(self.stage):
+            for index in range(self.number_of_bells):
                 self.expect_bell(index, Bell.from_index(index))
         else:
             self._row = self.row_generator.next_row(self.is_handstroke)
@@ -219,15 +226,16 @@ class Bot:
         Called when the ringing is about to go into changes.
         Resets the row_generator and starts the next row.
         """
-        assert self.row_generator.stage <= self._tower.number_of_bells, \
-            f"{self.row_generator.stage} <= {self._tower.number_of_bells}"
 
         self.row_generator.reset()
         self.start_next_row()
 
     def tick(self):
         """ Called every time the main loop is executed when the bot is ringing. """
-        bell = Bell.from_index(self._place) if self._is_ringing_rounds else self._row[self._place]
+        if self._is_ringing_rounds or self._place >= len(self._row):
+            bell = Bell.from_index(self._place)
+        else:
+            bell = self._row[self._place]
         user_controlled = self._user_assigned_bell(bell)
 
         self._rhythm.wait_for_bell_time(time.time(), bell, self._row_number, self._place,
@@ -238,7 +246,7 @@ class Bot:
 
         self._place += 1
 
-        if self._place == self.stage:
+        if self._place == self.number_of_bells:
             # Determine if we're finishing a handstroke
             has_just_rung_rounds = True
 

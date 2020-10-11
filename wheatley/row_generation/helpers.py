@@ -5,6 +5,8 @@ from typing import List
 import itertools
 import re
 
+from wheatley.bell import Bell
+
 _CROSS_PN = []
 _LOOKUP_NAME = "!1234567890ETABCD"
 
@@ -65,3 +67,8 @@ def convert_to_bell_string(bell: int) -> str:
         raise ValueError(f"'{bell}' is not known bell number")
 
     return _LOOKUP_NAME[bell]
+
+
+def rounds(number_of_bells) -> List[Bell]:
+    """ Generate rounds on the given number of bells. """
+    return [Bell.from_number(i) for i in range(1, number_of_bells + 1)]

@@ -3,6 +3,7 @@ A module to contain a Bell class used to encapsulate the idea of a Bell and remo
 errors related to deciding whether the treble is bell #0 or bell #1.
 """
 
+
 class Bell:
     """ A class to encapsulate the idea of a bell. """
 

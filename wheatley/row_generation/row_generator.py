@@ -5,6 +5,7 @@ from abc import ABCMeta, abstractmethod
 from typing import List
 
 from wheatley.bell import Bell
+from wheatley.row_generation.helpers import rounds
 
 
 class RowGenerator(metaclass=ABCMeta):
@@ -16,24 +17,10 @@ class RowGenerator(metaclass=ABCMeta):
         self.stage = stage
         self.logger = logging.getLogger(self.logger_name)
 
-        # Guess there is a cover bell
-        self.number_of_bells = self.stage + 1 if self.stage % 2 else self.stage
-
         self._has_bob = False
         self._has_single = False
         self._index = 0
         self._row = self.rounds()
-
-    def set_tower_size(self, tower_size):
-        """Set number of bells and warns if doesn't match the stage"""
-        if tower_size < self.stage:
-            self.logger.warning(f"Row generation requires at least {self.stage} bells, "
-                                + f"but the current tower has {tower_size}. "
-                                + "Wheatley will crash when you go into changes unless something is done!")
-        elif tower_size > self.stage + 1:
-            self.logger.info(f"Current tower has more bells ({tower_size}) than row generation requires "
-                             + f"({self.stage} bells). Wheatley will add extra cover bells.")
-        self.number_of_bells = tower_size
 
     def reset(self):
         """ Reset the row generator. """
@@ -54,7 +41,6 @@ class RowGenerator(metaclass=ABCMeta):
     def next_row(self, is_handstroke: bool) -> List[Bell]:
         """ Generate the next row, and mutate state accordingly. """
         self._row = self._gen_row(self._row, is_handstroke, self._index)
-        self._add_cover_if_required()
 
         self._index += 1
 
@@ -73,11 +59,7 @@ class RowGenerator(metaclass=ABCMeta):
 
     def rounds(self) -> List[Bell]:
         """ Generate rounds of the stage given by this RowGenerator. """
-        return [Bell.from_number(i) for i in range(1, self.number_of_bells + 1)]
-
-    def _add_cover_if_required(self):
-        for i in range(len(self._row), self.number_of_bells):
-            self._row.append(Bell.from_index(i))
+        return rounds(self.stage)
 
     @abstractmethod
     def _gen_row(self, previous_row: List[Bell], is_handstroke: bool, index: int) -> List[Bell]:

@@ -28,7 +28,3 @@ class PlaceHolderGenerator(RowGenerator):
 
     def _gen_row(self, previous_row: List[Bell], is_handstroke: bool, index: int) -> List[Bell]:
         raise NullRowGenError()
-
-    # Override as warnings make no sense from this place holder
-    def set_tower_size(self, tower_size):
-        pass

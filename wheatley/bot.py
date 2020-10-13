@@ -112,10 +112,18 @@ class Bot:
             self.logger.warning(e)
 
     def _on_size_change(self):
+        self._check_number_of_bells()
+
+    def _check_number_of_bells(self):
+        """ Returns whether Wheatley can ring with the current number of bells with reasons why not"""
+        if self.row_generator.stage == 0:
+            self.logger.debug("Place holder row generator. Wheatley will not ring!")
+            return False
         if self._tower.number_of_bells < self.row_generator.stage:
             self.logger.warning(f"Row generation requires at least {self.row_generator.stage} bells, "
                                 + f"but the current tower has {self._tower.number_of_bells}. "
-                                + "Bells will be omitted!")
+                                + "Wheatley will not ring!")
+            return False
         elif self._tower.number_of_bells > self.row_generator.stage + 1:
             if self.row_generator.stage % 2:
                 expected = self.row_generator.stage + 1
@@ -123,9 +131,11 @@ class Bot:
                 expected = self.row_generator.stage
             self.logger.info(f"Current tower has more bells ({self._tower.number_of_bells}) than expected "
                              + f"({expected}). Wheatley will add extra cover bells.")
+        return True
 
     def _on_look_to(self):
-        self.look_to_has_been_called(time.time())
+        if self._check_number_of_bells():
+            self.look_to_has_been_called(time.time())
 
     # This has to be made public, because the server's main function might have to call it
     def look_to_has_been_called(self, call_time):
@@ -226,9 +236,9 @@ class Bot:
         Called when the ringing is about to go into changes.
         Resets the row_generator and starts the next row.
         """
-
-        self.row_generator.reset()
-        self.start_next_row()
+        if self._check_number_of_bells():
+            self.row_generator.reset()
+            self.start_next_row()
 
     def tick(self):
         """ Called every time the main loop is executed when the bot is ringing. """

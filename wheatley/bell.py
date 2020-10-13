@@ -33,7 +33,7 @@ class Bell:
     def from_index(cls, bell_index: int):
         """
         Generates a Bell from a 0-indexed number, so Bell.from_number(0) will return a Bell
-        represeting the treble.
+        representing the treble.
         """
         return cls(bell_index)
 
@@ -52,7 +52,7 @@ class Bell:
         """ Gets the 1-indexed number representing this bell. """
         return self.index + 1
 
-    _lookup_name = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "E", "T"]
+    _lookup_name = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "E", "T", "A", "B", "C", "D"]
 
     def __str__(self):
         """ Converts this bell to a single-character string representing this bell. """

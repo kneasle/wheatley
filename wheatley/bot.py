@@ -6,7 +6,7 @@ program.
 
 import time
 import logging
-from typing import Optional
+from typing import Optional, List
 
 from wheatley import calls
 from wheatley.row_generation import RowGenerator
@@ -68,7 +68,7 @@ class Bot:
 
         self._row_number = 0
         self._place = 0
-        self._row = None
+        self._row: Optional[List[Bell]] = None
 
         self.logger = logging.getLogger(self.logger_name)
 
@@ -79,7 +79,7 @@ class Bot:
         return self._row_number % 2 == 0
 
     @property
-    def stage(self):
+    def number_of_bells(self):
         """ Convenient property to find the number of bells in the current tower. """
         return self._tower.number_of_bells
 
@@ -112,13 +112,30 @@ class Bot:
             self.logger.warning(e)
 
     def _on_size_change(self):
-        if not self.row_generator.is_tower_size_valid(self._tower.number_of_bells):
-            self.logger.warning(f"Row generation requires {self.row_generator.number_of_bells} \
-bells, but the current tower has {self._tower.number_of_bells}.  Wheatley will crash when you go \
-into changes unless something is done!")
+        self._check_number_of_bells()
+
+    def _check_number_of_bells(self):
+        """ Returns whether Wheatley can ring with the current number of bells with reasons why not """
+        if self.row_generator.stage == 0:
+            self.logger.debug("Place holder row generator. Wheatley will not ring!")
+            return False
+        if self._tower.number_of_bells < self.row_generator.stage:
+            self.logger.warning(f"Row generation requires at least {self.row_generator.stage} bells, "
+                                + f"but the current tower has {self._tower.number_of_bells}. "
+                                + "Wheatley will not ring!")
+            return False
+        elif self._tower.number_of_bells > self.row_generator.stage + 1:
+            if self.row_generator.stage % 2:
+                expected = self.row_generator.stage + 1
+            else:
+                expected = self.row_generator.stage
+            self.logger.info(f"Current tower has more bells ({self._tower.number_of_bells}) than expected "
+                             + f"({expected}). Wheatley will add extra cover bells.")
+        return True
 
     def _on_look_to(self):
-        self.look_to_has_been_called(time.time())
+        if self._check_number_of_bells():
+            self.look_to_has_been_called(time.time())
 
     # This has to be made public, because the server's main function might have to call it
     def look_to_has_been_called(self, call_time):
@@ -129,11 +146,11 @@ into changes unless something is done!")
 
         # Count number of user controlled bells
         number_of_user_controlled_bells = 0
-        for i in range(self.stage):
+        for i in range(self.number_of_bells):
             if self._user_assigned_bell(Bell.from_index(i)):
                 number_of_user_controlled_bells += 1
 
-        self._rhythm.initialise_line(self.stage, self._user_assigned_bell(treble),
+        self._rhythm.initialise_line(self.number_of_bells, self._user_assigned_bell(treble),
                                      call_time + 3, number_of_user_controlled_bells)
 
         # Move to the next row generator if it's defined
@@ -206,7 +223,7 @@ into changes unless something is done!")
         Creates a new row from the row generator and tells the rhythm to expect the new bells.
         """
         if self._is_ringing_rounds:
-            for index in range(self.stage):
+            for index in range(self.number_of_bells):
                 self.expect_bell(index, Bell.from_index(index))
         else:
             self._row = self.row_generator.next_row(self.is_handstroke)
@@ -219,15 +236,17 @@ into changes unless something is done!")
         Called when the ringing is about to go into changes.
         Resets the row_generator and starts the next row.
         """
-        assert self.row_generator.number_of_bells == self._tower.number_of_bells, \
-            f"{self.row_generator.number_of_bells} != {self._tower.number_of_bells}"
-
-        self.row_generator.reset()
-        self.start_next_row()
+        if self._check_number_of_bells():
+            self.row_generator.reset()
+            self.start_next_row()
 
     def tick(self):
         """ Called every time the main loop is executed when the bot is ringing. """
-        bell = Bell.from_index(self._place) if self._is_ringing_rounds else self._row[self._place]
+        if self._is_ringing_rounds or self._place >= len(self._row):
+            # Rounds or a cover bell at the end of the row
+            bell = Bell.from_index(self._place)
+        else:
+            bell = self._row[self._place]
         user_controlled = self._user_assigned_bell(bell)
 
         self._rhythm.wait_for_bell_time(time.time(), bell, self._row_number, self._place,
@@ -238,7 +257,7 @@ into changes unless something is done!")
 
         self._place += 1
 
-        if self._place == self.stage:
+        if self._place == self.number_of_bells:
             # Determine if we're finishing a handstroke
             has_just_rung_rounds = True
 

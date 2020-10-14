@@ -3,6 +3,9 @@ A module to contain a Bell class used to encapsulate the idea of a Bell and remo
 errors related to deciding whether the treble is bell #0 or bell #1.
 """
 
+BELL_NAMES = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "E", "T", "A", "B", "C", "D"]
+
+
 class Bell:
     """ A class to encapsulate the idea of a bell. """
 
@@ -14,7 +17,7 @@ class Bell:
         the treble, and Bell.from_str('T') will represent the twelfth.
         """
         try:
-            index = Bell._lookup_name.index(bell_str)
+            index = BELL_NAMES.index(bell_str)
         except ValueError as e:
             raise ValueError(f"'{bell_str}' is not known bell symbol") from e
 
@@ -32,7 +35,7 @@ class Bell:
     def from_index(cls, bell_index: int):
         """
         Generates a Bell from a 0-indexed number, so Bell.from_number(0) will return a Bell
-        represeting the treble.
+        representing the treble.
         """
         return cls(bell_index)
 
@@ -41,7 +44,7 @@ class Bell:
         Constructs a Bell from a given 0-indexed index.  Should not be used outside this class -
         see `Bell.from_index` and `Bell.from_number` instead.
         """
-        if index < 0 or index >= len(self._lookup_name):
+        if index < 0 or index >= len(BELL_NAMES):
             raise ValueError(f"'{index}' is not known bell index")
 
         self.index = index
@@ -51,11 +54,9 @@ class Bell:
         """ Gets the 1-indexed number representing this bell. """
         return self.index + 1
 
-    _lookup_name = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "E", "T"]
-
     def __str__(self):
         """ Converts this bell to a single-character string representing this bell. """
-        return self._lookup_name[self.index]
+        return BELL_NAMES[self.index]
 
     def __repr__(self):
         return str(self)

@@ -5,6 +5,7 @@ from abc import ABCMeta, abstractmethod
 from typing import List
 
 from wheatley.bell import Bell
+from wheatley.row_generation.helpers import rounds
 
 
 class RowGenerator(metaclass=ABCMeta):
@@ -16,17 +17,10 @@ class RowGenerator(metaclass=ABCMeta):
         self.stage = stage
         self.logger = logging.getLogger(self.logger_name)
 
-        # Ensure there is a cover bell
-        self.number_of_bells = self.stage + 1 if self.stage % 2 else self.stage
-
         self._has_bob = False
         self._has_single = False
         self._index = 0
         self._row = self.rounds()
-
-    def is_tower_size_valid(self, tower_size) -> bool:
-        """ Returns True if the row_generator can generate rows correctly for a given tower size. """
-        return tower_size == self.number_of_bells
 
     def reset(self):
         """ Reset the row generator. """
@@ -47,7 +41,6 @@ class RowGenerator(metaclass=ABCMeta):
     def next_row(self, is_handstroke: bool) -> List[Bell]:
         """ Generate the next row, and mutate state accordingly. """
         self._row = self._gen_row(self._row, is_handstroke, self._index)
-        self._add_cover_if_required()
 
         self._index += 1
 
@@ -66,11 +59,7 @@ class RowGenerator(metaclass=ABCMeta):
 
     def rounds(self) -> List[Bell]:
         """ Generate rounds of the stage given by this RowGenerator. """
-        return [Bell.from_number(i) for i in range(1, self.number_of_bells + 1)]
-
-    def _add_cover_if_required(self):
-        if len(self._row) == self.number_of_bells - 1:
-            self._row.append(Bell.from_number(self.number_of_bells))
+        return rounds(self.stage)
 
     @abstractmethod
     def _gen_row(self, previous_row: List[Bell], is_handstroke: bool, index: int) -> List[Bell]:

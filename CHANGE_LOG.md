@@ -1,5 +1,7 @@
 # 0.6.0 (W.I.P.)
 - Change place notation parsing to comply with the CompLib and the XML specification.
+- Allow support of the new tower sizes - `5`, `14` and `16`
+- Allow Wheatley to ring with any (positive) number of cover bells
 
 # 0.5.1
 - Fix invalid initial inertia.

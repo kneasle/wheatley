@@ -115,7 +115,7 @@ class Bot:
         self._check_number_of_bells()
 
     def _check_number_of_bells(self):
-        """ Returns whether Wheatley can ring with the current number of bells with reasons why not"""
+        """ Returns whether Wheatley can ring with the current number of bells with reasons why not """
         if self.row_generator.stage == 0:
             self.logger.debug("Place holder row generator. Wheatley will not ring!")
             return False

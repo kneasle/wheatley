@@ -243,6 +243,7 @@ class Bot:
     def tick(self):
         """ Called every time the main loop is executed when the bot is ringing. """
         if self._is_ringing_rounds or self._place >= len(self._row):
+            # Rounds or a cover bell at the end of the row
             bell = Bell.from_index(self._place)
         else:
             bell = self._row[self._place]

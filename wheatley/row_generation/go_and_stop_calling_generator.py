@@ -2,7 +2,7 @@
 
 # pylint: disable=protected-access
 
-from random import random
+import random
 from typing import List
 
 from wheatley import calls
@@ -22,7 +22,7 @@ class GoAndStopCallingGenerator(RowGenerator):
         self.generator = generator
         self.called_go = False
 
-    def next_row(self, is_handstroke: bool):
+    def next_row(self, is_handstroke: bool) -> List[Bell]:
         if not self.called_go and not is_handstroke and random.choices([True, False], [1, 3]):
             self.tower.make_call(calls.GO)
 

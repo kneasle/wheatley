@@ -22,7 +22,7 @@ class RowGenerator(metaclass=ABCMeta):
         self._index = 0
         self._row = self.rounds()
 
-    def reset(self):
+    def reset(self) -> None:
         """ Reset the row generator. """
         self.logger.info("Reset")
 
@@ -31,7 +31,7 @@ class RowGenerator(metaclass=ABCMeta):
         self._index = 0
         self._row = self.rounds()
 
-    def reset_calls(self):
+    def reset_calls(self) -> None:
         """ Clear the pending call flags. """
         self.logger.info("Reset calls")
 
@@ -49,11 +49,11 @@ class RowGenerator(metaclass=ABCMeta):
 
         return self._row
 
-    def set_bob(self):
+    def set_bob(self) -> None:
         """ Set the flag that a bob has been made. """
         self._has_bob = True
 
-    def set_single(self):
+    def set_single(self) -> None:
         """ Set the flag that a single has been made. """
         self._has_single = True
 

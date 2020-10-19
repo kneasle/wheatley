@@ -13,7 +13,7 @@ from .row_generator import RowGenerator
 class NullRowGenError(Exception):
     """ An exception thrown when a row is requested from a 'NullGenerator'. """
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "_gen_row() called on a PlaceHolderGenerator"
 
 
@@ -22,7 +22,7 @@ class PlaceHolderGenerator(RowGenerator):
     A place holder row generator that accepts any tower size but throws an exception when rows are requested.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         # Make the stage 0
         super().__init__(0)
 

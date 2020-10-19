@@ -8,7 +8,7 @@ import math
 import time
 
 from abc import ABCMeta, abstractmethod
-from typing import Any
+from typing import Any, Dict, List, Set, Tuple
 
 from wheatley.bell import Bell
 from wheatley.regression import calculate_regression
@@ -18,7 +18,7 @@ from wheatley.tower import HANDSTROKE, BACKSTROKE, stroke_to_string
 WEIGHT_REJECTION_THRESHOLD = 0.001
 
 
-def inverse_lerp(a, b, c):
+def inverse_lerp(a: float, b: float, c: float) -> float:
     """
     Inverse function to `lerp`.  Calculates t such that lerp(a, b, t) = c.
     (will divide by zero if a = b)
@@ -26,7 +26,7 @@ def inverse_lerp(a, b, c):
     return (c - a) / (b - a)
 
 
-def lerp(a, b, t):
+def lerp(a: float, b: float, t: float) -> float:
     """
     Linearly interpolates (unclamped) between a and b with factor t.
     Acts such that `lerp(a, b, 0.0)` returns `a`, and `lerp(a, b, 1.0)` returns `b`.
@@ -40,7 +40,7 @@ class Rhythm(metaclass=ABCMeta):
     """
 
     @abstractmethod
-    def return_to_mainloop(self):
+    def return_to_mainloop(self) -> None:
         """
         When called, this function requires that Wheatley's main thread should return from
         wait_for_bell_time and give control back to the mainloop within a reasonable amount of time
@@ -49,11 +49,11 @@ class Rhythm(metaclass=ABCMeta):
 
     @abstractmethod
     def wait_for_bell_time(self, current_time: float, bell: Bell, row_number: int, place: int,
-                           user_controlled: bool, stroke: bool):
+                           user_controlled: bool, stroke: bool) -> None:
         """ Sleeps the thread until a given Bell should have rung. """
 
     @abstractmethod
-    def expect_bell(self, expected_bell: Bell, row_number: int, place: int, expected_stroke: bool):
+    def expect_bell(self, expected_bell: Bell, row_number: int, place: int, expected_stroke: bool) -> None:
         """
         Indicates that a given Bell is expected to be rung at a given row, place and stroke.
         Used by the rhythm so that when that bell is rung later, it can tell where that bell
@@ -62,21 +62,21 @@ class Rhythm(metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def change_setting(self, key: str, value: Any):
+    def change_setting(self, key: str, value: Any) -> None:
         """ Called when the Ringing Room server asks Wheatley to change a setting. """
 
     @abstractmethod
-    def on_bell_ring(self, bell: Bell, stroke: bool, real_time: float):
+    def on_bell_ring(self, bell: Bell, stroke: bool, real_time: float) -> None:
         """
         Called when a bell is rung at a given stroke.  Used as a callback from the Tower class.
         """
 
     @abstractmethod
     def initialise_line(self, stage: int, user_controls_treble: bool, start_time: float,
-                        number_of_user_controlled_bells: int):
+                        number_of_user_controlled_bells: int) -> None:
         """ Allow the Rhythm object to initialise itself when 'Look to' is called. """
 
-    def sleep(self, seconds: float): #  pylint: disable=no-self-use
+    def sleep(self, seconds: float) -> None: #  pylint: disable=no-self-use
         """ Sleeps for given number of seconds. Allows mocking in tests"""
         time.sleep(seconds)
 
@@ -96,16 +96,16 @@ class WaitForUserRhythm(Rhythm):
 
         self._current_stroke = HANDSTROKE
 
-        self._expected_bells = {HANDSTROKE: set(), BACKSTROKE: set()}
-        self._early_bells = {HANDSTROKE: set(), BACKSTROKE: set()}
+        self._expected_bells: Dict[bool, Set] = {HANDSTROKE: set(), BACKSTROKE: set()}
+        self._early_bells: Dict[bool, Set] = {HANDSTROKE: set(), BACKSTROKE: set()}
 
-        self.delay = 0
+        self.delay = 0.0
 
         self.logger = logging.getLogger(self.logger_name)
 
         self._should_return_to_mainloop = False
 
-    def return_to_mainloop(self):
+    def return_to_mainloop(self) -> None:
         """
         When called, this function requires that Wheatley's main thread should return from
         wait_for_bell_time and give control back to the mainloop within a reasonable amount of time
@@ -114,7 +114,8 @@ class WaitForUserRhythm(Rhythm):
         self._should_return_to_mainloop = True
         self._inner_rhythm.return_to_mainloop()
 
-    def wait_for_bell_time(self, current_time, bell, row_number, place, user_controlled, stroke):
+    def wait_for_bell_time(self, current_time: float, bell: Bell, row_number: int, place: int,
+                           user_controlled: bool, stroke: bool) -> None:
         """ Sleeps the thread until a given Bell should have rung. """
         if stroke != self._current_stroke:
             self.logger.debug(f"Switching to unexpected stroke {stroke_to_string(stroke)}")
@@ -123,7 +124,7 @@ class WaitForUserRhythm(Rhythm):
         self._inner_rhythm.wait_for_bell_time(current_time - self.delay, bell, row_number, place,
                                               user_controlled, stroke)
         if user_controlled:
-            delay_for_user = 0
+            delay_for_user = 0.0
             while bell in self._expected_bells[stroke]:
                 self.sleep(self.sleep_time)
                 delay_for_user += self.sleep_time
@@ -138,7 +139,7 @@ class WaitForUserRhythm(Rhythm):
         # Reset the flag to say that we've returned to the mainloop
         self._should_return_to_mainloop = False
 
-    def expect_bell(self, expected_bell, row_number, place, expected_stroke):
+    def expect_bell(self, expected_bell: Bell, row_number: int, place: int, expected_stroke: bool) -> None:
         """
         Indicates that a given Bell is expected to be rung at a given row, place and stroke.
         Used by the rhythm so that when that bell is rung later, it can tell where that bell
@@ -155,10 +156,10 @@ class WaitForUserRhythm(Rhythm):
         if expected_bell not in self._early_bells[expected_stroke]:
             self._expected_bells[expected_stroke].add(expected_bell)
 
-    def change_setting(self, key, value):
+    def change_setting(self, key: str, value: Any) -> None:
         self._inner_rhythm.change_setting(key, value)
 
-    def on_bell_ring(self, bell, stroke, real_time):
+    def on_bell_ring(self, bell: Bell, stroke: bool, real_time: float) -> None:
         """
         Called when a bell is rung at a given stroke.  Used as a callback from the Tower class.
         """
@@ -182,8 +183,8 @@ class WaitForUserRhythm(Rhythm):
             self.logger.debug(f"{bell} rung early to {stroke_to_string(stroke)}")
             self._early_bells[not self._current_stroke].add(bell)
 
-    def initialise_line(self, stage, user_controls_treble, start_time,
-                        number_of_user_controlled_bells):
+    def initialise_line(self, stage: int, user_controls_treble: bool, start_time: float,
+                        number_of_user_controlled_bells: int) -> None:
         """ Allow the Rhythm object to initialise itself when 'Look to' is called. """
         self._expected_bells[HANDSTROKE].clear()
         self._expected_bells[BACKSTROKE].clear()
@@ -207,8 +208,8 @@ class RegressionRhythm(Rhythm):
 
     logger_name = "RHYTHM:Regression"
 
-    def __init__(self, inertia, peal_speed=178, handstroke_gap=1, min_bells_in_dataset=4,
-                 max_bells_in_dataset=15, initial_inertia=0):
+    def __init__(self, inertia: float, peal_speed: float=178, handstroke_gap: float=1,
+                 min_bells_in_dataset: int=4, max_bells_in_dataset: int=15, initial_inertia: float=0):
         """
         Initialises a new RegressionRhythm with a given default peal speed and handstroke gap.
         `peal_speed` is the number of minutes in a peal of 5040 changes, and `handstroke_gap`
@@ -232,14 +233,16 @@ class RegressionRhythm(Rhythm):
         self._blow_interval = 0
 
         self._number_of_user_controlled_bells = 0
-        self._expected_bells = {}
-        self.data_set = []
+        # Maps a bell and a stroke to the row number and place which that bell is next expected to ring at
+        # that stroke
+        self._expected_bells: Dict[Tuple[Bell, bool], Tuple[int, int]] = {}
+        self.data_set: List[Tuple[float, float, float]] = []
 
         self.logger = logging.getLogger(self.logger_name)
 
         self._should_return_to_mainloop = False
 
-    def _add_data_point(self, row_number, place, real_time, weight):
+    def _add_data_point(self, row_number: int, place: int, real_time: float, weight: float) -> None:
         blow_time = self.index_to_blow_time(row_number, place)
 
         self.data_set.append((blow_time, real_time, weight))
@@ -271,7 +274,7 @@ class RegressionRhythm(Rhythm):
             if len(self.data_set) >= self._max_bells_in_dataset:
                 del self.data_set[0]
 
-    def return_to_mainloop(self):
+    def return_to_mainloop(self) -> None:
         """
         When called, this function requires that Wheatley's main thread should return from
         wait_for_bell_time and give control back to the mainloop within a reasonable amount of time
@@ -279,7 +282,8 @@ class RegressionRhythm(Rhythm):
         """
         self._should_return_to_mainloop = True
 
-    def wait_for_bell_time(self, current_time, bell, row_number, place, user_controlled, stroke):
+    def wait_for_bell_time(self, current_time: float, bell: Bell, row_number: int, place: int,
+                           user_controlled: bool, stroke: bool) -> None:
         """ Sleeps the thread until a given Bell should have rung. """
         if user_controlled and self._start_time == float('inf'):
             self.logger.debug("Waiting for pull off")
@@ -303,7 +307,7 @@ class RegressionRhythm(Rhythm):
 
         self._should_return_to_mainloop = False
 
-    def expect_bell(self, expected_bell, row_number, place, expected_stroke):
+    def expect_bell(self, expected_bell: Bell, row_number: int, place: int, expected_stroke: bool) -> None:
         """
         Indicates that a given Bell is expected to be rung at a given row, place and stroke.
         Used by the rhythm so that when that bell is rung later, it can tell where that bell
@@ -314,8 +318,8 @@ class RegressionRhythm(Rhythm):
                           + f"{expected_stroke}")
         self._expected_bells[(expected_bell, expected_stroke)] = (row_number, place)
 
-    def change_setting(self, key, value):
-        def log_warning(message):
+    def change_setting(self, key: str, value: Any) -> None:
+        def log_warning(message: str) -> None:
             self.logger.warning(f"Invalid value for setting '{key}': {message}")
 
         if key == "sensitivity":
@@ -335,7 +339,7 @@ class RegressionRhythm(Rhythm):
                 log_warning(f"{value} is not an number")
 
 
-    def on_bell_ring(self, bell, stroke, real_time):
+    def on_bell_ring(self, bell: Bell, stroke: bool, real_time: float) -> None:
         """
         Called when a bell is rung at a given stroke.  Used as a callback from the Tower class.
         """
@@ -372,8 +376,8 @@ class RegressionRhythm(Rhythm):
             # If this bell wasn't expected, then log that
             self.logger.warning(f"Bell {bell} unexpectedly rang at stroke {'H' if stroke else 'B'}")
 
-    def initialise_line(self, stage, user_controls_treble, start_time,
-                        number_of_user_controlled_bells):
+    def initialise_line(self, stage: int, user_controls_treble: bool, start_time: float,
+                        number_of_user_controlled_bells: int) -> None:
         """ Allow the Rhythm object to initialise itself when 'Look to' is called. """
         self._number_of_user_controlled_bells = number_of_user_controlled_bells
         self.stage = stage
@@ -398,21 +402,21 @@ class RegressionRhythm(Rhythm):
             self._start_time = float('inf')
 
     # Linear conversions between different time measurements
-    def index_to_blow_time(self, row_number, place):
+    def index_to_blow_time(self, row_number: int, place: int) -> float:
         """ Convert a row number and place into a blow_time, taking hanstroke gaps into account. """
         return row_number * self.stage + place + (row_number // 2) * self._handstroke_gap
 
-    def blow_time_to_real_time(self, blow_time):
+    def blow_time_to_real_time(self, blow_time: float) -> float:
         """ Convert from blow_time into real_time using the regression line. """
         return self._start_time + self._blow_interval * blow_time
 
-    def index_to_real_time(self, row_number, place):
+    def index_to_real_time(self, row_number: int, place: int) -> float:
         """
         Convert straight from row number and place into the expected real time according to the
         regression line.
         """
         return self.blow_time_to_real_time(self.index_to_blow_time(row_number, place))
 
-    def real_time_to_blow_time(self, real_time):
+    def real_time_to_blow_time(self, real_time: float) -> float:
         """ Convert backwards from a real time to the corresponding blow time. """
         return (real_time - self._start_time) / self._blow_interval

@@ -1,10 +1,11 @@
 """ Module to hold a RowGenerator to generate rows from a method title. """
 
 import xml.etree.ElementTree as ET
-
-from typing import Optional
+from typing import Optional, Tuple
 
 import requests
+
+from wheatley.types import Call
 
 from .dixonoids_generator import DixonoidsGenerator
 from .helpers import STAGES
@@ -46,19 +47,19 @@ class MethodNotFoundError(ValueError):
     entry in the CC method library.
     """
 
-    def __init__(self, name):
+    def __init__(self, name: str):
         super().__init__()
 
         self._name = name
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"No method with title '{self._name}' found."
 
 
 class MethodPlaceNotationGenerator(PlaceNotationGenerator):
     """ A class to generate rows given a method title. """
 
-    def __init__(self, method_title: str, bob, single):
+    def __init__(self, method_title: str, bob: Call, single: Call):
         method_xml = self._fetch_method(method_title)
 
         try:
@@ -74,7 +75,7 @@ class MethodPlaceNotationGenerator(PlaceNotationGenerator):
         )
 
     @staticmethod
-    def _parse_xml(method_xml: str):
+    def _parse_xml(method_xml: str) -> Tuple[str, int]:
         method_parsed_xml = ET.fromstring(method_xml)
         xmlns = '{http://methods.ringing.org/NS/method}'
 
@@ -97,7 +98,7 @@ class MethodPlaceNotationGenerator(PlaceNotationGenerator):
         raise Exception("Place notation not found")
 
     @staticmethod
-    def _fetch_method(method_title):
+    def _fetch_method(method_title: str) -> str:
         params = {'title': method_title, 'fields': 'pn|stage'}
         source = requests.get('http://methods.ringing.org/cgi-bin/simple.pl', params=params)
         source.raise_for_status()

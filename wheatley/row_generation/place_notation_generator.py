@@ -13,8 +13,8 @@ class PlaceNotationGenerator(RowGenerator):
 
     # Dict Lead Index: String PlaceNotation
     # 0 for end of the lead
-    DefaultBob: Call = {0: '14'}
-    DefaultSingle: Call = {0: '1234'}
+    DefaultBob: ClassVar[Call] = {0: '14'}
+    DefaultSingle: ClassVar[Call] = {0: '1234'}
 
     def __init__(self, stage: int, method: str, bob: Call = None,
                  single: Call = None):

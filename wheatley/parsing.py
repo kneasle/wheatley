@@ -2,7 +2,7 @@
 A module to contain all the functions that parse command line arguments, and their error classes.
 """
 
-from typing import Any, Dict, Optional
+from typing import NoReturn, Optional
 import logging
 
 from wheatley.types import Call, JSON

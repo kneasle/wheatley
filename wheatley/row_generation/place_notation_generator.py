@@ -1,6 +1,6 @@
 """ A module to hold the row generator that generates rows given some place notations. """
 
-from typing import List, Dict
+from typing import ClassVar, List, Dict
 
 from wheatley.types import Call, Row, Places
 

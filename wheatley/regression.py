@@ -12,7 +12,7 @@ def fill(index: int, item: float, length: int) -> List[float]:
     """
     Make an array that contains `length` 0s, but with the value at `index` replaced with `item`.
     """
-    a = [0 for _ in range(length)]
+    a = [0.0 for _ in range(length)]
 
     a[index] = item
 

@@ -82,7 +82,12 @@ class MethodPlaceNotationGenerator(PlaceNotationGenerator):
         # Schema at http://methods.ringing.org/xml.html
         symblock = method_parsed_xml.findall(xmlns + 'method/' + xmlns + 'pn/' + xmlns + 'symblock')
         block = method_parsed_xml.findall(xmlns + 'method/' + xmlns + 'pn/' + xmlns + 'block')
-        stage = int(method_parsed_xml.find(xmlns + 'method/' + xmlns + 'stage').text)
+        # Unpack the stage piece-by-piece to appease the type checker and assert expected types at runtime
+        maybe_stage_str = method_parsed_xml.find(xmlns + 'method/' + xmlns + 'stage')
+        assert maybe_stage_str is not None
+        stage_str = maybe_stage_str.text
+        assert isinstance(stage_str, str)
+        stage = int(stage_str)
 
         if len(symblock) != 0:
             notation = symblock[0].text
@@ -92,7 +97,7 @@ class MethodPlaceNotationGenerator(PlaceNotationGenerator):
 
         if len(block) != 0:
             notation = block[0].text
-
+            assert notation is not None
             return notation, stage
 
         raise Exception("Place notation not found")

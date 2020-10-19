@@ -43,7 +43,10 @@ def convert_pn(pn_str: str, expect_symmetric:bool=False) -> List[List[int]]:
     dot_delimited_string = re.sub("[.]*[x-][.]*", ".-.", pn_str).strip('.&+ ')
     deduplicated_string = dot_delimited_string.replace('..', '.').split('.')
 
-    converted = [[convert_bell_string(y) for y in place] if place != '-' else _CROSS_PN
+    # We suppress the type error here, because mypy will assign the list comprehension type 'List[object]',
+    # not 'List[List[int]]'.
+    converted: List[List[int]] = [[convert_bell_string(y) for y in place] # type: ignore
+                 if place != '-' else _CROSS_PN
                  for place in deduplicated_string]
 
     if symmetric:

@@ -132,6 +132,7 @@ def parse_call(input_string: str) -> Call:
                 )
 
             # Strip whitespace from the string segments so that they can be parsed more easily
+            assert place_notation_str is not None
             location_str = location_str.strip()
             place_notation_str = place_notation_str.strip()
 
@@ -207,7 +208,7 @@ def json_to_row_generator(json: Dict[str, Any], logger: logging.Logger) -> RowGe
         except KeyError as e:
             raise_error('stage', "'stage' is not defined", e)
         except ValueError as e:
-            raise_error('stage', f"'{json[stage]}' is not a valid integer", e)
+            raise_error('stage', f"'{json['stage']}' is not a valid integer", e)
         return PlaceNotationGenerator(stage, "&" + json['notation'], json_to_call('bob'),
                                       json_to_call('single'))
 
@@ -226,6 +227,9 @@ def json_to_row_generator(json: Dict[str, Any], logger: logging.Logger) -> RowGe
         return row_gen
 
     raise_error('type', f"{json['type']} is not one of 'method' or 'composition'")
+    # This code is unreachable, but used to demonstrate to the type-checker that `raise_error` will
+    # always throw an Exception
+    assert False
 
 
 def to_bool(value: str) -> bool:

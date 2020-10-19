@@ -6,7 +6,7 @@ program.
 
 import time
 import logging
-from typing import Optional, List, Any, Dict
+from typing import cast, Optional, List, Any, Dict
 
 from wheatley import calls
 from wheatley.row_generation import RowGenerator
@@ -243,10 +243,13 @@ class Bot:
 
     def tick(self) -> None:
         """ Called every time the main loop is executed when the bot is ringing. """
-        if self._is_ringing_rounds or self._place >= len(self._row):
+        if self._is_ringing_rounds or self._place >= len(cast(Row, self._row)):
             # Rounds or a cover bell at the end of the row
             bell = Bell.from_index(self._place)
         else:
+            # self._row can't be None if self._is_ringing_rounds is False.  This both appeases the type
+            # checker and acts as a sanity check during run-time
+            assert self._row is not None
             bell = self._row[self._place]
         user_controlled = self._user_assigned_bell(bell)
 

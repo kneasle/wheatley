@@ -7,7 +7,7 @@ import logging
 from time import sleep
 from typing import Optional, Callable, Dict, List, Any
 
-import socketio
+import socketio # type: ignore
 
 from wheatley.bell import Bell
 
@@ -37,7 +37,7 @@ class RingingRoomTower:
 
         self.invoke_on_call: Dict[str, List[Callable[[], Any]]] = collections.defaultdict(list)
         self.invoke_on_reset: List[Callable[[], Any]] = []
-        self.invoke_on_bell_rung: List[Callable[[int, bool], Any]] = []
+        self.invoke_on_bell_rung: List[Callable[[Bell, bool], Any]] = []
         self.invoke_on_setting_change: List[Callable[[str, Any], Any]] = []
         self.invoke_on_row_gen_change: List[Callable[[Any], Any]] = []
         self.invoke_on_stop_touch: List[Callable[[], Any]] = []
@@ -96,8 +96,8 @@ class RingingRoomTower:
         """ Returns true if a given bell is assigned to the given user name. """
         try:
             assigned_user_id = self._assigned_users.get(bell, None)
-            if assigned_user_id is None and user_name is None:
-                return True
+            if assigned_user_id is None:
+                return user_name is None
             return self.user_name_from_id(assigned_user_id) == user_name
         except KeyError:
             return False
@@ -216,7 +216,7 @@ logged in as '{self._user_name_map[user_id_that_left]}'.")
         # Unassign all instances of that user
         for bell, user in self._assigned_users.items():
             if user == user_id_that_left:
-                self._assigned_users[bell] = None
+                del self._assigned_users[bell]
 
                 bells_unassigned.append(bell)
 
@@ -251,8 +251,15 @@ logged in as '{self._user_name_map[user_id_that_left]}'.")
         self._update_bell_state(data["global_bell_state"])
 
         who_rang = Bell.from_number(data["who_rang"])
+        # Only run the callbacks if the bells exist
         for bell_ring_callback in self.invoke_on_bell_rung:
-            bell_ring_callback(who_rang, self.get_stroke(who_rang))
+            new_stroke = self.get_stroke(who_rang)
+            if new_stroke is None:
+                self.logger.warning(
+                    f"Bell {data['who_rang']} rang, but the tower only has {self.number_of_bells} bells."
+                )
+            else:
+                bell_ring_callback(who_rang, new_stroke)
 
     def _update_bell_state(self, bell_state: List[bool]) -> None:
         self._bell_state = bell_state
@@ -288,15 +295,16 @@ logged in as '{self._user_name_map[user_id_that_left]}'.")
         bell = Bell.from_number(data["bell"])
         user = data["user"] or None
 
-        self._assigned_users[bell] = user
-
         assert isinstance(user, int) or user is None, \
                f"User ID {user} is not an integer (it has type {type(user)})."
 
-        if user:
-            self.logger.info(f"RECEIVED: Assigned bell '{bell}' to '{self.user_name_from_id(user)}'")
-        else:
+        if user is None:
             self.logger.info(f"RECEIVED: Unassigned bell '{bell}'")
+            if bell in self._assigned_users:
+                del self._assigned_users[bell]
+        else:
+            self._assigned_users[bell] = user
+            self.logger.info(f"RECEIVED: Assigned bell '{bell}' to '{self.user_name_from_id(user)}'")
 
     def _on_call(self, data: Dict[str, str]) -> None:
         """ Callback called when a call is made. """

@@ -229,8 +229,8 @@ class RegressionRhythm(Rhythm):
         self._max_bells_in_dataset = max_bells_in_dataset
 
         self.stage = 0
-        self._start_time = 0
-        self._blow_interval = 0
+        self._start_time = 0.0
+        self._blow_interval = 0.0
 
         self._number_of_user_controlled_bells = 0
         # Maps a bell and a stroke to the row number and place which that bell is next expected to ring at

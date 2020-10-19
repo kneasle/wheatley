@@ -227,9 +227,6 @@ def json_to_row_generator(json: JSON, logger: logging.Logger) -> RowGenerator:
         return row_gen
 
     raise_error('type', f"{json['type']} is not one of 'method' or 'composition'")
-    # This code is unreachable, but used to demonstrate to the type-checker that `raise_error` will
-    # always throw an Exception
-    assert False
 
 
 def to_bool(value: str) -> bool:

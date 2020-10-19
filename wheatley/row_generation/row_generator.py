@@ -2,9 +2,8 @@
 
 import logging
 from abc import ABCMeta, abstractmethod
-from typing import List
 
-from wheatley.bell import Bell
+from wheatley.types import Row, Places
 from wheatley.row_generation.helpers import rounds
 
 
@@ -38,7 +37,7 @@ class RowGenerator(metaclass=ABCMeta):
         self._has_bob = False
         self._has_single = False
 
-    def next_row(self, is_handstroke: bool) -> List[Bell]:
+    def next_row(self, is_handstroke: bool) -> Row:
         """ Generate the next row, and mutate state accordingly. """
         self._row = self._gen_row(self._row, is_handstroke, self._index)
 
@@ -57,15 +56,15 @@ class RowGenerator(metaclass=ABCMeta):
         """ Set the flag that a single has been made. """
         self._has_single = True
 
-    def rounds(self) -> List[Bell]:
+    def rounds(self) -> Row:
         """ Generate rounds of the stage given by this RowGenerator. """
         return rounds(self.stage)
 
     @abstractmethod
-    def _gen_row(self, previous_row: List[Bell], is_handstroke: bool, index: int) -> List[Bell]:
+    def _gen_row(self, previous_row: Row, is_handstroke: bool, index: int) -> Row:
         pass
 
-    def permute(self, row: List[Bell], places: List[int]) -> List[Bell]:
+    def permute(self, row: Row, places: Places) -> Row:
         """ Permute a row by a place notation given by `places`. """
         new_row = list(row)
 

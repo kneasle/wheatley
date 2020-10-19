@@ -5,7 +5,7 @@ A module to contain all the functions that parse command line arguments, and the
 from typing import Any, Dict, Optional
 import logging
 
-from wheatley.types import Call
+from wheatley.types import Call, JSON
 from wheatley.row_generation import RowGenerator
 from wheatley.row_generation.place_notation_generator import PlaceNotationGenerator
 from wheatley.row_generation.complib_composition_generator import ComplibCompositionGenerator, \
@@ -162,7 +162,7 @@ def parse_call(input_string: str) -> Call:
 
 class RowGenParseError(ValueError):
     """ A class to encapsulate an error generated when parsing an RowGenerator from JSON. """
-    def __init__(self, json: Dict[str, Any], field: str, message: str):
+    def __init__(self, json: JSON, field: str, message: str):
         super().__init__()
 
         self.json = json
@@ -176,7 +176,7 @@ class RowGenParseError(ValueError):
         return str(self)
 
 
-def json_to_row_generator(json: Dict[str, Any], logger: logging.Logger) -> RowGenerator:
+def json_to_row_generator(json: JSON, logger: logging.Logger) -> RowGenerator:
     """ Takes a JSON message from SocketIO and convert it to a RowGenerator or throw an exception. """
     def raise_error(field: str, message: str, parent_error: Optional[Exception] = None) -> None:
         """ A helper function to raise a `RowGenParseError` with a helpful error message. """
@@ -184,7 +184,7 @@ def json_to_row_generator(json: Dict[str, Any], logger: logging.Logger) -> RowGe
             raise RowGenParseError(json, field, message)
         raise RowGenParseError(json, field, message) from parent_error
 
-    def json_to_call(name: str) -> Optional[Dict[int, str]]:
+    def json_to_call(name: str) -> Optional[Call]:
         """ Helper function to generate a call with a given name from the json. """
         if name not in json:
             logger.warning(f"No field '{name}' in the row generator JSON")

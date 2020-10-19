@@ -2,8 +2,7 @@
 
 from typing import List, Dict
 
-from wheatley.bell import Bell
-from wheatley.types import Call
+from wheatley.types import Call, Row, Places
 
 from .helpers import convert_pn, convert_to_bell_string
 from .row_generator import RowGenerator
@@ -29,7 +28,7 @@ class PlaceNotationGenerator(RowGenerator):
         self.method_pn = convert_pn(method)
         self.lead_len = len(self.method_pn)
 
-        def parse_call_dict(unparsed_calls: Dict[int, str]) -> Dict[int, List[List[int]]]:
+        def parse_call_dict(unparsed_calls: Call) -> Dict[int, List[Places]]:
             """ Parse a dict of type `int => str` to `int => [PlaceNotation]`. """
             parsed_calls = {}
 
@@ -47,9 +46,9 @@ class PlaceNotationGenerator(RowGenerator):
         self.bobs_pn = parse_call_dict(bob)
         self.singles_pn = parse_call_dict(single)
 
-        self._generating_call_pn: List[List[int]] = []
+        self._generating_call_pn: List[Places] = []
 
-    def _gen_row(self, previous_row: List[Bell], is_handstroke: bool, index: int) -> List[Bell]:
+    def _gen_row(self, previous_row: Row, is_handstroke: bool, index: int) -> Row:
         lead_index = index % self.lead_len
 
         if self._has_bob and self.bobs_pn.get(lead_index):

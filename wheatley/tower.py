@@ -9,6 +9,7 @@ from typing import Optional, Callable, Dict, List, Any
 
 import socketio # type: ignore
 
+from wheatley.types import JSON
 from wheatley.bell import Bell
 
 
@@ -176,7 +177,7 @@ class RingingRoomTower:
         self._join_tower()
         self._request_global_state()
 
-    def _on_setting_change(self, data: Dict[str, Any]) -> None:
+    def _on_setting_change(self, data: JSON) -> None:
         self.logger.info(f"RECEIVED: Settings changed: {data}\
 {' (ignoring)' if len(self.invoke_on_setting_change) == 0 else ''}")
 
@@ -184,7 +185,7 @@ class RingingRoomTower:
             for callback in self.invoke_on_setting_change:
                 callback(key, value)
 
-    def _on_row_gen_change(self, data: Dict[str, Any]) -> None:
+    def _on_row_gen_change(self, data: JSON) -> None:
         self.logger.info(f"RECEIVED: Row gen changed: {data}\
 {' (ignoring)' if len(self.invoke_on_row_gen_change) == 0 else ''}")
 
@@ -197,7 +198,7 @@ class RingingRoomTower:
         for callback in self.invoke_on_stop_touch:
             callback()
 
-    def _on_user_leave(self, data: Dict[str, Any]) -> None:
+    def _on_user_leave(self, data: JSON) -> None:
         user_id_that_left = data["user_id"]
         user_name_that_left = data["username"]
 
@@ -224,12 +225,12 @@ logged in as '{self._user_name_map[user_id_that_left]}'.")
             f"RECEIVED: User #{user_id_that_left}:'{user_name_that_left}' left from bells {bells_unassigned}."
         )
 
-    def _on_user_entered(self, data: Dict[str, Any]) -> None:
+    def _on_user_entered(self, data: JSON) -> None:
         """ Called when the server receives a uew user so we can update our user list. """
         # Add the new user to the user list, so we can match up their ID with their username
         self._user_name_map[data['user_id']] = data['username']
 
-    def _on_user_list(self, user_list: Dict[str, Any]) -> None:
+    def _on_user_list(self, user_list: JSON) -> None:
         """ Called when the server broadcasts a user list when Wheatley joins a tower. """
         for user in user_list['user_list']:
             self._user_name_map[user['user_id']] = user['username']
@@ -246,7 +247,7 @@ logged in as '{self._user_name_map[user_id_that_left]}'.")
         """ Send a request to the server to get the current state of the tower. """
         self._emit('c_request_global_state', {"tower_id": self.tower_id}, "Request state")
 
-    def _on_bell_rung(self, data: Dict[str, Any]) -> None:
+    def _on_bell_rung(self, data: JSON) -> None:
         """ Callback called when the client receives a signal that a bell has been rung. """
         self._update_bell_state(data["global_bell_state"])
 
@@ -266,7 +267,7 @@ logged in as '{self._user_name_map[user_id_that_left]}'.")
 
         self.logger.debug(f"RECEIVED: Bells '{['H' if x else 'B' for x in bell_state]}'")
 
-    def _on_global_bell_state(self, data: Dict[str, Any]) -> None:
+    def _on_global_bell_state(self, data: JSON) -> None:
         """
         Callback called when receiving an update to the global tower state.
         Cannot have further callbacks assigned to it.
@@ -275,7 +276,7 @@ logged in as '{self._user_name_map[user_id_that_left]}'.")
         for invoke_callback in self.invoke_on_reset:
             invoke_callback()
 
-    def _on_size_change(self, data: Dict[str, Any]) -> None:
+    def _on_size_change(self, data: JSON) -> None:
         """ Callback called when the number of bells in the room changes. """
         new_size = data["size"]
         if new_size != self.number_of_bells:
@@ -290,7 +291,7 @@ logged in as '{self._user_name_map[user_id_that_left]}'.")
             for invoke_callback in self.invoke_on_reset:
                 invoke_callback()
 
-    def _on_assign_user(self, data: Dict[str, Any]) -> None:
+    def _on_assign_user(self, data: JSON) -> None:
         """ Callback called when a bell assignment is changed. """
         bell = Bell.from_number(data["bell"])
         user = data["user"] or None

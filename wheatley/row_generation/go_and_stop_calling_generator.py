@@ -3,10 +3,9 @@
 # pylint: disable=protected-access
 
 import random
-from typing import List
 
 from wheatley import calls
-from wheatley.bell import Bell
+from wheatley.types import Row
 from wheatley.tower import RingingRoomTower
 
 from .row_generator import RowGenerator
@@ -22,13 +21,13 @@ class GoAndStopCallingGenerator(RowGenerator):
         self.generator = generator
         self.called_go = False
 
-    def next_row(self, is_handstroke: bool) -> List[Bell]:
+    def next_row(self, is_handstroke: bool) -> Row:
         if not self.called_go and not is_handstroke and random.choices([True, False], [1, 3]):
             self.tower.make_call(calls.GO)
 
         return super().next_row(is_handstroke)
 
-    def _gen_row(self, previous_row: List[Bell], is_handstroke: bool, index: int) -> List[Bell]:
+    def _gen_row(self, previous_row: Row, is_handstroke: bool, index: int) -> Row:
         next_row = self.generator._gen_row(previous_row, is_handstroke, index)
 
         if next_row == self.rounds():

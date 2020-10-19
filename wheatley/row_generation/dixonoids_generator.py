@@ -2,7 +2,7 @@
 
 from typing import Dict, List
 
-from wheatley.bell import Bell
+from wheatley.types import Places, Row
 
 from .helpers import convert_pn
 from .row_generator import RowGenerator
@@ -47,7 +47,7 @@ class DixonoidsGenerator(RowGenerator):
         self.bob_rules = self._convert_pn_dict(bob_rules)
         self.single_rules = self._convert_pn_dict(single_rules)
 
-    def _gen_row(self, previous_row: List[Bell], is_handstroke: bool, index: int) -> List[Bell]:
+    def _gen_row(self, previous_row: Row, is_handstroke: bool, index: int) -> Row:
         leading_bell = previous_row[0].number
         pn_index = 0 if is_handstroke else 1
 
@@ -70,5 +70,5 @@ class DixonoidsGenerator(RowGenerator):
         return row
 
     @staticmethod
-    def _convert_pn_dict(rules: Dict[int, List[str]]) -> Dict[int, List[List[int]]]:
+    def _convert_pn_dict(rules: Dict[int, List[str]]) -> Dict[int, List[Places]]:
         return {key: [convert_pn(pn)[0] for pn in places] for key, places in rules.items()}

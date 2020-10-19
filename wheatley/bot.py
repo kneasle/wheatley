@@ -6,13 +6,14 @@ program.
 
 import time
 import logging
-from typing import cast, Optional, List, Any, Dict
+from typing import cast, Optional, Any
 
 from wheatley import calls
 from wheatley.row_generation import RowGenerator
 from wheatley.bell import Bell
 from wheatley.rhythm import Rhythm
 from wheatley.tower import RingingRoomTower
+from wheatley.types import JSON, Row
 from wheatley.parsing import to_bool, json_to_row_generator, RowGenParseError
 
 
@@ -69,7 +70,7 @@ class Bot:
 
         self._row_number = 0
         self._place = 0
-        self._row: Optional[List[Bell]] = None
+        self._row: Optional[Row] = None
 
         self.logger = logging.getLogger(self.logger_name)
 
@@ -104,7 +105,7 @@ class Bot:
         else:
             self._rhythm.change_setting(key, value)
 
-    def _on_row_gen_change(self, row_gen_json: Dict[str, Any]) -> None:
+    def _on_row_gen_change(self, row_gen_json: JSON) -> None:
         try:
             self.next_row_generator = json_to_row_generator(row_gen_json, self.logger)
             self.logger.info("Successfully updated next row gen")

@@ -3,9 +3,7 @@ A module to hold a place-holder row generator that accepts all tower sizes but t
 producing rows.
 """
 
-from typing import List
-
-from wheatley.bell import Bell
+from wheatley.types import Row
 
 from .row_generator import RowGenerator
 
@@ -26,5 +24,5 @@ class PlaceHolderGenerator(RowGenerator):
         # Make the stage 0
         super().__init__(0)
 
-    def _gen_row(self, previous_row: List[Bell], is_handstroke: bool, index: int) -> List[Bell]:
+    def _gen_row(self, previous_row: Row, is_handstroke: bool, index: int) -> Row:
         raise NullRowGenError()

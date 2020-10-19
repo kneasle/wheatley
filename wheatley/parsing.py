@@ -32,7 +32,7 @@ def parse_peal_speed(peal_speed: str) -> int:
     """
     Parses a peal speed written in the format /2h58(m?)/ or /XXX(m?)/ into a number of minutes.
     """
-    def exit_with_message(error_text: str) -> None:
+    def exit_with_message(error_text: str) -> NoReturn:
         """ Raise an exception with a useful error message. """
         raise PealSpeedParseError(peal_speed, error_text)
 

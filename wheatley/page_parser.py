@@ -4,7 +4,6 @@ things like the load-balanced URL of the socket-io server.
 """
 
 import urllib
-
 import requests
 
 

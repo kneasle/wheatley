@@ -51,7 +51,6 @@ def convert_pn(pn_str: str, expect_symmetric:bool=False) -> List[List[int]]:
 
     if symmetric:
         return converted + list(reversed(converted[:-1]))
-
     return converted
 
 

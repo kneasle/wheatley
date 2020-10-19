@@ -107,7 +107,6 @@ class Bot:
     def _on_row_gen_change(self, row_gen_json: Dict[str, Any]) -> None:
         try:
             self.next_row_generator = json_to_row_generator(row_gen_json, self.logger)
-
             self.logger.info("Successfully updated next row gen")
         except RowGenParseError as e:
             self.logger.warning(e)
@@ -125,7 +124,7 @@ class Bot:
                                 + f"but the current tower has {self._tower.number_of_bells}. "
                                 + "Wheatley will not ring!")
             return False
-        elif self._tower.number_of_bells > self.row_generator.stage + 1:
+        if self._tower.number_of_bells > self.row_generator.stage + 1:
             if self.row_generator.stage % 2:
                 expected = self.row_generator.stage + 1
             else:

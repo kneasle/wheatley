@@ -110,7 +110,7 @@ class CallParseError(ValueError):
 
 def parse_call(input_string: str) -> Call:
     """ Parse a call string into a dict of lead locations to place notation strings. """
-    def exit_with_message(message: str) -> None:
+    def exit_with_message(message: str) -> NoReturn:
         """ Raises a parse error with the given error message. """
         raise CallParseError(input_string, message)
 

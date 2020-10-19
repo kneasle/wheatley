@@ -178,7 +178,7 @@ class RowGenParseError(ValueError):
 
 def json_to_row_generator(json: JSON, logger: logging.Logger) -> RowGenerator:
     """ Takes a JSON message from SocketIO and convert it to a RowGenerator or throw an exception. """
-    def raise_error(field: str, message: str, parent_error: Optional[Exception] = None) -> None:
+    def raise_error(field: str, message: str, parent_error: Optional[Exception] = None) -> NoReturn:
         """ A helper function to raise a `RowGenParseError` with a helpful error message. """
         if parent_error is None:
             raise RowGenParseError(json, field, message)

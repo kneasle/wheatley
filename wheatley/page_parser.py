@@ -45,11 +45,6 @@ def get_load_balancing_url(tower_id: int, unfixed_http_server_url: str) -> str:
     bars.
     """
     http_server_url = _fix_url(unfixed_http_server_url)
-
-    # Trying to extract the following line in the rendered html:
-    # server_ip: "{{server_ip}}"
-    # See https://github.com/lelandpaul/virtual-ringing-room/blob/
-    #     ec00927ca57ab94fa2ff6a978ffaff707ab23a57/app/templates/ringing_room.html#L46
     url = urllib.parse.urljoin(http_server_url, str(tower_id)) # type: ignore
 
     try:
@@ -58,6 +53,10 @@ def get_load_balancing_url(tower_id: int, unfixed_http_server_url: str) -> str:
         raise InvalidURLError(http_server_url) from e
 
     try:
+        # Trying to extract the following line in the rendered html:
+        # server_ip: "{{server_ip}}"
+        # See https://github.com/lelandpaul/virtual-ringing-room/blob/
+        #     ec00927ca57ab94fa2ff6a978ffaff707ab23a57/app/templates/ringing_room.html#L46
         url_start_index = html.index("server_ip") + len('server_ip: "')
         string_that_starts_with_url = html[url_start_index:]
         load_balancing_url = string_that_starts_with_url[:string_that_starts_with_url.index('"')]

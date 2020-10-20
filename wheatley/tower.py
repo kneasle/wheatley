@@ -9,15 +9,11 @@ from typing import Optional, Callable, Dict, List, Any
 
 import socketio # type: ignore
 
-from wheatley.types import JSON
+from wheatley.types import JSON, Stroke, HANDSTROKE, BACKSTROKE
 from wheatley.bell import Bell
 
 
-HANDSTROKE = True
-BACKSTROKE = False
-
-
-def stroke_to_string(stroke: bool) -> str:
+def stroke_to_string(stroke: Stroke) -> str:
     """ Convert stroke to string for logging """
     return "HANDSTROKE" if stroke else "BACKSTROKE"
 
@@ -31,14 +27,14 @@ class RingingRoomTower:
         """ Initialise a tower with a given room id and url. """
         self.tower_id = tower_id
 
-        self._bell_state: List[bool] = []
+        self._bell_state: List[Stroke] = []
         self._assigned_users: Dict[Bell, int] = {}
         # A map from user IDs to the corresponding user name
         self._user_name_map: Dict[int, str] = {}
 
         self.invoke_on_call: Dict[str, List[Callable[[], Any]]] = collections.defaultdict(list)
         self.invoke_on_reset: List[Callable[[], Any]] = []
-        self.invoke_on_bell_rung: List[Callable[[Bell, bool], Any]] = []
+        self.invoke_on_bell_rung: List[Callable[[Bell, Stroke], Any]] = []
         self.invoke_on_setting_change: List[Callable[[str, Any], Any]] = []
         self.invoke_on_row_gen_change: List[Callable[[Any], Any]] = []
         self.invoke_on_stop_touch: List[Callable[[], Any]] = []
@@ -74,7 +70,7 @@ class RingingRoomTower:
         """ Returns the number of bells currently in the tower. """
         return len(self._bell_state)
 
-    def ring_bell(self, bell: Bell, is_handstroke: bool) -> bool:
+    def ring_bell(self, bell: Bell, is_handstroke: Stroke) -> bool:
         """ Send a request to the the server if the bell can be rung on the given stroke. """
         try:
             stroke = self.get_stroke(bell)
@@ -110,12 +106,11 @@ class RingingRoomTower:
         """
         return self._user_name_map.get(user_id)
 
-    def get_stroke(self, bell: Bell) -> Optional[bool]:
+    def get_stroke(self, bell: Bell) -> Optional[Stroke]:
         """ Returns the stroke of a given bell. """
         if bell.index >= len(self._bell_state) or bell.index < 0:
             self.logger.error(f"Bell {bell} not in tower")
             return None
-
         return self._bell_state[bell.index]
 
     def make_call(self, call: str) -> None:
@@ -262,7 +257,7 @@ logged in as '{self._user_name_map[user_id_that_left]}'.")
             else:
                 bell_ring_callback(who_rang, new_stroke)
 
-    def _update_bell_state(self, bell_state: List[bool]) -> None:
+    def _update_bell_state(self, bell_state: List[Stroke]) -> None:
         self._bell_state = bell_state
 
         self.logger.debug(f"RECEIVED: Bells '{['H' if x else 'B' for x in bell_state]}'")
@@ -330,6 +325,6 @@ logged in as '{self._user_name_map[user_id_that_left]}'.")
             self.logger.info(f"EMIT: {message}")
 
     @staticmethod
-    def _bells_set_at_hand(number: int) -> List[bool]:
+    def _bells_set_at_hand(number: int) -> List[Stroke]:
         """ Returns the representation of `number` bells, all set at handstroke. """
         return [HANDSTROKE for _ in range(number)]

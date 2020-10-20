@@ -13,7 +13,7 @@ from wheatley.row_generation import RowGenerator
 from wheatley.bell import Bell
 from wheatley.rhythm import Rhythm
 from wheatley.tower import RingingRoomTower
-from wheatley.types import JSON, Row
+from wheatley.types import JSON, Row, Stroke
 from wheatley.parsing import to_bool, json_to_row_generator, RowGenParseError
 
 
@@ -76,9 +76,9 @@ class Bot:
 
     # Convenient properties that are frequently used
     @property
-    def is_handstroke(self) -> bool:
+    def stroke(self) -> Stroke:
         """ Returns true if the current row (determined by self._row_number) represents a handstroke. """
-        return self._row_number % 2 == 0
+        return Stroke(self._row_number % 2 == 0)
 
     @property
     def number_of_bells(self) -> int:
@@ -194,13 +194,13 @@ class Bot:
         """ Callback called when a user calls 'Stand Next'. """
         self._should_stand = True
 
-    def _on_bell_ring(self, bell: Bell, stroke: bool) -> None:
+    def _on_bell_ring(self, bell: Bell, stroke: Stroke) -> None:
         """ Callback called when the Tower receives a signal that a bell has been rung. """
         if self._user_assigned_bell(bell):
             # This will give us the stroke _after_ the bell rings, we have to invert it, because
             # otherwise this will always expect the bells on the wrong stroke and no ringing will
             # ever happen
-            self._rhythm.on_bell_ring(bell, not stroke, time.time())
+            self._rhythm.on_bell_ring(bell, stroke.opposite(), time.time())
 
     def _on_stop_touch(self) -> None:
         self.logger.info("Got to callback for stop touch")
@@ -216,7 +216,7 @@ class Bot:
                 bell,
                 self._row_number,
                 index,
-                self.is_handstroke
+                self.stroke
             )
 
     def start_next_row(self) -> None:
@@ -227,7 +227,7 @@ class Bot:
             for index in range(self.number_of_bells):
                 self.expect_bell(index, Bell.from_index(index))
         else:
-            self._row = self.row_generator.next_row(self.is_handstroke)
+            self._row = self.row_generator.next_row(self.stroke)
 
             for (index, bell) in enumerate(self._row):
                 self.expect_bell(index, bell)
@@ -254,10 +254,10 @@ class Bot:
         user_controlled = self._user_assigned_bell(bell)
 
         self._rhythm.wait_for_bell_time(time.time(), bell, self._row_number, self._place,
-                                        user_controlled, self.is_handstroke)
+                                        user_controlled, self.stroke)
 
         if not user_controlled:
-            self._tower.ring_bell(bell, self.is_handstroke)
+            self._tower.ring_bell(bell, self.stroke)
 
         self._place += 1
 

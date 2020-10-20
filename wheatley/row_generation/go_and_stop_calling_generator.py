@@ -5,7 +5,7 @@
 import random
 
 from wheatley import calls
-from wheatley.types import Row
+from wheatley.types import Row, Stroke
 from wheatley.tower import RingingRoomTower
 
 from .row_generator import RowGenerator
@@ -21,14 +21,14 @@ class GoAndStopCallingGenerator(RowGenerator):
         self.generator = generator
         self.called_go = False
 
-    def next_row(self, is_handstroke: bool) -> Row:
-        if not self.called_go and not is_handstroke and random.choices([True, False], [1, 3]):
+    def next_row(self, stroke: Stroke) -> Row:
+        if not self.called_go and stroke.is_back() and random.choices([True, False], [1, 3]):
             self.tower.make_call(calls.GO)
 
-        return super().next_row(is_handstroke)
+        return super().next_row(stroke)
 
-    def _gen_row(self, previous_row: Row, is_handstroke: bool, index: int) -> Row:
-        next_row = self.generator._gen_row(previous_row, is_handstroke, index)
+    def _gen_row(self, previous_row: Row, stroke: Stroke, index: int) -> Row:
+        next_row = self.generator._gen_row(previous_row, stroke, index)
 
         if next_row == self.rounds():
             self.tower.make_call(calls.THATS_ALL)

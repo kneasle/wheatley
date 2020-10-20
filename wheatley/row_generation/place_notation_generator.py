@@ -2,7 +2,7 @@
 
 from typing import ClassVar, List, Dict
 
-from wheatley.types import Call, Row, Places
+from wheatley.types import Call, Row, Places, Stroke
 
 from .helpers import convert_pn, convert_to_bell_string
 from .row_generator import RowGenerator
@@ -13,11 +13,10 @@ class PlaceNotationGenerator(RowGenerator):
 
     # Dict Lead Index: String PlaceNotation
     # 0 for end of the lead
-    DefaultBob: ClassVar[Call] = {0: '14'}
-    DefaultSingle: ClassVar[Call] = {0: '1234'}
+    DefaultBob: ClassVar[Call] = Call({0: '14'})
+    DefaultSingle: ClassVar[Call] = Call({0: '1234'})
 
-    def __init__(self, stage: int, method: str, bob: Call = None,
-                 single: Call = None):
+    def __init__(self, stage: int, method: str, bob: Call = None, single: Call = None):
         super().__init__(stage)
 
         if bob is None:
@@ -48,7 +47,7 @@ class PlaceNotationGenerator(RowGenerator):
 
         self._generating_call_pn: List[Places] = []
 
-    def _gen_row(self, previous_row: Row, is_handstroke: bool, index: int) -> Row:
+    def _gen_row(self, previous_row: Row, stroke: Stroke, index: int) -> Row:
         lead_index = index % self.lead_len
 
         if self._has_bob and self.bobs_pn.get(lead_index):
@@ -78,7 +77,7 @@ class PlaceNotationGenerator(RowGenerator):
         main_body[0] = "3"
         notation = ".".join(main_body)
 
-        return PlaceNotationGenerator(stage, notation, bob={-1: "3"}, single={-1: "3.123"})
+        return PlaceNotationGenerator(stage, notation, bob=Call({-1: "3"}), single=Call({-1: "3.123"}))
 
     @staticmethod
     def stedman(stage: int) -> RowGenerator:
@@ -94,13 +93,13 @@ class PlaceNotationGenerator(RowGenerator):
 
         notation = f"3.1.{stage_bell}.3.1.3.1.3.{stage_bell}.1.3.1"
 
-        return PlaceNotationGenerator(stage, notation, bob={3: stage_bell_2, 9: stage_bell_2},
-                                      single={3: f"{stage_bell_2}{stage_bell_1}{stage_bell}",
-                                              9: f"{stage_bell_2}{stage_bell_1}{stage_bell}"})
+        return PlaceNotationGenerator(stage, notation, bob=Call({3: stage_bell_2, 9: stage_bell_2}),
+                                      single=Call({3: f"{stage_bell_2}{stage_bell_1}{stage_bell}",
+                                              9: f"{stage_bell_2}{stage_bell_1}{stage_bell}"}))
 
     @staticmethod
     def stedman_doubles() -> RowGenerator:
         """ Generates Stedman on a given stage (even bell Stedman will cause an exception). """
         notation = "3.1.5.3.1.3.1.3.5.1.3.1"
 
-        return PlaceNotationGenerator(5, notation, bob={}, single={6: "345", 12: "145"})
+        return PlaceNotationGenerator(5, notation, bob=Call({}), single=Call({6: "345", 12: "145"}))

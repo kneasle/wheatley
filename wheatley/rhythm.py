@@ -10,9 +10,10 @@ import time
 from abc import ABCMeta, abstractmethod
 from typing import Any, Dict, List, Set, Tuple
 
+from wheatley.types import Stroke, HANDSTROKE, BACKSTROKE
 from wheatley.bell import Bell
 from wheatley.regression import calculate_regression
-from wheatley.tower import HANDSTROKE, BACKSTROKE, stroke_to_string
+from wheatley.tower import stroke_to_string
 
 
 WEIGHT_REJECTION_THRESHOLD = 0.001
@@ -49,11 +50,11 @@ class Rhythm(metaclass=ABCMeta):
 
     @abstractmethod
     def wait_for_bell_time(self, current_time: float, bell: Bell, row_number: int, place: int,
-                           user_controlled: bool, stroke: bool) -> None:
+                           user_controlled: bool, stroke: Stroke) -> None:
         """ Sleeps the thread until a given Bell should have rung. """
 
     @abstractmethod
-    def expect_bell(self, expected_bell: Bell, row_number: int, place: int, expected_stroke: bool) -> None:
+    def expect_bell(self, expected_bell: Bell, row_number: int, place: int, expected_stroke: Stroke) -> None:
         """
         Indicates that a given Bell is expected to be rung at a given row, place and stroke.
         Used by the rhythm so that when that bell is rung later, it can tell where that bell
@@ -66,7 +67,7 @@ class Rhythm(metaclass=ABCMeta):
         """ Called when the Ringing Room server asks Wheatley to change a setting. """
 
     @abstractmethod
-    def on_bell_ring(self, bell: Bell, stroke: bool, real_time: float) -> None:
+    def on_bell_ring(self, bell: Bell, stroke: Stroke, real_time: float) -> None:
         """
         Called when a bell is rung at a given stroke.  Used as a callback from the Tower class.
         """
@@ -96,8 +97,8 @@ class WaitForUserRhythm(Rhythm):
 
         self._current_stroke = HANDSTROKE
 
-        self._expected_bells: Dict[bool, Set] = {HANDSTROKE: set(), BACKSTROKE: set()}
-        self._early_bells: Dict[bool, Set] = {HANDSTROKE: set(), BACKSTROKE: set()}
+        self._expected_bells: Dict[Stroke, Set] = {HANDSTROKE: set(), BACKSTROKE: set()}
+        self._early_bells: Dict[Stroke, Set] = {HANDSTROKE: set(), BACKSTROKE: set()}
 
         self.delay = 0.0
 
@@ -115,7 +116,7 @@ class WaitForUserRhythm(Rhythm):
         self._inner_rhythm.return_to_mainloop()
 
     def wait_for_bell_time(self, current_time: float, bell: Bell, row_number: int, place: int,
-                           user_controlled: bool, stroke: bool) -> None:
+                           user_controlled: bool, stroke: Stroke) -> None:
         """ Sleeps the thread until a given Bell should have rung. """
         if stroke != self._current_stroke:
             self.logger.debug(f"Switching to unexpected stroke {stroke_to_string(stroke)}")
@@ -139,7 +140,7 @@ class WaitForUserRhythm(Rhythm):
         # Reset the flag to say that we've returned to the mainloop
         self._should_return_to_mainloop = False
 
-    def expect_bell(self, expected_bell: Bell, row_number: int, place: int, expected_stroke: bool) -> None:
+    def expect_bell(self, expected_bell: Bell, row_number: int, place: int, expected_stroke: Stroke) -> None:
         """
         Indicates that a given Bell is expected to be rung at a given row, place and stroke.
         Used by the rhythm so that when that bell is rung later, it can tell where that bell
@@ -151,7 +152,7 @@ class WaitForUserRhythm(Rhythm):
         if expected_stroke != self._current_stroke:
             self._current_stroke = expected_stroke
             self._expected_bells[expected_stroke].clear()
-            self._early_bells[not expected_stroke].clear()
+            self._early_bells[expected_stroke.opposite()].clear()
 
         if expected_bell not in self._early_bells[expected_stroke]:
             self._expected_bells[expected_stroke].add(expected_bell)
@@ -159,7 +160,7 @@ class WaitForUserRhythm(Rhythm):
     def change_setting(self, key: str, value: Any) -> None:
         self._inner_rhythm.change_setting(key, value)
 
-    def on_bell_ring(self, bell: Bell, stroke: bool, real_time: float) -> None:
+    def on_bell_ring(self, bell: Bell, stroke: Stroke, real_time: float) -> None:
         """
         Called when a bell is rung at a given stroke.  Used as a callback from the Tower class.
         """
@@ -174,14 +175,14 @@ class WaitForUserRhythm(Rhythm):
                 self.logger.debug(f"{bell} rung at {stroke_to_string(stroke)}")
 
             try:
-                self._early_bells[not self._current_stroke].remove(bell)
+                self._early_bells[self._current_stroke.opposite()].remove(bell)
             except KeyError:
                 pass
             else:
                 self.logger.debug(f"{bell} reset to {stroke_to_string(stroke)}")
         else:
             self.logger.debug(f"{bell} rung early to {stroke_to_string(stroke)}")
-            self._early_bells[not self._current_stroke].add(bell)
+            self._early_bells[self._current_stroke.opposite()].add(bell)
 
     def initialise_line(self, stage: int, user_controls_treble: bool, start_time: float,
                         number_of_user_controlled_bells: int) -> None:
@@ -235,7 +236,7 @@ class RegressionRhythm(Rhythm):
         self._number_of_user_controlled_bells = 0
         # Maps a bell and a stroke to the row number and place which that bell is next expected to ring at
         # that stroke
-        self._expected_bells: Dict[Tuple[Bell, bool], Tuple[int, int]] = {}
+        self._expected_bells: Dict[Tuple[Bell, Stroke], Tuple[int, int]] = {}
         self.data_set: List[Tuple[float, float, float]] = []
 
         self.logger = logging.getLogger(self.logger_name)
@@ -283,7 +284,7 @@ class RegressionRhythm(Rhythm):
         self._should_return_to_mainloop = True
 
     def wait_for_bell_time(self, current_time: float, bell: Bell, row_number: int, place: int,
-                           user_controlled: bool, stroke: bool) -> None:
+                           user_controlled: bool, stroke: Stroke) -> None:
         """ Sleeps the thread until a given Bell should have rung. """
         if user_controlled and self._start_time == float('inf'):
             self.logger.debug("Waiting for pull off")
@@ -307,7 +308,7 @@ class RegressionRhythm(Rhythm):
 
         self._should_return_to_mainloop = False
 
-    def expect_bell(self, expected_bell: Bell, row_number: int, place: int, expected_stroke: bool) -> None:
+    def expect_bell(self, expected_bell: Bell, row_number: int, place: int, expected_stroke: Stroke) -> None:
         """
         Indicates that a given Bell is expected to be rung at a given row, place and stroke.
         Used by the rhythm so that when that bell is rung later, it can tell where that bell
@@ -339,7 +340,7 @@ class RegressionRhythm(Rhythm):
                 log_warning(f"{value} is not an number")
 
 
-    def on_bell_ring(self, bell: Bell, stroke: bool, real_time: float) -> None:
+    def on_bell_ring(self, bell: Bell, stroke: Stroke, real_time: float) -> None:
         """
         Called when a bell is rung at a given stroke.  Used as a callback from the Tower class.
         """

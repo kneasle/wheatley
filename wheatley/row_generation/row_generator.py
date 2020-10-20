@@ -3,7 +3,7 @@
 import logging
 from abc import ABCMeta, abstractmethod
 
-from wheatley.types import Row, Places
+from wheatley.types import Row, Places, Stroke
 from wheatley.row_generation.helpers import rounds
 
 
@@ -37,9 +37,9 @@ class RowGenerator(metaclass=ABCMeta):
         self._has_bob = False
         self._has_single = False
 
-    def next_row(self, is_handstroke: bool) -> Row:
+    def next_row(self, stroke: Stroke) -> Row:
         """ Generate the next row, and mutate state accordingly. """
-        self._row = self._gen_row(self._row, is_handstroke, self._index)
+        self._row = self._gen_row(self._row, stroke, self._index)
 
         self._index += 1
 
@@ -61,7 +61,7 @@ class RowGenerator(metaclass=ABCMeta):
         return rounds(self.stage)
 
     @abstractmethod
-    def _gen_row(self, previous_row: Row, is_handstroke: bool, index: int) -> Row:
+    def _gen_row(self, previous_row: Row, stroke: Stroke, index: int) -> Row:
         pass
 
     def permute(self, row: Row, places: Places) -> Row:
@@ -82,4 +82,4 @@ class RowGenerator(metaclass=ABCMeta):
             new_row[i - 1], new_row[i] = new_row[i], new_row[i - 1]
             i += 2
 
-        return new_row
+        return Row(new_row)

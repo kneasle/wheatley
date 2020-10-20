@@ -8,7 +8,7 @@ import re
 from wheatley.types import Places, Row
 from wheatley.bell import Bell, BELL_NAMES
 
-_CROSS_PN: List[bool] = []
+_CROSS_PN: Places = Places([])
 
 STAGES = {
     "singles": 3,
@@ -28,7 +28,7 @@ STAGES = {
 }
 
 
-def convert_pn(pn_str: str, expect_symmetric:bool=False) -> List[Places]:
+def convert_pn(pn_str: str, expect_symmetric: bool=False) -> List[Places]:
     """ Convert a place notation string into a list of places. """
     if "," in pn_str:
         return list(itertools.chain.from_iterable(convert_pn(part, True) for part in pn_str.split(",")))
@@ -73,4 +73,4 @@ def convert_to_bell_string(bell: int) -> str:
 
 def rounds(number_of_bells: int) -> Row:
     """ Generate rounds on the given number of bells. """
-    return [Bell.from_number(i) for i in range(1, number_of_bells + 1)]
+    return Row([Bell.from_number(i) for i in range(1, number_of_bells + 1)])

@@ -1,10 +1,10 @@
 """ Contains the RowGenerator subclass for generating rows from a CompLib composition. """
 
-from typing import Optional
+from typing import Optional, List
 
 import requests
 
-from wheatley.types import Row
+from wheatley.types import Row, Stroke
 from wheatley.bell import Bell
 from .row_generator import RowGenerator
 
@@ -75,7 +75,7 @@ class ComplibCompositionGenerator(RowGenerator):
 
         # New line separated, skip the first line (rounds)
         split_rows = request_rows.text.splitlines(False)[1::]
-        self.loaded_rows = [[Bell.from_str(bell) for bell in row] for row in split_rows]
+        self.loaded_rows: List[Row] = [Row([Bell.from_str(bell) for bell in row]) for row in split_rows]
 
         stage = len(self.loaded_rows[0])
 
@@ -112,7 +112,7 @@ class ComplibCompositionGenerator(RowGenerator):
 
         return cls(comp_id, access_key)
 
-    def _gen_row(self, previous_row: Row, is_handstroke: bool, index: int) -> Row:
+    def _gen_row(self, previous_row: Row, stroke: Stroke, index: int) -> Row:
         if index < len(self.loaded_rows):
             return self.loaded_rows[index]
 

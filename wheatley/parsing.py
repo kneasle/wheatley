@@ -115,7 +115,7 @@ def parse_call(input_string: str) -> Call:
         raise CallParseError(input_string, message)
 
     # A dictionary that will be filled with the parsed calls
-    parsed_calls: Call = {}
+    parsed_calls: Call = Call({})
 
     for segment in input_string.split("/"):
         # Default the location to 0 and initialise place_notation_str with None
@@ -197,7 +197,7 @@ def json_to_row_generator(json: JSON, logger: logging.Logger) -> RowGenerator:
             except ValueError as e:
                 raise_error(name, f"Call index '{key}' is not a valid integer", e)
             call[index] = value
-        return call
+        return Call(call)
 
     if 'type' not in json:
         raise_error('type', "'type' is not defined")

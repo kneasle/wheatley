@@ -3,7 +3,7 @@ A module to hold a place-holder row generator that accepts all tower sizes but t
 producing rows.
 """
 
-from wheatley.types import Row
+from wheatley.types import Row, Stroke
 
 from .row_generator import RowGenerator
 
@@ -24,5 +24,5 @@ class PlaceHolderGenerator(RowGenerator):
         # Make the stage 0
         super().__init__(0)
 
-    def _gen_row(self, previous_row: Row, is_handstroke: bool, index: int) -> Row:
+    def _gen_row(self, previous_row: Row, stroke: Stroke, index: int) -> Row:
         raise NullRowGenError()

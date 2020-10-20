@@ -92,7 +92,6 @@ class MethodPlaceNotationGenerator(PlaceNotationGenerator):
         if len(symblock) != 0:
             notation = symblock[0].text
             lead_end = symblock[1].text
-
             return f"&{notation},&{lead_end}", stage
 
         if len(block) != 0:

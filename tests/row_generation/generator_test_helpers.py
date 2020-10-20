@@ -1,6 +1,7 @@
 from typing import List, Iterator
 
 from wheatley.bell import Bell
+from wheatley.types import Stroke, HANDSTROKE
 
 
 def rounds(stage: int) -> List[int]:
@@ -12,12 +13,12 @@ def as_bells(nums: List[int]) -> List[Bell]:
     return [Bell.from_number(x) for x in nums]
 
 
-def gen_rows(generator, count, start_at_hand=True) -> List[int]:
-    return list(yield_rows(generator, count, start_at_hand))
+def gen_rows(generator, count, start_stroke: Stroke = HANDSTROKE) -> List[int]:
+    return list(yield_rows(generator, count, start_stroke))
 
 
-def yield_rows(generator, count, start_at_hand=True) -> Iterator[int]:
-    is_handstroke = start_at_hand
+def yield_rows(generator, count, start_stroke=HANDSTROKE) -> Iterator[int]:
+    stroke = start_stroke
     for _ in range(count):
-        yield [bell.number for bell in generator.next_row(is_handstroke)]
-        is_handstroke = not is_handstroke
+        yield [bell.number for bell in generator.next_row(stroke)]
+        stroke = stroke.opposite()

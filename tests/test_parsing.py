@@ -1,6 +1,7 @@
 import unittest
 
 from wheatley.parsing import parse_peal_speed, PealSpeedParseError, parse_call, CallParseError
+from wheatley.types import CallDef
 
 
 class ParseTests(unittest.TestCase):
@@ -48,7 +49,7 @@ class ParseTests(unittest.TestCase):
 
         for (input_arg, expected_call_dict) in test_cases:
             with self.subTest(input=input_arg, expected_call_dict=expected_call_dict):
-                self.assertEqual(expected_call_dict, parse_call(input_arg))
+                self.assertEqual(CallDef(expected_call_dict), parse_call(input_arg))
 
     def test_call_parsing_errors(self):
         test_cases = [("xx:14", "Location 'xx' is not an integer."),

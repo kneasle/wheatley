@@ -8,7 +8,7 @@ import re
 from wheatley.types import Places, Row
 from wheatley.bell import Bell, BELL_NAMES
 
-_CROSS_PN: List[bool] = []
+_CROSS_PN: Places = []
 
 STAGES = {
     "singles": 3,

@@ -46,7 +46,7 @@ class Stroke:
     def __ne__(self, other: Any) -> bool:
         return not self == other
 
-    def __inverse__(self) -> Stroke:
+    def __inverse__(self) -> 'Stroke':
         return self.opposite()
 
 

@@ -12,7 +12,7 @@ class Bell:
     """ A class to encapsulate the idea of a bell. """
 
     @classmethod
-    def from_str(cls, bell_str: str) -> Any:
+    def from_str(cls, bell_str: str) -> 'Bell':
         """
         Generates a Bell object from a string representing that bell's name.
         This works according to the standard convention, so Bell.from_str('1') will represent
@@ -26,7 +26,7 @@ class Bell:
         return cls(index)
 
     @classmethod
-    def from_number(cls, bell_num: int) -> Any:
+    def from_number(cls, bell_num: int) -> 'Bell':
         """
         Generates a Bell from a 1-indexed number, so Bell.from_number(1) will return a Bell
         representing the treble.
@@ -34,7 +34,7 @@ class Bell:
         return cls(bell_num - 1)
 
     @classmethod
-    def from_index(cls, bell_index: int) -> Any:
+    def from_index(cls, bell_index: int) -> 'Bell':
         """
         Generates a Bell from a 0-indexed number, so Bell.from_number(0) will return a Bell
         representing the treble.

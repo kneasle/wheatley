@@ -5,7 +5,7 @@ from typing import Optional, Tuple
 
 import requests
 
-from wheatley.types import Call
+from wheatley.types import CallDef
 
 from .dixonoids_generator import DixonoidsGenerator
 from .helpers import STAGES
@@ -59,7 +59,7 @@ class MethodNotFoundError(ValueError):
 class MethodPlaceNotationGenerator(PlaceNotationGenerator):
     """ A class to generate rows given a method title. """
 
-    def __init__(self, method_title: str, bob: Call, single: Call):
+    def __init__(self, method_title: str, bob: CallDef, single: CallDef):
         method_xml = self._fetch_method(method_title)
 
         try:

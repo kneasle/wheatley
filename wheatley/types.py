@@ -4,7 +4,7 @@ from typing import Any, Dict, NewType, List
 from wheatley.bell import Bell
 
 
-Call = NewType('Call', Dict[int, str])
+CallDef = NewType('CallDef', Dict[int, str])
 JSON = Dict[str, Any]
 Places = NewType('Places', List[int])
 Row = NewType('Row', List[Bell])

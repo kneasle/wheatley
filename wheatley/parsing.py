@@ -2,10 +2,10 @@
 A module to contain all the functions that parse command line arguments, and their error classes.
 """
 
-from typing import NoReturn, Optional
+from typing import Dict, NoReturn, Optional
 import logging
 
-from wheatley.types import Call, JSON
+from wheatley.types import CallDef, JSON
 from wheatley.row_generation import RowGenerator
 from wheatley.row_generation.place_notation_generator import PlaceNotationGenerator
 from wheatley.row_generation.complib_composition_generator import ComplibCompositionGenerator, \
@@ -108,14 +108,14 @@ class CallParseError(ValueError):
         return f"Error parsing call string '{self.call_string}': {self.message}"
 
 
-def parse_call(input_string: str) -> Call:
+def parse_call(input_string: str) -> CallDef:
     """ Parse a call string into a dict of lead locations to place notation strings. """
     def exit_with_message(message: str) -> NoReturn:
         """ Raises a parse error with the given error message. """
         raise CallParseError(input_string, message)
 
     # A dictionary that will be filled with the parsed calls
-    parsed_calls: Call = Call({})
+    parsed_calls: Dict[int, str] = {}
 
     for segment in input_string.split("/"):
         # Default the location to 0 and initialise place_notation_str with None
@@ -157,7 +157,7 @@ def parse_call(input_string: str) -> Call:
 
         parsed_calls[location] = place_notation_str
 
-    return parsed_calls
+    return CallDef(parsed_calls)
 
 
 class RowGenParseError(ValueError):
@@ -184,20 +184,20 @@ def json_to_row_generator(json: JSON, logger: logging.Logger) -> RowGenerator:
             raise RowGenParseError(json, field, message)
         raise RowGenParseError(json, field, message) from parent_error
 
-    def json_to_call(name: str) -> Optional[Call]:
+    def json_to_call(name: str) -> Optional[CallDef]:
         """ Helper function to generate a call with a given name from the json. """
         if name not in json:
             logger.warning(f"No field '{name}' in the row generator JSON")
             return None
 
-        call = {}
+        call: Dict[int, str] = {}
         for key, value in json[name].items():
             try:
                 index = int(key)
             except ValueError as e:
                 raise_error(name, f"Call index '{key}' is not a valid integer", e)
             call[index] = value
-        return Call(call)
+        return CallDef(call)
 
     if 'type' not in json:
         raise_error('type', "'type' is not defined")

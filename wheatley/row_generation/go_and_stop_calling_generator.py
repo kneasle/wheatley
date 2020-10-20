@@ -14,7 +14,7 @@ from .row_generator import RowGenerator
 class GoAndStopCallingGenerator(RowGenerator):
     """ A decorator to add calling go and stop to an existing RowGenerator. """
 
-    def __init__(self, generator: RowGenerator, tower: RingingRoomTower):
+    def __init__(self, generator: RowGenerator, tower: RingingRoomTower) -> None:
         super().__init__(generator.stage)
 
         self.tower = tower

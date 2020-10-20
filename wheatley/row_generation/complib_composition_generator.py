@@ -12,7 +12,7 @@ from .row_generator import RowGenerator
 class PrivateCompError(ValueError):
     """ An error class thrown when a user tries to access a private CompLib composition. """
 
-    def __init__(self, comp_id: int):
+    def __init__(self, comp_id: int) -> None:
         super().__init__()
 
         self._comp_id = comp_id
@@ -24,7 +24,7 @@ class PrivateCompError(ValueError):
 class InvalidCompError(ValueError):
     """ An error class thrown when a user tries to access an invalid CompLib composition. """
 
-    def __init__(self, comp_id: int):
+    def __init__(self, comp_id: int) -> None:
         super().__init__()
 
         self._comp_id = comp_id
@@ -36,7 +36,7 @@ class InvalidCompError(ValueError):
 class InvalidComplibURLError(Exception):
     """ An error class thrown when a user inputs an invalid complib comp URL. """
 
-    def __init__(self, url: str, error: str):
+    def __init__(self, url: str, error: str) -> None:
         super().__init__()
 
         self._url = url
@@ -59,7 +59,7 @@ class ComplibCompositionGenerator(RowGenerator):
 
     complib_url = "https://complib.org/composition/"
 
-    def __init__(self, comp_id: int, access_key: Optional[str]=None):
+    def __init__(self, comp_id: int, access_key: Optional[str]=None) -> None:
         url = self.complib_url + str(comp_id) + "/rows"
         if access_key:
             url += "?accessKey=" + access_key

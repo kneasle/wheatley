@@ -23,7 +23,7 @@ class RingingRoomTower:
 
     logger_name = "TOWER"
 
-    def __init__(self, tower_id: int, url: str):
+    def __init__(self, tower_id: int, url: str) -> None:
         """ Initialise a tower with a given room id and url. """
         self.tower_id = tower_id
 

@@ -10,7 +10,7 @@ import requests
 class TowerNotFoundError(ValueError):
     """ An error class created whenever the user inputs an incorrect room id. """
 
-    def __init__(self, tower_id: int, url: str):
+    def __init__(self, tower_id: int, url: str) -> None:
         super().__init__()
 
         self._id = tower_id
@@ -22,7 +22,7 @@ class TowerNotFoundError(ValueError):
 class InvalidURLError(Exception):
     """ An error class created whenever the user inputs a URL that is invalid. """
 
-    def __init__(self, url: str):
+    def __init__(self, url: str) -> None:
         super().__init__()
 
         self._url = url

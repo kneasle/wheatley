@@ -12,7 +12,7 @@ class RowGenerator(metaclass=ABCMeta):
 
     logger_name = "ROWGEN"
 
-    def __init__(self, stage: int):
+    def __init__(self, stage: int) -> None:
         self.stage = stage
         self.logger = logging.getLogger(self.logger_name)
 

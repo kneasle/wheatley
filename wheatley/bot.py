@@ -32,7 +32,7 @@ class Bot:
 
     def __init__(self, tower: RingingRoomTower, row_generator: RowGenerator, do_up_down_in: bool,
                  stop_at_rounds: bool, rhythm: Rhythm, user_name: Optional[str]=None,
-                 server_mode: bool=False):
+                 server_mode: bool=False) -> None:
         """ Initialise a Bot with all the parts it needs to run. """
         self._server_mode = server_mode
         self._last_activity_time = time.time()

@@ -47,7 +47,7 @@ class MethodNotFoundError(ValueError):
     entry in the CC method library.
     """
 
-    def __init__(self, name: str):
+    def __init__(self, name: str) -> None:
         super().__init__()
 
         self._name = name
@@ -59,7 +59,7 @@ class MethodNotFoundError(ValueError):
 class MethodPlaceNotationGenerator(PlaceNotationGenerator):
     """ A class to generate rows given a method title. """
 
-    def __init__(self, method_title: str, bob: CallDef, single: CallDef):
+    def __init__(self, method_title: str, bob: CallDef, single: CallDef) -> None:
         method_xml = self._fetch_method(method_title)
 
         try:

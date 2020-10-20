@@ -18,7 +18,7 @@ class PealSpeedParseError(ValueError):
     cannot be parsed by the parser.
     """
 
-    def __init__(self, peal_speed_string: str, message: str):
+    def __init__(self, peal_speed_string: str, message: str) -> None:
         super().__init__()
 
         self.peal_speed_string = peal_speed_string
@@ -98,7 +98,7 @@ class CallParseError(ValueError):
     cannot be parsed by the parser.
     """
 
-    def __init__(self, call_string: str, message: str):
+    def __init__(self, call_string: str, message: str) -> None:
         super().__init__()
 
         self.call_string = call_string
@@ -162,7 +162,7 @@ def parse_call(input_string: str) -> CallDef:
 
 class RowGenParseError(ValueError):
     """ A class to encapsulate an error generated when parsing an RowGenerator from JSON. """
-    def __init__(self, json: JSON, field: str, message: str):
+    def __init__(self, json: JSON, field: str, message: str) -> None:
         super().__init__()
 
         self.json = json

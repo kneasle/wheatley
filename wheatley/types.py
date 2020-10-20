@@ -49,6 +49,9 @@ class Stroke:
     def __inverse__(self) -> 'Stroke':
         return self.opposite()
 
+    def __hash__(self) -> int:
+        return self._is_handstroke.__hash__()
+
 
 HANDSTROKE: Stroke = Stroke(True)
 BACKSTROKE: Stroke = Stroke(False)

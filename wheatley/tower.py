@@ -267,7 +267,7 @@ logged in as '{self._user_name_map[user_id_that_left]}'.")
         Callback called when receiving an update to the global tower state.
         Cannot have further callbacks assigned to it.
         """
-        self._update_bell_state(data["global_bell_state"])
+        self._update_bell_state([Stroke(x) for x in data["global_bell_state"]])
         for invoke_callback in self.invoke_on_reset:
             invoke_callback()
 

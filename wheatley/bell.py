@@ -7,6 +7,7 @@ from typing import Any
 
 
 BELL_NAMES = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "E", "T", "A", "B", "C", "D"]
+MAX_BELL = len(BELL_NAMES)
 
 
 class Bell:

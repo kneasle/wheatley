@@ -3,7 +3,7 @@ A module to hold a place-holder row generator that accepts all tower sizes but t
 producing rows.
 """
 
-from wheatley.types import Row, Stroke
+from wheatley.aliases import Row, Stroke
 
 from .row_generator import RowGenerator
 

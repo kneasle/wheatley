@@ -4,7 +4,7 @@ from typing import Optional, List
 
 import requests
 
-from wheatley.types import Row, Stroke
+from wheatley.aliases import Row, Stroke
 from wheatley.bell import Bell
 from .row_generator import RowGenerator
 

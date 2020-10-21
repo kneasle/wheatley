@@ -5,7 +5,7 @@ A module to contain all the functions that parse command line arguments, and the
 from typing import Dict, NoReturn, Optional
 import logging
 
-from wheatley.types import CallDef, JSON
+from wheatley.aliases import CallDef, JSON
 from wheatley.row_generation import RowGenerator
 from wheatley.row_generation.place_notation_generator import PlaceNotationGenerator
 from wheatley.row_generation.complib_composition_generator import ComplibCompositionGenerator, \

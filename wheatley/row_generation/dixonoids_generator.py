@@ -2,7 +2,7 @@
 
 from typing import Dict, List
 
-from wheatley.types import Places, Row, Stroke
+from wheatley.aliases import Places, Row, Stroke
 
 from .helpers import convert_pn
 from .row_generator import RowGenerator

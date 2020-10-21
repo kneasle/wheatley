@@ -9,12 +9,12 @@ import logging
 from typing import cast, Optional, Any
 
 from wheatley import calls
-from wheatley.row_generation import RowGenerator
+from wheatley.aliases import JSON, Row, Stroke
 from wheatley.bell import Bell
 from wheatley.rhythm import Rhythm
 from wheatley.tower import RingingRoomTower
-from wheatley.types import JSON, Row, Stroke
 from wheatley.parsing import to_bool, json_to_row_generator, RowGenParseError
+from wheatley.row_generation import RowGenerator
 
 
 # Number of seconds that Wheatley is not ringing before Wheatley will return from the mainloop

@@ -1,7 +1,7 @@
 import unittest
 
 from wheatley.parsing import parse_peal_speed, PealSpeedParseError, parse_call, CallParseError
-from wheatley.types import CallDef
+from wheatley.aliases import CallDef
 
 
 class ParseTests(unittest.TestCase):

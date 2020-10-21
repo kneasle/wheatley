@@ -9,7 +9,7 @@ from typing import Optional, Callable, Dict, List, Any
 
 import socketio # type: ignore
 
-from wheatley.types import JSON, Stroke, HANDSTROKE
+from wheatley.aliases import JSON, Stroke, HANDSTROKE
 from wheatley.bell import Bell
 
 

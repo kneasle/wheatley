@@ -5,7 +5,7 @@
 import random
 
 from wheatley import calls
-from wheatley.types import Row, Stroke
+from wheatley.aliases import Row, Stroke
 from wheatley.tower import RingingRoomTower
 
 from .row_generator import RowGenerator

@@ -5,7 +5,7 @@ from typing import Optional, Tuple
 
 import requests
 
-from wheatley.types import CallDef
+from wheatley.aliases import CallDef
 
 from .dixonoids_generator import DixonoidsGenerator
 from .helpers import STAGES

@@ -5,7 +5,7 @@ from typing import List
 import itertools
 import re
 
-from wheatley.types import Places, Row
+from wheatley.aliases import Places, Row
 from wheatley.bell import Bell, BELL_NAMES
 
 _CROSS_PN: Places = Places([])

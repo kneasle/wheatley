@@ -2,7 +2,7 @@ from unittest import TestCase
 
 from tests.row_generation import as_bells
 from wheatley.row_generation import DixonoidsGenerator
-from wheatley.types import HANDSTROKE, BACKSTROKE
+from wheatley.aliases import HANDSTROKE, BACKSTROKE
 
 
 class DixonoidsGeneratorTests(TestCase):

@@ -1,6 +1,6 @@
 """ A module to hold a row generator that produces plain hunt on any (even) stage. """
 
-from wheatley.types import Places, Row, Stroke
+from wheatley.aliases import Places, Row, Stroke
 
 from .row_generator import RowGenerator
 

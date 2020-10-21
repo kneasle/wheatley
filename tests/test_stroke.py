@@ -2,7 +2,7 @@ import unittest
 from wheatley.stroke import Stroke, HANDSTROKE, BACKSTROKE
 
 
-class BellTests(unittest.TestCase):
+class StrokeTests(unittest.TestCase):
     def test_equality(self):
         for i in [True, False]:
             for j in [True, False]:
@@ -34,4 +34,3 @@ class BellTests(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-

@@ -70,17 +70,17 @@ class RingingRoomTower:
         """ Returns the number of bells currently in the tower. """
         return len(self._bell_state)
 
-    def ring_bell(self, bell: Bell, is_handstroke: Stroke) -> bool:
+    def ring_bell(self, bell: Bell, expected_stroke: Stroke) -> bool:
         """ Send a request to the the server if the bell can be rung on the given stroke. """
         try:
             stroke = self.get_stroke(bell)
-            if stroke != is_handstroke:
+            if stroke != expected_stroke:
                 self.logger.error(f"Bell {bell} on opposite stroke")
                 return False
 
             self._emit(
                 "c_bell_rung",
-                {"bell": bell.number, "stroke": stroke, "tower_id": self.tower_id},
+                {"bell": bell.number, "stroke": stroke.is_hand(), "tower_id": self.tower_id},
                 ""
             )
 

@@ -168,6 +168,7 @@ class RingingRoomTower:
         self._request_global_state()
 
     def _on_setting_change(self, data: JSON) -> None:
+        # The values in data could have any types, so we don't need any type checking here.
         self.logger.info(f"RECEIVED: Settings changed: {data}\
 {' (ignoring)' if len(self.invoke_on_setting_change) == 0 else ''}")
 
@@ -182,27 +183,29 @@ class RingingRoomTower:
         for callback in self.invoke_on_row_gen_change:
             callback(data)
 
-    def _on_stop_touch(self, data: Any) -> None:
+    def _on_stop_touch(self, data: JSON) -> None:
+        # No data is transferred over this signal, so we don't need to typecheck `data`
         self.logger.info(f"RECEIVED: Stop touch: {data}.")
 
         for callback in self.invoke_on_stop_touch:
             callback()
 
     def _on_user_leave(self, data: JSON) -> None:
-        user_id_that_left = data["user_id"]
-        user_name_that_left = data["username"]
+        # Unpack the data and assign it the expected types
+        user_id_that_left: int = data["user_id"]
+        user_name_that_left: str = data["username"]
 
         # Remove the user ID that left from our user list
         if user_id_that_left not in self._user_name_map:
             self.logger.warning(
                 f"User #{user_id_that_left}:'{user_name_that_left}' left, but wasn't in the user list."
             )
-        elif self._user_name_map[user_id_that_left] != data['username']:
+        elif self._user_name_map[user_id_that_left] != user_name_that_left:
             self.logger.warning(f"User #{user_id_that_left}:'{user_name_that_left}' left, but that ID was \
 logged in as '{self._user_name_map[user_id_that_left]}'.")
             del self._user_name_map[user_id_that_left]
 
-        bells_unassigned = []
+        bells_unassigned: List[Bell] = []
 
         # Unassign all instances of that user
         for bell, user in self._assigned_users.items():
@@ -217,13 +220,19 @@ logged in as '{self._user_name_map[user_id_that_left]}'.")
 
     def _on_user_entered(self, data: JSON) -> None:
         """ Called when the server receives a uew user so we can update our user list. """
+        # Unpack the data and assign it expected types
+        user_id: int = data['user_id']
+        username: str = data['username']
         # Add the new user to the user list, so we can match up their ID with their username
-        self._user_name_map[data['user_id']] = data['username']
+        self._user_name_map[user_id] = username
 
     def _on_user_list(self, user_list: JSON) -> None:
         """ Called when the server broadcasts a user list when Wheatley joins a tower. """
         for user in user_list['user_list']:
-            self._user_name_map[user['user_id']] = user['username']
+            # Unpack the data and assign it expected types
+            user_id: int = user['user_id']
+            username: str = user['username']
+            self._user_name_map[user_id] = username
 
     def _join_tower(self) -> None:
         """ Joins the tower as an anonymous user. """
@@ -239,22 +248,25 @@ logged in as '{self._user_name_map[user_id_that_left]}'.")
 
     def _on_bell_rung(self, data: JSON) -> None:
         """ Callback called when the client receives a signal that a bell has been rung. """
-        self._update_bell_state([Stroke(b) for b in data["global_bell_state"]])
-
-        who_rang = Bell.from_number(data["who_rang"])
+        # Unpack the data and assign it expected types
+        global_bell_state: List[bool] = data['global_bell_state']
+        who_rang_raw: int = data["who_rang"]
+        # Run callbacks for updating the bell state
+        self._update_bell_state([Stroke(b) for b in global_bell_state])
+        # Convert 'who_rang' to a Bell
+        who_rang = Bell.from_number(who_rang_raw)
         # Only run the callbacks if the bells exist
         for bell_ring_callback in self.invoke_on_bell_rung:
             new_stroke = self.get_stroke(who_rang)
             if new_stroke is None:
                 self.logger.warning(
-                    f"Bell {data['who_rang']} rang, but the tower only has {self.number_of_bells} bells."
+                    f"Bell {who_rang} rang, but the tower only has {self.number_of_bells} bells."
                 )
             else:
                 bell_ring_callback(who_rang, new_stroke)
 
     def _update_bell_state(self, bell_state: List[Stroke]) -> None:
         self._bell_state = bell_state
-
         self.logger.debug(f"RECEIVED: Bells '{['H' if x else 'B' for x in bell_state]}'")
 
     def _on_global_bell_state(self, data: JSON) -> None:
@@ -262,13 +274,14 @@ logged in as '{self._user_name_map[user_id_that_left]}'.")
         Callback called when receiving an update to the global tower state.
         Cannot have further callbacks assigned to it.
         """
-        self._update_bell_state([Stroke(x) for x in data["global_bell_state"]])
+        global_bell_state: List[bool] = data["global_bell_state"]
+        self._update_bell_state([Stroke(x) for x in global_bell_state])
         for invoke_callback in self.invoke_on_reset:
             invoke_callback()
 
     def _on_size_change(self, data: JSON) -> None:
         """ Callback called when the number of bells in the room changes. """
-        new_size = data["size"]
+        new_size: int = data["size"]
         if new_size != self.number_of_bells:
             # Remove the user who's bells have been removed (so that returning to a stage doesn't make
             # Wheatley think the bells are still assigned)
@@ -283,8 +296,9 @@ logged in as '{self._user_name_map[user_id_that_left]}'.")
 
     def _on_assign_user(self, data: JSON) -> None:
         """ Callback called when a bell assignment is changed. """
-        bell = Bell.from_number(data["bell"])
-        user = data["user"] or None
+        raw_bell: int = data["bell"]
+        bell: Bell = Bell.from_number(raw_bell)
+        user: Optional[int] = data["user"] or None
 
         assert isinstance(user, int) or user is None, \
                f"User ID {user} is not an integer (it has type {type(user)})."

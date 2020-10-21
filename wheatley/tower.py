@@ -74,9 +74,11 @@ class RingingRoomTower:
                 self.logger.error(f"Bell {bell} on opposite stroke")
                 return False
 
+            bell_num: int = bell.number
+            is_handstroke: bool = stroke.is_hand()
             self._emit(
                 "c_bell_rung",
-                {"bell": bell.number, "stroke": stroke.is_hand(), "tower_id": self.tower_id},
+                {"bell": bell_num, "stroke": is_handstroke, "tower_id": self.tower_id},
                 ""
             )
 

@@ -13,11 +13,6 @@ from wheatley.types import JSON, Stroke, HANDSTROKE
 from wheatley.bell import Bell
 
 
-def stroke_to_string(stroke: Stroke) -> str:
-    """ Convert stroke to string for logging """
-    return "HANDSTROKE" if stroke else "BACKSTROKE"
-
-
 class RingingRoomTower:
     """ A class representing a tower, which will handle a single ringing-room session. """
 

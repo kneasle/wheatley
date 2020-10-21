@@ -13,7 +13,6 @@ from typing import Any, Dict, List, Set, Tuple
 from wheatley.types import Stroke, HANDSTROKE, BACKSTROKE
 from wheatley.bell import Bell
 from wheatley.regression import calculate_regression
-from wheatley.tower import stroke_to_string
 
 
 WEIGHT_REJECTION_THRESHOLD = 0.001
@@ -119,7 +118,7 @@ class WaitForUserRhythm(Rhythm):
                            user_controlled: bool, stroke: Stroke) -> None:
         """ Sleeps the thread until a given Bell should have rung. """
         if stroke != self._current_stroke:
-            self.logger.debug(f"Switching to unexpected stroke {stroke_to_string(stroke)}")
+            self.logger.debug(f"Switching to unexpected stroke {stroke}")
             self._current_stroke = stroke
 
         self._inner_rhythm.wait_for_bell_time(current_time - self.delay, bell, row_number, place,
@@ -172,16 +171,16 @@ class WaitForUserRhythm(Rhythm):
             except KeyError:
                 pass
             else:
-                self.logger.debug(f"{bell} rung at {stroke_to_string(stroke)}")
+                self.logger.debug(f"{bell} rung at {stroke}")
 
             try:
                 self._early_bells[self._current_stroke.opposite()].remove(bell)
             except KeyError:
                 pass
             else:
-                self.logger.debug(f"{bell} reset to {stroke_to_string(stroke)}")
+                self.logger.debug(f"{bell} reset to {stroke}")
         else:
-            self.logger.debug(f"{bell} rung early to {stroke_to_string(stroke)}")
+            self.logger.debug(f"{bell} rung early to {stroke}")
             self._early_bells[self._current_stroke.opposite()].add(bell)
 
     def initialise_line(self, stage: int, user_controls_treble: bool, start_time: float,

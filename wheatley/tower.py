@@ -10,8 +10,8 @@ from typing import Optional, Callable, Dict, List, Any
 import socketio # type: ignore
 
 from wheatley.aliases import JSON
-from wheatley.stroke import Stroke, HANDSTROKE
 from wheatley.bell import Bell
+from wheatley.stroke import Stroke, HANDSTROKE
 
 
 class RingingRoomTower:
@@ -211,9 +211,9 @@ logged in as '{self._user_name_map[user_id_that_left]}'.")
         # Unassign all instances of that user
         for bell, user in self._assigned_users.items():
             if user == user_id_that_left:
-                del self._assigned_users[bell]
-
                 bells_unassigned.append(bell)
+        for bell in bells_unassigned:
+            del self._assigned_users[bell]
 
         self.logger.info(
             f"RECEIVED: User #{user_id_that_left}:'{user_name_that_left}' left from bells {bells_unassigned}."

@@ -239,7 +239,7 @@ logged in as '{self._user_name_map[user_id_that_left]}'.")
 
     def _on_bell_rung(self, data: JSON) -> None:
         """ Callback called when the client receives a signal that a bell has been rung. """
-        self._update_bell_state(data["global_bell_state"])
+        self._update_bell_state([Stroke(b) for b in data["global_bell_state"]])
 
         who_rang = Bell.from_number(data["who_rang"])
         # Only run the callbacks if the bells exist

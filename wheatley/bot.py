@@ -9,7 +9,8 @@ import logging
 from typing import cast, Optional, Any
 
 from wheatley import calls
-from wheatley.aliases import JSON, Row, Stroke
+from wheatley.aliases import JSON, Row
+from wheatley.stroke import Stroke
 from wheatley.bell import Bell
 from wheatley.rhythm import Rhythm
 from wheatley.tower import RingingRoomTower

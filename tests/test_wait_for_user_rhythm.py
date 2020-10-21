@@ -4,7 +4,7 @@ from threading import Thread
 
 from unittest.mock import Mock
 
-from wheatley.aliases import HANDSTROKE, BACKSTROKE
+from wheatley.stroke import HANDSTROKE, BACKSTROKE
 from wheatley.bell import Bell
 from wheatley.rhythm import Rhythm, WaitForUserRhythm
 

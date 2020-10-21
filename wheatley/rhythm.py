@@ -10,7 +10,7 @@ import time
 from abc import ABCMeta, abstractmethod
 from typing import Any, Dict, List, Set, Tuple
 
-from wheatley.aliases import Stroke, HANDSTROKE, BACKSTROKE
+from wheatley.stroke import Stroke, HANDSTROKE, BACKSTROKE
 from wheatley.bell import Bell
 from wheatley.regression import calculate_regression
 

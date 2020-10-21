@@ -3,7 +3,8 @@
 import logging
 from abc import ABCMeta, abstractmethod
 
-from wheatley.aliases import Row, Places, Stroke
+from wheatley.aliases import Row, Places
+from wheatley.stroke import Stroke
 from wheatley.row_generation.helpers import rounds
 
 

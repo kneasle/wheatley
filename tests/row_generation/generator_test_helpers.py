@@ -1,7 +1,7 @@
 from typing import List, Iterator
 
 from wheatley.bell import Bell
-from wheatley.aliases import Stroke, HANDSTROKE
+from wheatley.stroke import Stroke, HANDSTROKE
 
 
 def rounds(stage: int) -> List[int]:

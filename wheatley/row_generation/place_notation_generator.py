@@ -1,8 +1,9 @@
 """ A module to hold the row generator that generates rows given some place notations. """
 
-from typing import List, Dict
+from typing import ClassVar, List, Dict
 
-from wheatley.bell import Bell
+from wheatley.aliases import CallDef, Row, Places
+from wheatley.stroke import Stroke
 
 from .helpers import convert_pn, convert_to_bell_string
 from .row_generator import RowGenerator
@@ -13,11 +14,10 @@ class PlaceNotationGenerator(RowGenerator):
 
     # Dict Lead Index: String PlaceNotation
     # 0 for end of the lead
-    DefaultBob = {0: '14'}
-    DefaultSingle = {0: '1234'}
+    DefaultBob: ClassVar[CallDef] = CallDef({0: '14'})
+    DefaultSingle: ClassVar[CallDef] = CallDef({0: '1234'})
 
-    def __init__(self, stage: int, method: str, bob: Dict[int, str] = None,
-                 single: Dict[int, str] = None):
+    def __init__(self, stage: int, method: str, bob: CallDef = None, single: CallDef = None) -> None:
         super().__init__(stage)
 
         if bob is None:
@@ -28,7 +28,7 @@ class PlaceNotationGenerator(RowGenerator):
         self.method_pn = convert_pn(method)
         self.lead_len = len(self.method_pn)
 
-        def parse_call_dict(unparsed_calls):
+        def parse_call_dict(unparsed_calls: CallDef) -> Dict[int, List[Places]]:
             """ Parse a dict of type `int => str` to `int => [PlaceNotation]`. """
             parsed_calls = {}
 
@@ -46,9 +46,9 @@ class PlaceNotationGenerator(RowGenerator):
         self.bobs_pn = parse_call_dict(bob)
         self.singles_pn = parse_call_dict(single)
 
-        self._generating_call_pn: List[List[int]] = []
+        self._generating_call_pn: List[Places] = []
 
-    def _gen_row(self, previous_row: List[Bell], is_handstroke: bool, index: int) -> List[Bell]:
+    def _gen_row(self, previous_row: Row, stroke: Stroke, index: int) -> Row:
         lead_index = index % self.lead_len
 
         if self._has_bob and self.bobs_pn.get(lead_index):
@@ -68,7 +68,7 @@ class PlaceNotationGenerator(RowGenerator):
         return self.permute(previous_row, place_notation)
 
     @staticmethod
-    def grandsire(stage: int):
+    def grandsire(stage: int) -> RowGenerator:
         """ Generates Grandsire on a given stage. """
         stage_bell = convert_to_bell_string(stage)
 
@@ -78,10 +78,10 @@ class PlaceNotationGenerator(RowGenerator):
         main_body[0] = "3"
         notation = ".".join(main_body)
 
-        return PlaceNotationGenerator(stage, notation, bob={-1: "3"}, single={-1: "3.123"})
+        return PlaceNotationGenerator(stage, notation, bob=CallDef({-1: "3"}), single=CallDef({-1: "3.123"}))
 
     @staticmethod
-    def stedman(stage: int):
+    def stedman(stage: int) -> RowGenerator:
         """ Generates Stedman on a given stage (even bell Stedman will cause an exception). """
         assert stage % 2 == 1
 
@@ -94,13 +94,13 @@ class PlaceNotationGenerator(RowGenerator):
 
         notation = f"3.1.{stage_bell}.3.1.3.1.3.{stage_bell}.1.3.1"
 
-        return PlaceNotationGenerator(stage, notation, bob={3: stage_bell_2, 9: stage_bell_2},
-                                      single={3: f"{stage_bell_2}{stage_bell_1}{stage_bell}",
-                                              9: f"{stage_bell_2}{stage_bell_1}{stage_bell}"})
+        return PlaceNotationGenerator(stage, notation, bob=CallDef({3: stage_bell_2, 9: stage_bell_2}),
+                                      single=CallDef({3: f"{stage_bell_2}{stage_bell_1}{stage_bell}",
+                                              9: f"{stage_bell_2}{stage_bell_1}{stage_bell}"}))
 
     @staticmethod
-    def stedman_doubles():
+    def stedman_doubles() -> RowGenerator:
         """ Generates Stedman on a given stage (even bell Stedman will cause an exception). """
         notation = "3.1.5.3.1.3.1.3.5.1.3.1"
 
-        return PlaceNotationGenerator(5, notation, bob={}, single={6: "345", 12: "145"})
+        return PlaceNotationGenerator(5, notation, bob=CallDef({}), single=CallDef({6: "345", 12: "145"}))

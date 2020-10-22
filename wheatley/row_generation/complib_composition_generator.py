@@ -1,9 +1,11 @@
 """ Contains the RowGenerator subclass for generating rows from a CompLib composition. """
 
-from typing import List, Optional
+from typing import Optional, List
 
 import requests
 
+from wheatley.aliases import Row
+from wheatley.stroke import Stroke
 from wheatley.bell import Bell
 from .row_generator import RowGenerator
 
@@ -11,42 +13,42 @@ from .row_generator import RowGenerator
 class PrivateCompError(ValueError):
     """ An error class thrown when a user tries to access a private CompLib composition. """
 
-    def __init__(self, comp_id):
+    def __init__(self, comp_id: int) -> None:
         super().__init__()
 
         self._comp_id = comp_id
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"Composition with ID {self._comp_id} is private."
 
 
 class InvalidCompError(ValueError):
     """ An error class thrown when a user tries to access an invalid CompLib composition. """
 
-    def __init__(self, comp_id):
+    def __init__(self, comp_id: int) -> None:
         super().__init__()
 
         self._comp_id = comp_id
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"Composition with ID {self._comp_id} is does not exist."
 
 
 class InvalidComplibURLError(Exception):
     """ An error class thrown when a user inputs an invalid complib comp URL. """
 
-    def __init__(self, url, error):
+    def __init__(self, url: str, error: str) -> None:
         super().__init__()
 
         self._url = url
         self._error = error
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"Invalid CompLib URL {self._url}: {self._error}"
 
 
 # The 'removeprefix' function from Python 3.9
-def removeprefix(string, prefix: str) -> str:
+def removeprefix(string: str, prefix: str) -> str:
     """ Removes a prefix from a given string if it exists. """
     if string.startswith(prefix):
         return string[len(prefix):]
@@ -58,7 +60,7 @@ class ComplibCompositionGenerator(RowGenerator):
 
     complib_url = "https://complib.org/composition/"
 
-    def __init__(self, comp_id: int, access_key: Optional[str]=None):
+    def __init__(self, comp_id: int, access_key: Optional[str]=None) -> None:
         url = self.complib_url + str(comp_id) + "/rows"
         if access_key:
             url += "?accessKey=" + access_key
@@ -74,14 +76,14 @@ class ComplibCompositionGenerator(RowGenerator):
 
         # New line separated, skip the first line (rounds)
         split_rows = request_rows.text.splitlines(False)[1::]
-        self.loaded_rows = [[Bell.from_str(bell) for bell in row] for row in split_rows]
+        self.loaded_rows: List[Row] = [Row([Bell.from_str(bell) for bell in row]) for row in split_rows]
 
         stage = len(self.loaded_rows[0])
 
         super().__init__(stage)
 
     @classmethod
-    def from_url(cls, url):
+    def from_url(cls, url: str) -> RowGenerator:
         """ Generates a ComplibCompositionGenerator from a URL to that composition. """
         # ==== CANONICALISATION ====
         # Always strip the 'https://' and 'www.' from the front of the URL
@@ -92,7 +94,7 @@ class ComplibCompositionGenerator(RowGenerator):
         parts = canonical_url.split("?accessKey=")
         main_url = parts[0]
         try:
-            access_key = parts[1]
+            access_key: Optional[str] = parts[1]
         except IndexError:
             access_key = None
 
@@ -111,7 +113,7 @@ class ComplibCompositionGenerator(RowGenerator):
 
         return cls(comp_id, access_key)
 
-    def _gen_row(self, previous_row: List[Bell], is_handstroke: bool, index: int) -> List[Bell]:
+    def _gen_row(self, previous_row: Row, stroke: Stroke, index: int) -> Row:
         if index < len(self.loaded_rows):
             return self.loaded_rows[index]
 

@@ -10,7 +10,9 @@ import logging
 import os
 import sys
 
-from wheatley.rhythm import RegressionRhythm, WaitForUserRhythm
+from typing import List, Optional
+
+from wheatley.rhythm import Rhythm, RegressionRhythm, WaitForUserRhythm
 from wheatley.tower import RingingRoomTower
 from wheatley.bot import Bot
 from wheatley.page_parser import get_load_balancing_url, TowerNotFoundError, InvalidURLError
@@ -24,7 +26,7 @@ from wheatley.row_generation.method_place_notation_generator import MethodNotFou
 from wheatley.row_generation.place_holder_generator import PlaceHolderGenerator
 
 
-def create_row_generator(args):
+def create_row_generator(args: argparse.Namespace) -> RowGenerator:
     """ Generates a row generator according to the given CLI arguments. """
     if "comp_url" in args and args.comp_url is not None:
         try:
@@ -53,7 +55,8 @@ def create_row_generator(args):
     return row_gen
 
 
-def create_rhythm(peal_speed, inertia, max_bells_in_dataset, handstroke_gap, use_wait, initial_inertia=0):
+def create_rhythm(peal_speed: int, inertia: float, max_bells_in_dataset: int, handstroke_gap: float,
+                  use_wait: bool, initial_inertia: float=0) -> Rhythm:
     """ Generates a rhythm object according to the given CLI arguments. """
     # Sets the minimum number of bells that Wheatley will use in order to deduce a rhythm.  Setting this to
     # larger numbers will make Wheatley more stable during the pull-off, whereas smaller numbers will make
@@ -79,7 +82,7 @@ def create_rhythm(peal_speed, inertia, max_bells_in_dataset, handstroke_gap, use
     return regression
 
 
-def get_version_number():
+def get_version_number() -> str:
     """
     Try to read the file with the version number, if not print an error and set a poison value as the
     version.
@@ -93,7 +96,7 @@ def get_version_number():
         return "<NO VERSION FILE FOUND>"
 
 
-def configure_logging():
+def configure_logging() -> None:
     """ Sets up the logging for the bot. """
     logging.basicConfig(level=logging.WARNING)
 
@@ -104,7 +107,7 @@ def configure_logging():
     logging.getLogger(WaitForUserRhythm.logger_name).setLevel(logging.INFO)
 
 
-def server_main(override_args, stop_on_join_tower):
+def server_main(override_args: Optional[List[str]], stop_on_join_tower: bool) -> None:
     """
     The main function of Wheatley when spawned by the Ringing Room server.
     This has many many fewer options than the standard `main` function, on the basis that this running mode
@@ -175,7 +178,7 @@ def server_main(override_args, stop_on_join_tower):
             bot.main_loop()
 
 
-def console_main(override_args, stop_on_join_tower):
+def console_main(override_args: Optional[List[str]], stop_on_join_tower: bool) -> None:
     """
     The main function of the bot.
     This parses the CLI arguments, creates the Rhythm, RowGenerator and Bot objects, then starts
@@ -374,7 +377,7 @@ def console_main(override_args, stop_on_join_tower):
         if not stop_on_join_tower:
             bot.main_loop()
 
-def main(override_args=None, stop_on_join_tower=False):
+def main(override_args: Optional[List[str]]=None, stop_on_join_tower: bool=False) -> None:
     """
     The root main function for Wheatley.  If the first argument given to Wheatley is 'server-mode', then
     this will run `server_main` (the main function for running Wheatley on RR's servers) otherwise it will

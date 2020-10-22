@@ -4,9 +4,9 @@ from threading import Thread
 
 from unittest.mock import Mock
 
+from wheatley.stroke import HANDSTROKE, BACKSTROKE
 from wheatley.bell import Bell
 from wheatley.rhythm import Rhythm, WaitForUserRhythm
-from wheatley.tower import HANDSTROKE, BACKSTROKE
 
 treble = Bell.from_number(1)
 second = Bell.from_number(2)

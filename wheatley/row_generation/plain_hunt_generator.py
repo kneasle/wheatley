@@ -1,8 +1,7 @@
 """ A module to hold a row generator that produces plain hunt on any (even) stage. """
 
-from typing import List
-
-from wheatley.bell import Bell
+from wheatley.aliases import Places, Row
+from wheatley.stroke import Stroke
 
 from .row_generator import RowGenerator
 
@@ -10,8 +9,7 @@ from .row_generator import RowGenerator
 class PlainHuntGenerator(RowGenerator):
     """ A row generator to create plain hunt on any stage. """
 
-    def _gen_row(self, previous_row: List[Bell], is_handstroke: bool, index: int) -> List[Bell]:
-        if is_handstroke:
-            return self.permute(previous_row, [])
-
-        return self.permute(previous_row, [1, self.stage])
+    def _gen_row(self, previous_row: Row, stroke: Stroke, index: int) -> Row:
+        if stroke.is_hand():
+            return self.permute(previous_row, Places([]))
+        return self.permute(previous_row, Places([1, self.stage]))

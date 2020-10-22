@@ -5,9 +5,10 @@ from typing import List
 import itertools
 import re
 
+from wheatley.aliases import Places, Row
 from wheatley.bell import Bell, BELL_NAMES
 
-_CROSS_PN = []
+_CROSS_PN: Places = Places([])
 
 STAGES = {
     "singles": 3,
@@ -27,7 +28,7 @@ STAGES = {
 }
 
 
-def convert_pn(pn_str: str, expect_symmetric=False) -> List[List[int]]:
+def convert_pn(pn_str: str, expect_symmetric: bool=False) -> List[Places]:
     """ Convert a place notation string into a list of places. """
     if "," in pn_str:
         return list(itertools.chain.from_iterable(convert_pn(part, True) for part in pn_str.split(",")))
@@ -43,12 +44,14 @@ def convert_pn(pn_str: str, expect_symmetric=False) -> List[List[int]]:
     dot_delimited_string = re.sub("[.]*[x-][.]*", ".-.", pn_str).strip('.&+ ')
     deduplicated_string = dot_delimited_string.replace('..', '.').split('.')
 
-    converted = [[convert_bell_string(y) for y in place] if place != '-' else _CROSS_PN
+    # We suppress the type error here, because mypy will assign the list comprehension type 'List[object]',
+    # not 'List[Places]'.
+    converted: List[Places] = [[convert_bell_string(y) for y in place] # type: ignore
+                 if place != '-' else _CROSS_PN
                  for place in deduplicated_string]
 
     if symmetric:
         return converted + list(reversed(converted[:-1]))
-
     return converted
 
 
@@ -68,6 +71,6 @@ def convert_to_bell_string(bell: int) -> str:
     return BELL_NAMES[bell - 1]
 
 
-def rounds(number_of_bells) -> List[Bell]:
+def rounds(number_of_bells: int) -> Row:
     """ Generate rounds on the given number of bells. """
-    return [Bell.from_number(i) for i in range(1, number_of_bells + 1)]
+    return Row([Bell.from_number(i) for i in range(1, number_of_bells + 1)])

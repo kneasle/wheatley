@@ -23,6 +23,8 @@ jobs:
           pip3 install -r requirements.txt
       - name: Run linter
         run: python3 -m pylint wheatley/**/*.py
+      - name: Run typechecker
+        run: python3 -m mypy wheatley --pretty --disallow-incomplete-defs --disallow-untyped-defs
       - name: Run unit tests
         run: python3 -m pytest
       - name: Run integration tests

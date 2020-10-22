@@ -2,21 +2,24 @@
 Module to claculate weighted regression lines of 2D data, required for the rhythm generator to work.
 """
 
-import numpy
+from typing import List, Tuple
+# We can disable the type checking on numpy because it is only used within this file and the interface from
+# this file to the rest of the code is type-checked.
+import numpy # type: ignore
 
 
-def fill(index, item, length):
+def fill(index: int, item: float, length: int) -> List[float]:
     """
     Make an array that contains `length` 0s, but with the value at `index` replaced with `item`.
     """
-    a = [0 for _ in range(length)]
+    a = [0.0 for _ in range(length)]
 
     a[index] = item
 
     return a
 
 
-def calculate_regression(data_set):
+def calculate_regression(data_set: List[Tuple[float, float, float]]) -> Tuple[float, float]:
     """
     Calculates a weighted linear regression over the data given in data_set.
     Expects data_set to consist of 3-tuples of (blow_time, real_time, weight).

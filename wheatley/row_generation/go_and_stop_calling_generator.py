@@ -28,6 +28,10 @@ class GoAndStopCallingGenerator(RowGenerator):
 
         return super().next_row(stroke)
 
+    def summary_string(self) -> str:
+        """ Returns a short string summarising the RowGenerator. """
+        return f"{self.generator.summary_string}, calling 'Go' and 'Stop'"
+
     def _gen_row(self, previous_row: Row, stroke: Stroke, index: int) -> Row:
         next_row = self.generator._gen_row(previous_row, stroke, index)
 

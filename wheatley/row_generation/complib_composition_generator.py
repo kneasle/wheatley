@@ -80,6 +80,10 @@ class ComplibCompositionGenerator(RowGenerator):
 
         stage = len(self.loaded_rows[0])
 
+        # Variables from which the summary string is generated
+        self.comp_id = comp_id
+        self.is_comp_private = False  # We currently can't load private comps, so this is always False
+
         super().__init__(stage)
 
     @classmethod
@@ -112,6 +116,10 @@ class ComplibCompositionGenerator(RowGenerator):
             raise InvalidComplibURLError(url, f"ID {main_url_parts[2]} is not an integer.") from e
 
         return cls(comp_id, access_key)
+
+    def summary_string(self) -> str:
+        """ Returns a short string summarising the RowGenerator. """
+        return f"{'private ' if self.is_comp_private else ''}comp #{self.comp_id}"
 
     def _gen_row(self, previous_row: Row, stroke: Stroke, index: int) -> Row:
         if index < len(self.loaded_rows):

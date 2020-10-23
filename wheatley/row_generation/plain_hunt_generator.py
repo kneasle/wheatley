@@ -9,6 +9,10 @@ from .row_generator import RowGenerator
 class PlainHuntGenerator(RowGenerator):
     """ A row generator to create plain hunt on any stage. """
 
+    def summary_string(self) -> str:
+        """ Returns a short string summarising the RowGenerator. """
+        return f"Plain Hunt on {self.stage}"
+
     def _gen_row(self, previous_row: Row, stroke: Stroke, index: int) -> Row:
         if stroke.is_hand():
             return self.permute(previous_row, Places([]))

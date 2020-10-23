@@ -25,5 +25,9 @@ class PlaceHolderGenerator(RowGenerator):
         # Make the stage 0
         super().__init__(0)
 
+    def summary_string(self) -> str:
+        """ Returns a short string summarising the RowGenerator. """
+        return "nothing"
+
     def _gen_row(self, previous_row: Row, stroke: Stroke, index: int) -> Row:
         raise NullRowGenError()

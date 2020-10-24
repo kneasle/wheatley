@@ -137,17 +137,19 @@ class RingingRoomTower:
 
     def wait_loaded(self) -> None:
         """ Pause the thread until the socket-io connection is open and stable. """
-        if self._socket_io_client is None:
-            raise Exception("Not Connected")
+        if self._socket_io_client is None or not self._socket_io_client.connected:
+            raise SocketIOClientError("Not Connected")
 
         iteration = 0
-        while not self._bell_state:
-            iteration += 1
-            if iteration % 50 == 0:
-                self._join_tower()
-                self._request_global_state()
+        # Wait up to 2 seconds
+        while iteration < 20:
+            if self._bell_state:
+                break
 
+            iteration += 1
             sleep(0.1)
+        else:
+            raise SocketIOClientError("Not received bell state from RingingRoom")
 
     def _create_client(self) -> None:
         """ Generates the socket-io client and attaches callbacks. """
@@ -328,8 +330,8 @@ logged in as '{self._user_name_map[user_id_that_left]}'.")
 
     def _emit(self, event: str, data: Any, message: str) -> None:
         """ Emit a socket-io signal. """
-        if self._socket_io_client is None:
-            raise Exception("Not Connected")
+        if self._socket_io_client is None or not self._socket_io_client.connected:
+            raise SocketIOClientError("Not Connected")
 
         self._socket_io_client.emit(event, data)
 
@@ -340,3 +342,8 @@ logged in as '{self._user_name_map[user_id_that_left]}'.")
     def _bells_set_at_hand(number: int) -> List[Stroke]:
         """ Returns the representation of `number` bells, all set at handstroke. """
         return [HANDSTROKE for _ in range(number)]
+
+
+class SocketIOClientError(Exception):
+    """Errors related to SocketIO Client"""
+    pass

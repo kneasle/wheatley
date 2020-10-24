@@ -77,20 +77,19 @@ class ComplibCompositionGenerator(RowGenerator):
         response_rows = json.loads(request_rows.text)
 
         # Derive the rows, calls and stage from the JSON response
-        self.loaded_rows: List[Tuple[Row, Optional[str]]] = [
+        self.loaded_rows_and_calls: List[Tuple[Row, List[str]]] = [
             (
                 Row([Bell.from_str(bell) for bell in row]),
-                None if call == '' else call
+                [] if call == '' else call.split(';')
             ) for row, call, property_bitmap in response_rows['rows'][2:]
         ]
-        stage = response_rows['stage']
 
         # Variables from which the summary string is generated
         self.comp_id = comp_id
         self.comp_title = response_rows['title']
         self.is_comp_private = access_key is not None
 
-        super().__init__(stage)
+        super().__init__(response_rows['stage'])
 
     @classmethod
     def from_url(cls, url: str) -> RowGenerator:
@@ -127,7 +126,11 @@ class ComplibCompositionGenerator(RowGenerator):
         """ Returns a short string summarising the RowGenerator. """
         return f"{'private ' if self.is_comp_private else ''}comp #{self.comp_id}: {self.comp_title}"
 
+    # Overriding _gen_row_and_call in RowGenerator so that we can generate custom calls
+    def _gen_row_and_call(self, previous_row: Row, stroke: Stroke, index: int) -> Tuple[Row, List[str]]:
+        if index < len(self.loaded_rows_and_calls):
+            return self.loaded_rows_and_calls[index]
+        return (self.rounds(), [])
+
     def _gen_row(self, previous_row: Row, stroke: Stroke, index: int) -> Row:
-        if index < len(self.loaded_rows):
-            return self.loaded_rows[index][0]
-        return self.rounds()
+        raise NotImplementedError()

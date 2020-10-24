@@ -1,6 +1,7 @@
 """ A module to contain the abstract base class that all row generators inherit from. """
 
 import logging
+from typing import List, Tuple
 from abc import ABCMeta, abstractmethod
 
 from wheatley.aliases import Row, Places
@@ -20,7 +21,8 @@ class RowGenerator(metaclass=ABCMeta):
         self._has_bob = False
         self._has_single = False
         self._index = 0
-        self._row = self.rounds()
+        self._row: Row = self.rounds()
+        self._calls: List[str] = []
 
     def reset(self) -> None:
         """ Reset the row generator. """
@@ -30,6 +32,7 @@ class RowGenerator(metaclass=ABCMeta):
         self._has_single = False
         self._index = 0
         self._row = self.rounds()
+        self._calls = []
 
     def reset_calls(self) -> None:
         """ Clear the pending call flags. """
@@ -38,16 +41,18 @@ class RowGenerator(metaclass=ABCMeta):
         self._has_bob = False
         self._has_single = False
 
-    def next_row(self, stroke: Stroke) -> Row:
+    def next_row_and_calls(self, stroke: Stroke) -> Tuple[Row, List[str]]:
         """ Generate the next row, and mutate state accordingly. """
-        self._row = self._gen_row(self._row, stroke, self._index)
-
+        self._row, self._calls = self._gen_row_and_call(self._row, stroke, self._index)
         self._index += 1
 
+        # Print debug message
         message = " ".join([str(bell) for bell in self._row])
+        if self._calls != []:
+            message += " : " + "; ".join(self._calls)
         self.logger.info(message)
 
-        return self._row
+        return (self._row, self._calls)
 
     def set_bob(self) -> None:
         """ Set the flag that a bob has been made. """
@@ -60,6 +65,13 @@ class RowGenerator(metaclass=ABCMeta):
     def rounds(self) -> Row:
         """ Generate rounds of the stage given by this RowGenerator. """
         return rounds(self.stage)
+
+    def _gen_row_and_call(self, previous_row: Row, stroke: Stroke, index: int) -> Tuple[Row, List[str]]:
+        """ Produce the next row in the composition, along with the calls that should be made if Wheatley is
+        calling.
+        """
+        # If this function is not overridden, we return no calls
+        return (self._gen_row(previous_row, stroke, index), [])
 
     @abstractmethod
     def _gen_row(self, previous_row: Row, stroke: Stroke, index: int) -> Row:

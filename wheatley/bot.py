@@ -6,7 +6,7 @@ program.
 
 import time
 import logging
-from typing import Optional, Any
+from typing import List, Optional, Any
 
 from wheatley import calls
 from wheatley.aliases import JSON, Row
@@ -33,8 +33,8 @@ class Bot:
     logger_name = "BOT"
 
     def __init__(self, tower: RingingRoomTower, row_generator: RowGenerator, do_up_down_in: bool,
-                 stop_at_rounds: bool, rhythm: Rhythm, user_name: Optional[str] = None,
-                 server_mode: bool = False) -> None:
+                 stop_at_rounds: bool, rhythm: Rhythm, is_calling: bool = False,
+                 user_name: Optional[str] = None, server_mode: bool = False) -> None:
         """ Initialise a Bot with all the parts it needs to run. """
         self._server_mode = server_mode
         self._last_activity_time = time.time()
@@ -44,6 +44,7 @@ class Bot:
         self._stop_at_rounds = stop_at_rounds
         self._user_name = user_name
 
+        self._is_calling = is_calling
         self.row_generator = row_generator
         # This is the row generator that will be used after 'Look to' is called for the next time, allowing
         # for changing the method or composition whilst Wheatley is running.
@@ -74,6 +75,7 @@ class Bot:
         self._place = 0
         self._rounds: Row = rounds(MAX_BELL)
         self._row: Row = self._rounds
+        self._calls: List[str] = []
 
         self.logger = logging.getLogger(self.logger_name)
 
@@ -230,13 +232,17 @@ class Bot:
         if self._is_ringing_rounds:
             self._row = self._rounds
         else:
-            self._row = self.row_generator.next_row(self.stroke)
+            self._row, self._calls = self.row_generator.next_row_and_calls(self.stroke)
             if len(self._row) < len(self._rounds):
                 # Add cover bells if needed
                 self._row.extend(self._rounds[len(self._row):])
 
         for (index, bell) in enumerate(self._row):
             self.expect_bell(index, bell)
+
+            if self._is_calling:
+                for call in self._calls:
+                    self._tower.make_call(call)
 
     def start_method(self) -> None:
         """

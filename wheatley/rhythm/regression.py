@@ -244,7 +244,7 @@ class RegressionRhythm(Rhythm):
             del self._expected_bells[(bell, stroke)]
         else:
             # If this bell wasn't expected, then log that
-            self.logger.warning(f"Bell {bell} unexpectedly rang at stroke {'H' if stroke else 'B'}")
+            self.logger.warning(f"Bell {bell} unexpectedly rang at {stroke}")
 
     def initialise_line(self, stage: int, user_controls_treble: bool, start_time: float,
                         number_of_user_controlled_bells: int) -> None:

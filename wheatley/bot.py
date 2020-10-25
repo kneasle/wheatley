@@ -6,13 +6,14 @@ program.
 
 import time
 import logging
-from typing import cast, Optional, Any
+from typing import Optional, Any
 
 from wheatley import calls
 from wheatley.aliases import JSON, Row
 from wheatley.stroke import Stroke
-from wheatley.bell import Bell
+from wheatley.bell import Bell, MAX_BELL
 from wheatley.rhythm import Rhythm
+from wheatley.row_generation.helpers import rounds
 from wheatley.tower import RingingRoomTower
 from wheatley.parsing import to_bool, json_to_row_generator, RowGenParseError
 from wheatley.row_generation import RowGenerator
@@ -32,8 +33,8 @@ class Bot:
     logger_name = "BOT"
 
     def __init__(self, tower: RingingRoomTower, row_generator: RowGenerator, do_up_down_in: bool,
-                 stop_at_rounds: bool, rhythm: Rhythm, user_name: Optional[str]=None,
-                 server_mode: bool=False) -> None:
+                 stop_at_rounds: bool, rhythm: Rhythm, user_name: Optional[str] = None,
+                 server_mode: bool = False) -> None:
         """ Initialise a Bot with all the parts it needs to run. """
         self._server_mode = server_mode
         self._last_activity_time = time.time()
@@ -71,7 +72,8 @@ class Bot:
 
         self._row_number = 0
         self._place = 0
-        self._row: Optional[Row] = None
+        self._rounds: Row = rounds(MAX_BELL)
+        self._row: Row = self._rounds
 
         self.logger = logging.getLogger(self.logger_name)
 
@@ -115,6 +117,7 @@ class Bot:
 
     def _on_size_change(self) -> None:
         self._check_number_of_bells()
+        self._rounds = rounds(self.number_of_bells)
 
     def _check_number_of_bells(self) -> bool:
         """ Returns whether Wheatley can ring with the current number of bells with reasons why not """
@@ -144,13 +147,10 @@ class Bot:
         """ Callback called when a user calls 'Look To'. """
         self._rhythm.return_to_mainloop()
 
-        treble = Bell.from_number(1)
+        treble = self._rounds[0]
 
         # Count number of user controlled bells
-        number_of_user_controlled_bells = 0
-        for i in range(self.number_of_bells):
-            if self._user_assigned_bell(Bell.from_index(i)):
-                number_of_user_controlled_bells += 1
+        number_of_user_controlled_bells = sum(1 for bell in self._rounds if self._user_assigned_bell(bell))
 
         self._rhythm.initialise_line(self.number_of_bells, self._user_assigned_bell(treble),
                                      call_time + 3, number_of_user_controlled_bells)
@@ -224,14 +224,17 @@ class Bot:
         """
         Creates a new row from the row generator and tells the rhythm to expect the new bells.
         """
+
         if self._is_ringing_rounds:
-            for index in range(self.number_of_bells):
-                self.expect_bell(index, Bell.from_index(index))
+            self._row = self._rounds
         else:
             self._row = self.row_generator.next_row(self.stroke)
+            if len(self._row) < len(self._rounds):
+                # Add cover bells if needed
+                self._row.extend(self._rounds[len(self._row):])
 
-            for (index, bell) in enumerate(self._row):
-                self.expect_bell(index, bell)
+        for (index, bell) in enumerate(self._row):
+            self.expect_bell(index, bell)
 
     def start_method(self) -> None:
         """
@@ -244,14 +247,8 @@ class Bot:
 
     def tick(self) -> None:
         """ Called every time the main loop is executed when the bot is ringing. """
-        if self._is_ringing_rounds or self._place >= len(cast(Row, self._row)):
-            # Rounds or a cover bell at the end of the row
-            bell = Bell.from_index(self._place)
-        else:
-            # self._row can't be None if self._is_ringing_rounds is False.  This both appeases the type
-            # checker and acts as a sanity check during run-time
-            assert self._row is not None
-            bell = self._row[self._place]
+
+        bell = self._row[self._place]
         user_controlled = self._user_assigned_bell(bell)
 
         self._rhythm.wait_for_bell_time(time.time(), bell, self._row_number, self._place,
@@ -262,16 +259,9 @@ class Bot:
 
         self._place += 1
 
-        if self._place == self.number_of_bells:
+        if self._place >= self.number_of_bells:
             # Determine if we're finishing a handstroke
-            has_just_rung_rounds = True
-
-            if self._row is None:
-                has_just_rung_rounds = False
-            else:
-                for i, bell in enumerate(self._row):
-                    if bell.index != i:
-                        has_just_rung_rounds = False
+            has_just_rung_rounds = self._row == self._rounds
 
             # Generate the next row and update row indices
             self._row_number += 1
@@ -279,15 +269,13 @@ class Bot:
             self.start_next_row()
 
             # Implement handbell-style 'up down in'
-            if self._do_up_down_in:
-                if self._is_ringing_rounds and self._row_number == 2:
-                    self._should_start_method = True
+            if self._do_up_down_in and self._is_ringing_rounds and self._row_number == 2:
+                self._should_start_method = True
 
             # Implement handbell-style stopping at rounds
-            if self._stop_at_rounds:
-                if has_just_rung_rounds:
-                    self._should_stand = False
-                    self._is_ringing = False
+            if self._stop_at_rounds and has_just_rung_rounds:
+                self._should_stand = False
+                self._is_ringing = False
 
             # If we're starting a handstroke, we should convert all the flags into actions
             if self._row_number % 2 == 0:

@@ -2,6 +2,7 @@ import unittest
 
 from wheatley.row_generation.helpers import convert_bell_string, convert_to_bell_string, convert_pn
 from wheatley.row_generation.helpers import _CROSS_PN
+from wheatley.bell import MAX_BELL
 
 
 class HelpersBellStringTests(unittest.TestCase):
@@ -37,8 +38,8 @@ class HelpersBellStringTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "'0' is not known bell number"):
             convert_to_bell_string(0)
 
-        with self.assertRaisesRegex(ValueError, "'17' is not known bell number"):
-            convert_to_bell_string(17)
+        with self.assertRaisesRegex(ValueError, f"'{MAX_BELL + 1}' is not known bell number"):
+            convert_to_bell_string(MAX_BELL + 1)
 
 
 class HelpersPlaceNotationTests(unittest.TestCase):

@@ -3,6 +3,7 @@
 - Allow support of the new tower sizes - `5`, `14` and `16`
 - Allow Wheatley to ring with any (positive) number of cover bells
 - Add full static typing, and fix some `None`-related bugs
+- Print summary string of what Wheatley is going to ring
 
 # 0.5.1
 - Fix invalid initial inertia.

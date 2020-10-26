@@ -65,6 +65,13 @@ class RowGenerator(metaclass=ABCMeta):
     def _gen_row(self, previous_row: Row, stroke: Stroke, index: int) -> Row:
         pass
 
+    @abstractmethod
+    def summary_string(self) -> str:
+        """ Returns a short string summarising the RowGenerator.
+        This should make grammatical sense when formatted with
+        'Wheatley (will ring|is ringing) {summary_string}'.
+        """
+
     def permute(self, row: Row, places: Places) -> Row:
         """ Permute a row by a place notation given by `places`. """
         new_row = list(row)

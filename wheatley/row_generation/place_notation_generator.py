@@ -27,6 +27,8 @@ class PlaceNotationGenerator(RowGenerator):
 
         self.method_pn = convert_pn(method)
         self.lead_len = len(self.method_pn)
+        # Store the method place notation as a string for the summary string
+        self.method_pn_string = method
 
         def parse_call_dict(unparsed_calls: CallDef) -> Dict[int, List[Places]]:
             """ Parse a dict of type `int => str` to `int => [PlaceNotation]`. """
@@ -47,6 +49,10 @@ class PlaceNotationGenerator(RowGenerator):
         self.singles_pn = parse_call_dict(single)
 
         self._generating_call_pn: List[Places] = []
+
+    def summary_string(self) -> str:
+        """ Returns a short string summarising the RowGenerator. """
+        return f"place notation '{self.method_pn_string}'"
 
     def _gen_row(self, previous_row: Row, stroke: Stroke, index: int) -> Row:
         lead_index = index % self.lead_len

@@ -70,6 +70,10 @@ class DixonoidsGenerator(RowGenerator):
         row = self.permute(previous_row, place_notation)
         return row
 
+    def summary_string(self) -> str:
+        """ Returns a short string summarising the RowGenerator. """
+        return f"dixonoid: {self.plain_rules}"
+
     @staticmethod
     def _convert_pn_dict(rules: Dict[int, List[str]]) -> Dict[int, List[Places]]:
         return {key: [convert_pn(pn)[0] for pn in places] for key, places in rules.items()}

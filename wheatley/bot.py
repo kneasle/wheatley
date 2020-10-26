@@ -77,6 +77,9 @@ class Bot:
 
         self.logger = logging.getLogger(self.logger_name)
 
+        # Log what we're going to ring
+        self.logger.info(f"Wheatley will ring {self.row_generator.summary_string()}")
+
     # Convenient properties that are frequently used
     @property
     def stroke(self) -> Stroke:
@@ -111,7 +114,7 @@ class Bot:
     def _on_row_gen_change(self, row_gen_json: JSON) -> None:
         try:
             self.next_row_generator = json_to_row_generator(row_gen_json, self.logger)
-            self.logger.info("Successfully updated next row gen")
+            self.logger.info(f"Next touch, Wheatley will ring {self.next_row_generator.summary_string()}")
         except RowGenParseError as e:
             self.logger.warning(e)
 
@@ -171,7 +174,6 @@ class Bot:
         # Start at the first place of the first row
         self._row_number = 0
         self._place = 0
-
         self.start_next_row()
 
     def _on_go(self) -> None:
@@ -308,7 +310,7 @@ class Bot:
                     self.logger.info(f"Timed out - no activity for {INACTIVITY_EXIT_TIME}s. Exiting.")
                     return
 
-            self.logger.info("Starting to ring!")
+            self.logger.info(f"Starting to ring {self.row_generator.summary_string()}")
             if self._server_mode:
                 self._tower.set_is_ringing(True)
 

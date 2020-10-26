@@ -1,6 +1,7 @@
 """ Contains the RowGenerator subclass for generating rows from a CompLib composition. """
 
-from typing import Optional, List
+import json
+from typing import Optional, List, Tuple
 
 import requests
 
@@ -58,27 +59,36 @@ def removeprefix(string: str, prefix: str) -> str:
 class ComplibCompositionGenerator(RowGenerator):
     """ The RowGenerator subclass for generating rows from a CompLib composition. """
 
-    complib_url = "https://complib.org/composition/"
+    complib_url = "https://api.complib.org/composition/"
 
     def __init__(self, comp_id: int, access_key: Optional[str]=None) -> None:
+        # Generate URL and request the rows
         url = self.complib_url + str(comp_id) + "/rows"
         if access_key:
             url += "?accessKey=" + access_key
         request_rows = requests.get(url)
-
+        # Check for the status of the requests
         if request_rows.status_code == 404:
             raise InvalidCompError(comp_id)
-
         if request_rows.status_code == 403:
             raise PrivateCompError(comp_id)
-
         request_rows.raise_for_status()
+        # Parse the request responses as JSON
+        response_rows = json.loads(request_rows.text)
 
-        # New line separated, skip the first line (rounds)
-        split_rows = request_rows.text.splitlines(False)[1::]
-        self.loaded_rows: List[Row] = [Row([Bell.from_str(bell) for bell in row]) for row in split_rows]
+        # Derive the rows, calls and stage from the JSON response
+        self.loaded_rows: List[Tuple[Row, Optional[str]]] = [
+            (
+                Row([Bell.from_str(bell) for bell in row]),
+                None if call == '' else call
+            ) for row, call, property_bitmap in response_rows['rows'][2:]
+        ]
+        stage = response_rows['stage']
 
-        stage = len(self.loaded_rows[0])
+        # Variables from which the summary string is generated
+        self.comp_id = comp_id
+        self.comp_title = response_rows['title']
+        self.is_comp_private = access_key is not None
 
         super().__init__(stage)
 
@@ -101,7 +111,7 @@ class ComplibCompositionGenerator(RowGenerator):
         main_url_parts = main_url.split("/")
 
         try:
-            if main_url_parts[0] != "complib.org":
+            if not main_url_parts[0].endswith("complib.org"):
                 raise InvalidComplibURLError(url, "Doesn't point to 'complib.org'.")
             if main_url_parts[1] != "composition":
                 raise InvalidComplibURLError(url, "Not a composition.")
@@ -113,8 +123,11 @@ class ComplibCompositionGenerator(RowGenerator):
 
         return cls(comp_id, access_key)
 
+    def summary_string(self) -> str:
+        """ Returns a short string summarising the RowGenerator. """
+        return f"{'private ' if self.is_comp_private else ''}comp #{self.comp_id}: {self.comp_title}"
+
     def _gen_row(self, previous_row: Row, stroke: Stroke, index: int) -> Row:
         if index < len(self.loaded_rows):
-            return self.loaded_rows[index]
-
+            return self.loaded_rows[index][0]
         return self.rounds()

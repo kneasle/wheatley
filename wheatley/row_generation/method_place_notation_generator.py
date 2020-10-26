@@ -63,7 +63,8 @@ class MethodPlaceNotationGenerator(PlaceNotationGenerator):
         method_xml = self._fetch_method(method_title)
 
         try:
-            method_pn, stage = self._parse_xml(method_xml)
+            method_pn, stage, actual_title = self._parse_xml(method_xml)
+            self._title = actual_title
         except AttributeError as e:
             raise MethodNotFoundError(method_title) from e
 
@@ -74,10 +75,20 @@ class MethodPlaceNotationGenerator(PlaceNotationGenerator):
             single
         )
 
+    def summary_string(self) -> str:
+        """ Returns a short string summarising the RowGenerator. """
+        return f"{self._title}"
+
     @staticmethod
-    def _parse_xml(method_xml: str) -> Tuple[str, int]:
+    def _parse_xml(method_xml: str) -> Tuple[str, int, str]:
         method_parsed_xml = ET.fromstring(method_xml)
         xmlns = '{http://methods.ringing.org/NS/method}'
+
+        # Unpack the title
+        title_elems = method_parsed_xml.findall(xmlns + 'method/' + xmlns + 'title')
+        assert len(title_elems) > 0
+        title: Optional[str] = title_elems[0].text
+        assert title is not None
 
         # Schema at http://methods.ringing.org/xml.html
         symblock = method_parsed_xml.findall(xmlns + 'method/' + xmlns + 'pn/' + xmlns + 'symblock')
@@ -92,18 +103,18 @@ class MethodPlaceNotationGenerator(PlaceNotationGenerator):
         if len(symblock) != 0:
             notation = symblock[0].text
             lead_end = symblock[1].text
-            return f"&{notation},&{lead_end}", stage
+            return f"&{notation},&{lead_end}", stage, title
 
         if len(block) != 0:
             notation = block[0].text
             assert notation is not None
-            return notation, stage
+            return notation, stage, title
 
         raise Exception("Place notation not found")
 
     @staticmethod
     def _fetch_method(method_title: str) -> str:
-        params = {'title': method_title, 'fields': 'pn|stage'}
+        params = {'title': method_title, 'fields': 'title|pn|stage'}
         source = requests.get('http://methods.ringing.org/cgi-bin/simple.pl', params=params)
         source.raise_for_status()
 

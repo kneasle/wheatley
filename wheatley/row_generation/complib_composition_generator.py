@@ -75,13 +75,19 @@ class ComplibCompositionGenerator(RowGenerator):
         request_rows.raise_for_status()
         # Parse the request responses as JSON
         response_rows = json.loads(request_rows.text)
+        unparsed_rows = response_rows['rows']
+        # Determine the start row of the composition
+        num_starting_rounds = 0
+        while unparsed_rows[num_starting_rounds][0] == unparsed_rows[0][0]:
+            num_starting_rounds += 1
+        self._start_stroke = Stroke.from_index(num_starting_rounds)
 
         # Derive the rows, calls and stage from the JSON response
         self.loaded_rows: List[Tuple[Row, Optional[str]]] = [
             (
                 Row([Bell.from_str(bell) for bell in row]),
                 None if call == '' else call
-            ) for row, call, property_bitmap in response_rows['rows'][2:]
+            ) for row, call, property_bitmap in unparsed_rows[num_starting_rounds:]
         ]
         stage = response_rows['stage']
 
@@ -127,7 +133,12 @@ class ComplibCompositionGenerator(RowGenerator):
         """ Returns a short string summarising the RowGenerator. """
         return f"{'private ' if self.is_comp_private else ''}comp #{self.comp_id}: {self.comp_title}"
 
-    def _gen_row(self, previous_row: Row, stroke: Stroke, index: int) -> Row:
+    def _gen_row(self, _previous_row: Row, _stroke: Stroke, index: int) -> Row:
         if index < len(self.loaded_rows):
             return self.loaded_rows[index][0]
         return self.rounds()
+
+    def start_stroke(self) -> Stroke:
+        """ Gets the stroke of the first row.  We allow backstroke starts, and derive this in the constructor
+        """
+        return self._start_stroke

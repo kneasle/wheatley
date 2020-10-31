@@ -4,7 +4,7 @@ import logging
 from abc import ABCMeta, abstractmethod
 
 from wheatley.aliases import Row, Places
-from wheatley.stroke import Stroke
+from wheatley.stroke import Stroke, HANDSTROKE
 from wheatley.row_generation.helpers import rounds
 
 
@@ -64,6 +64,11 @@ class RowGenerator(metaclass=ABCMeta):
     @abstractmethod
     def _gen_row(self, previous_row: Row, stroke: Stroke, index: int) -> Row:
         pass
+
+    def start_stroke(self) -> Stroke: # pylint: disable=no-self-use
+        """ Gets the stroke of the first row.  This defaults to HANDSTROKE, but should be overridden by
+        other RowGenerators if different start strokes are possible. """
+        return HANDSTROKE
 
     @abstractmethod
     def summary_string(self) -> str:

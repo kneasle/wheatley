@@ -33,7 +33,7 @@ class Bot:
     logger_name = "BOT"
 
     def __init__(self, tower: RingingRoomTower, row_generator: RowGenerator, do_up_down_in: bool,
-                 stop_at_rounds: bool, rhythm: Rhythm, is_calling: bool = False,
+                 stop_at_rounds: bool, rhythm: Rhythm, is_calling: bool = True,
                  user_name: Optional[str] = None, server_mode: bool = False) -> None:
         """ Initialise a Bot with all the parts it needs to run. """
         self._server_mode = server_mode
@@ -225,10 +225,7 @@ class Bot:
             )
 
     def start_next_row(self) -> None:
-        """
-        Creates a new row from the row generator and tells the rhythm to expect the new bells.
-        """
-
+        """ Creates a new row from the row generator and tells the rhythm to expect the new bells. """
         if self._is_ringing_rounds:
             self._row = self._rounds
         else:
@@ -240,9 +237,9 @@ class Bot:
         for (index, bell) in enumerate(self._row):
             self.expect_bell(index, bell)
 
-            if self._is_calling:
-                for call in self._calls:
-                    self._tower.make_call(call)
+        if self._is_calling:
+            for call in self._calls:
+                self._tower.make_call(call)
 
     def start_method(self) -> None:
         """

@@ -86,7 +86,7 @@ class Bot:
     @property
     def stroke(self) -> Stroke:
         """ Returns true if the current row (determined by self._row_number) represents a handstroke. """
-        return Stroke(self._row_number % 2 == 0)
+        return Stroke.from_index(self._row_number)
 
     @property
     def number_of_bells(self) -> int:
@@ -254,7 +254,7 @@ class Bot:
             self.start_next_row()
 
     def tick(self) -> None:
-        """ Called every time the main loop is executed when the bot is ringing. """
+        """ Move the ringing on by one place """
 
         bell = self._row[self._place]
         user_controlled = self._user_assigned_bell(bell)
@@ -278,28 +278,28 @@ class Bot:
 
             # Implement handbell-style 'up down in'
             if self._do_up_down_in and self._is_ringing_rounds and self._row_number == 2:
+                self.logger.debug("Setting '_should_start_method' for handbell-style start.")
                 self._should_start_method = True
 
             # Implement handbell-style stopping at rounds
-            if self._stop_at_rounds and has_just_rung_rounds:
+            if self._stop_at_rounds and has_just_rung_rounds and not self._is_ringing_rounds:
                 self._should_stand = False
                 self._is_ringing = False
 
             # If we're starting a handstroke, we should convert all the flags into actions
-            if self._row_number % 2 == 0:
-                if self._should_stand:
-                    self._should_stand = False
-                    self._is_ringing = False
+            if self._should_stand:
+                self._should_stand = False
+                self._is_ringing = False
 
+            if self._should_start_ringing_rounds and not self._is_ringing_rounds:
+                self._should_start_ringing_rounds = False
+                self._is_ringing_rounds = True
+
+            if Stroke.from_index(self._row_number) == self.row_generator.start_stroke():
                 if self._should_start_method and self._is_ringing_rounds:
                     self._should_start_method = False
                     self._is_ringing_rounds = False
-
                     self.start_method()
-
-                if self._should_start_ringing_rounds and not self._is_ringing_rounds:
-                    self._should_start_ringing_rounds = False
-                    self._is_ringing_rounds = True
 
     def main_loop(self) -> None:
         """

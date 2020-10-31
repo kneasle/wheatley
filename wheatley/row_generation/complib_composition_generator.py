@@ -75,13 +75,30 @@ class ComplibCompositionGenerator(RowGenerator):
         request_rows.raise_for_status()
         # Parse the request responses as JSON
         response_rows = json.loads(request_rows.text)
+        unparsed_rows = response_rows['rows']
+        # Determine the start row of the composition
+        num_starting_rounds = 0
+        while unparsed_rows[num_starting_rounds][0] == unparsed_rows[0][0]:
+            num_starting_rounds += 1
+        self._start_stroke = Stroke.from_index(num_starting_rounds)
 
-        # Derive the rows, calls and stage from the JSON response
-        self.loaded_rows_and_calls: List[Tuple[Row, List[str]]] = [
+        # Unpack the raw rows and calls from the JSON
+        unshifted_rows_and_calls: List[Tuple[Row, List[str]]] = [
             (
                 Row([Bell.from_str(bell) for bell in row]),
                 [] if call == '' else call.split(';')
-            ) for row, call, property_bitmap in response_rows['rows'][2:]
+            ) for row, call, property_bitmap in unparsed_rows
+        ]
+
+        # CompLib's API returns calls on the row which they are *called*, but Wheatley expects them on the
+        # row they *take effect*.  So we push all the calls along by two rows, ignoring the fact that
+        # `That's All; Stand` falls off the end.
+        self.loaded_rows_and_calls: List[Tuple[Row, List[str]]] = [
+            (
+                unshifted_rows_and_calls[i][0],    # Get the  row from the index i
+                unshifted_rows_and_calls[i - 2][1] # Get the call from the index i - 2
+            )
+            for i in range(num_starting_rounds, len(unshifted_rows_and_calls))
         ]
 
         # Variables from which the summary string is generated
@@ -134,3 +151,8 @@ class ComplibCompositionGenerator(RowGenerator):
 
     def _gen_row(self, previous_row: Row, stroke: Stroke, index: int) -> Row:
         raise NotImplementedError()
+
+    def start_stroke(self) -> Stroke:
+        """ Gets the stroke of the first row.  We allow backstroke starts, and derive this in the constructor
+        """
+        return self._start_stroke

@@ -5,7 +5,7 @@ from typing import List, Tuple
 from abc import ABCMeta, abstractmethod
 
 from wheatley.aliases import Row, Places
-from wheatley.stroke import Stroke
+from wheatley.stroke import Stroke, HANDSTROKE
 from wheatley.row_generation.helpers import rounds
 
 
@@ -67,8 +67,9 @@ class RowGenerator(metaclass=ABCMeta):
         return rounds(self.stage)
 
     def _gen_row_and_call(self, previous_row: Row, stroke: Stroke, index: int) -> Tuple[Row, List[str]]:
-        """ Produce the next row in the composition, along with the calls that should be made if Wheatley is
-        calling.
+        """ Produce the next row in the composition, along with the calls that should be **applied** to that
+        row if Wheatley is calling.  Note that Wheatley will place the call two changes before it is
+        returned, using a 2-change buffer for look-ahead.
         """
         # If this function is not overridden, we return no calls
         return (self._gen_row(previous_row, stroke, index), [])
@@ -76,6 +77,11 @@ class RowGenerator(metaclass=ABCMeta):
     @abstractmethod
     def _gen_row(self, previous_row: Row, stroke: Stroke, index: int) -> Row:
         pass
+
+    def start_stroke(self) -> Stroke: # pylint: disable=no-self-use
+        """ Gets the stroke of the first row.  This defaults to HANDSTROKE, but should be overridden by
+        other RowGenerators if different start strokes are possible. """
+        return HANDSTROKE
 
     @abstractmethod
     def summary_string(self) -> str:

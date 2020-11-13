@@ -24,8 +24,19 @@ class StrokeTests(unittest.TestCase):
         self.assertEqual(BACKSTROKE.is_back(), True)
 
     def test_from_index(self):
+        # The -100th row is a handstroke
+        stroke = HANDSTROKE
         for i in range(-100, 100):
-            self.assertEqual(Stroke.from_index(i).is_hand(), i % 2 == 0)
+            self.assertEqual(Stroke.from_index(i), stroke)
+            # Every successive row should alternate the stroke
+            stroke = stroke.opposite()
+
+        # Some handwritten tests
+        self.assertEqual(Stroke.from_index(0), HANDSTROKE)
+        self.assertEqual(Stroke.from_index(1), BACKSTROKE)
+        self.assertEqual(Stroke.from_index(2), HANDSTROKE)
+        self.assertEqual(Stroke.from_index(3), BACKSTROKE)
+        self.assertEqual(Stroke.from_index(55), BACKSTROKE)
 
     def test_opposite(self):
         self.assertEqual(HANDSTROKE.opposite(), BACKSTROKE)

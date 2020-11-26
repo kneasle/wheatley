@@ -5,6 +5,10 @@
 - Add full static typing, and fix some `None`-related bugs
 - Print summary string of what Wheatley is going to ring
 
+# 0.5.2
+- Bump numpy version to exactly `1.19.3` on Windows to fix
+  [this issue](https://tinyurl.com/y3dm3h86).
+
 # 0.5.1
 - Fix invalid initial inertia.
 

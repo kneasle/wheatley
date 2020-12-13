@@ -1,9 +1,10 @@
 # 0.6.0 (W.I.P.)
 - Print summary string of what Wheatley is going to ring.
-- Tell users when Wheatley is waiting for `Look To`.
+- Add proper support for backstroke starts (with 3 rows of rounds for `--up-down-in`).
 - Allow support of the new tower sizes - `5`, `14` and `16`.
-- Change place notation parsing to comply with CompLib and the XML specification.
 - Allow Wheatley to ring with any (positive) number of cover bells.
+- Tell users when Wheatley is waiting for `Look To`.
+- Change place notation parsing to comply with CompLib and the XML specification.
 - Add full static typing, and fix some `None`-related bugs.
 
 # 0.5.2

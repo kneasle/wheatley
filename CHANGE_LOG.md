@@ -3,6 +3,7 @@
 - Add proper support for backstroke starts (with 3 rows of rounds for `--up-down-in`).
 - Allow support of the new tower sizes - `5`, `14` and `16`.
 - Allow Wheatley to ring with any (positive) number of cover bells.
+- Add `--start-index` to specify how many rows into a lead of a method Wheatley should start.
 - Tell users when Wheatley is waiting for `Look To`.
 - Change place notation parsing to comply with CompLib and the XML specification.
 - Add full static typing, and fix some `None`-related bugs.

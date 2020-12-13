@@ -189,8 +189,7 @@ class RegressionRhythm(Rhythm):
         _should_ have been in the ringing, and so can use that knowledge to inform the speed of the
         ringing.
         """
-        self.logger.debug(f"Expected bell {expected_bell} at index {row_number}:{place} at stroke"
-                          + f"{expected_stroke}")
+        self.logger.debug(f"Expected bell {expected_bell} at index {row_number}:{place} at {expected_stroke}")
         self._expected_bells[(expected_bell, expected_stroke)] = (row_number, place)
 
     def change_setting(self, key: str, value: Any) -> None:

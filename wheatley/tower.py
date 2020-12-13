@@ -155,7 +155,7 @@ class RingingRoomTower:
         """ Generates the socket-io client and attaches callbacks. """
         self._socket_io_client = socketio.Client()
         self._socket_io_client.connect(self._url)
-        self.logger.info(f"Connected to {self._url}")
+        self.logger.debug(f"Connected to {self._url}")
 
         self._socket_io_client.on("s_bell_rung", self._on_bell_rung)
         self._socket_io_client.on("s_global_state", self._on_global_bell_state)
@@ -249,7 +249,8 @@ logged in as '{self._user_name_map[user_id_that_left]}'.")
 
     def _request_global_state(self) -> None:
         """ Send a request to the server to get the current state of the tower. """
-        self._emit('c_request_global_state', {"tower_id": self.tower_id}, "Request state")
+        self.logger.debug("Requesting global state.")
+        self._emit('c_request_global_state', {"tower_id": self.tower_id}, "")
 
     def _on_bell_rung(self, data: JSON) -> None:
         """ Callback called when the client receives a signal that a bell has been rung. """

@@ -272,7 +272,7 @@ logged in as '{self._user_name_map[user_id_that_left]}'.")
 
     def _update_bell_state(self, bell_state: List[Stroke]) -> None:
         self._bell_state = bell_state
-        self.logger.debug(f"RECEIVED: Bells '{['H' if x else 'B' for x in bell_state]}'")
+        self.logger.debug(f"RECEIVED: Bells '{''.join([s.char() for s in bell_state])}'")
 
     def _on_global_bell_state(self, data: JSON) -> None:
         """

@@ -1,5 +1,6 @@
 # 0.6.0 (W.I.P.)
 - Print summary string of what Wheatley is going to ring.
+- Tell users when Wheatley is waiting for `Look To`.
 - Allow support of the new tower sizes - `5`, `14` and `16`.
 - Change place notation parsing to comply with CompLib and the XML specification.
 - Allow Wheatley to ring with any (positive) number of cover bells.

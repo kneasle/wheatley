@@ -23,6 +23,12 @@ class StrokeTests(unittest.TestCase):
         self.assertEqual(HANDSTROKE.is_back(), False)
         self.assertEqual(BACKSTROKE.is_back(), True)
 
+    def test_from_index(self):
+        stroke = HANDSTROKE
+        for i in range(-100, 100):
+            self.assertEqual(Stroke.from_index(i), stroke)
+            stroke = stroke.opposite()
+
     def test_opposite(self):
         self.assertEqual(HANDSTROKE.opposite(), BACKSTROKE)
         self.assertEqual(BACKSTROKE.opposite(), HANDSTROKE)

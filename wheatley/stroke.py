@@ -21,6 +21,11 @@ class Stroke:
         """
         return not self._is_handstroke
 
+    @classmethod
+    def from_index(cls, index: int) -> 'Stroke':
+        """ Returns the stroke of the row that would exist at a given index. """
+        return cls(index % 2 == 0)
+
     def opposite(self) -> 'Stroke':
         """ Returns the opposite Stroke to the current one. """
         return Stroke(not self._is_handstroke)

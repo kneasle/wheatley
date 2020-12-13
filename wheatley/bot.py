@@ -84,7 +84,7 @@ class Bot:
     @property
     def stroke(self) -> Stroke:
         """ Returns true if the current row (determined by self._row_number) represents a handstroke. """
-        return Stroke(self._row_number % 2 == 0)
+        return Stroke.from_index(self._row_number)
 
     @property
     def number_of_bells(self) -> int:
@@ -248,7 +248,7 @@ class Bot:
             self.start_next_row()
 
     def tick(self) -> None:
-        """ Called every time the main loop is executed when the bot is ringing. """
+        """ Move the ringing on by one place """
 
         bell = self._row[self._place]
         user_controlled = self._user_assigned_bell(bell)

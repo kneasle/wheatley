@@ -99,8 +99,13 @@ class RegressionRhythm(Rhythm):
         self._max_bells_in_dataset = max_bells_in_dataset
 
         self.stage = 0
+        # Two values that determine the linear relationship between ringing and real time - these are set by
+        # the regression algorithm and used to decide when Wheatley's bells should be rung
         self._start_time = 0.0
         self._blow_interval = 0.0
+
+        # The actual time that the current touch started (this is unaffected by the regression algorithm)
+        self._real_start_time = 0.0
 
         self._number_of_user_controlled_bells = 0
         # Maps a bell and a stroke to the row number and place which that bell is next expected to ring at
@@ -118,7 +123,7 @@ class RegressionRhythm(Rhythm):
         self.data_set.append((blow_time, real_time, weight))
 
         for (b, r, w) in self.data_set:
-            self.logger.debug(f"Datapoint: {b:4.1f} {r:8.3f}s {w:.3f}")
+            self.logger.debug(f"Datapoint: {b:4.1f} {r - self._real_start_time:8.3f}s {w:.3f}")
 
         # Only calculate the regression line if there are at least two datapoints, otherwise
         # just store the datapoint
@@ -259,6 +264,9 @@ class RegressionRhythm(Rhythm):
         peal_speed_seconds = self._peal_speed * 60
         seconds_per_whole_pull = peal_speed_seconds / 2520  # 2520 = 5040 / 2
         self._blow_interval = seconds_per_whole_pull / (self.stage * 2 + 1)
+
+        # Set real start time to make debug output more succinct
+        self._real_start_time = start_time
 
         if not user_controls_treble:
             # If the bot is ringing the first bell, then add it as a datapoint anyway, so that after

@@ -1,9 +1,9 @@
 # 0.6.0 (W.I.P.)
-- Change place notation parsing to comply with the CompLib and the XML specification.
-- Allow support of the new tower sizes - `5`, `14` and `16`
-- Allow Wheatley to ring with any (positive) number of cover bells
-- Add full static typing, and fix some `None`-related bugs
-- Print summary string of what Wheatley is going to ring
+- Print summary string of what Wheatley is going to ring.
+- Allow support of the new tower sizes - `5`, `14` and `16`.
+- Change place notation parsing to comply with CompLib and the XML specification.
+- Allow Wheatley to ring with any (positive) number of cover bells.
+- Add full static typing, and fix some `None`-related bugs.
 
 # 0.5.2
 - Bump numpy version to exactly `1.19.3` on Windows to fix

@@ -1,14 +1,19 @@
 # 0.6.0 (W.I.P.)
-- Add support for loading CompLib urls (_including 'share' links to private comps_) with `--comp-url` (actually added in `0.5.0`).
+- Add support for loading CompLib urls (_including 'share' links to private comps_) with
+  `--comp-url` (actually added in `0.5.0`).
 - Add proper support for backstroke starts (with 3 rows of rounds for `--up-down-in`).
-- Allow support of the new tower sizes - `5`, `14` and `16`.
+- Add `--start-index` to specify how many rows into a lead of a method Wheatley should start.
 - Add `-v`/`--verbose` and `-q`/`--quiet` to change how much stuff Wheatley prints.
 - Print summary string of what Wheatley is going to ring before every touch.
 - Tell users when Wheatley is waiting for `Look To`.
-- Add `--start-index` to specify how many rows into a lead of a method Wheatley should start.
+- Make the error messages friendlier.
+  - Moved some overly verbose `INFO` messages into `DEBUG`.
+  - Capped all numbers to 3 decimal places.
+  - Made debug 'wait' logging slightly less verbose.
 
 ## Technical changes
 
+- Allow support of the new tower sizes - `5`, `14` and `16`.
 - Allow Wheatley to ring with any (positive) number of cover bells.
 - Change place notation parsing to comply with CompLib and the XML specification.
 - Add full static typing, and fix some `None`-related bugs.

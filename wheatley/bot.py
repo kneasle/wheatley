@@ -301,6 +301,8 @@ class Bot:
         The main thread will get stuck forever in this function whilst the bot rings.
         """
         while True:
+            # Log a message to say that Wheatley is waiting for 'Look To!'
+            self.logger.info("Waiting for 'Look To!'...")
             # Sit in an infinite loop whilst we're not ringing, and exit Wheatley if enough time
             # has passed
             self._last_activity_time = time.time()

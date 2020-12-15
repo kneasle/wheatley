@@ -35,7 +35,8 @@ setuptools.setup(
         'numpy<=1.19.3; platform_system == "Windows"',
         'numpy; platform_system != "Windows"',
         "requests",
-        "python-socketio",
+        "python-socketio<5",
+        "python-engineio<4",
         "websocket-client"
     ],
     package_data={"wheatley": ["version.txt"]},

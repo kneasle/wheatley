@@ -7,6 +7,7 @@
 - Tell users when Wheatley is waiting for `Look To`.
 - Change place notation parsing to comply with CompLib and the XML specification.
 - Add full static typing, and fix some `None`-related bugs.
+- Prevent installing the wrong version of socketio to work with RingingRoom
 
 # 0.5.2
 - Bump numpy version to exactly `1.19.3` on Windows to fix

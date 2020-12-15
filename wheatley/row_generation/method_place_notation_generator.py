@@ -59,7 +59,7 @@ class MethodNotFoundError(ValueError):
 class MethodPlaceNotationGenerator(PlaceNotationGenerator):
     """ A class to generate rows given a method title. """
 
-    def __init__(self, method_title: str, bob: CallDef, single: CallDef) -> None:
+    def __init__(self, method_title: str, bob: CallDef, single: CallDef, start_row: int = 0) -> None:
         method_xml = self._fetch_method(method_title)
 
         try:
@@ -72,7 +72,8 @@ class MethodPlaceNotationGenerator(PlaceNotationGenerator):
             stage,
             method_pn,
             bob,
-            single
+            single,
+            start_row
         )
 
     def summary_string(self) -> str:

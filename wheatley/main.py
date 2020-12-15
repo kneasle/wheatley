@@ -44,7 +44,8 @@ def create_row_generator(args: argparse.Namespace) -> RowGenerator:
                       MethodPlaceNotationGenerator(
                           args.method,
                           parse_call(args.bob),
-                          parse_call(args.single)
+                          parse_call(args.single),
+                          args.start_index
                       )
         except MethodNotFoundError as e:
             sys.exit(f"Bad value for '--method': {e}")
@@ -259,6 +260,13 @@ def console_main(override_args: Optional[List[str]], stop_on_join_tower: bool) -
               "0:1678" => 6ths place lead end single.  "-1:3.123" => a Grandsire Single. \
               "20: 7890" => a 7890 single taking effect 20 changes into a lead (the Half Lead for \
               Surprise Royal). "3: 567/9: 567" => singles in Stedman Triples.  Defaults to "1234".'
+    )
+    row_gen_group.add_argument(
+        "--start-index",
+        type=int,
+        default=0,
+        help="Determines which row of the lead Wheatley will start ringing.  This can be negative (so -1 \
+              would refer to the lead **end**).  Defaults to 0 (i.e. a standard start)."
     )
     row_gen_group.add_argument(
         "-u", "--use-up-down-in",

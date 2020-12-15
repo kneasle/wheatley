@@ -84,7 +84,7 @@ class Bot:
     @property
     def stroke(self) -> Stroke:
         """ Returns true if the current row (determined by self._row_number) represents a handstroke. """
-        return Stroke(self._row_number % 2 == 0)
+        return Stroke.from_index(self._row_number)
 
     @property
     def number_of_bells(self) -> int:
@@ -248,7 +248,7 @@ class Bot:
             self.start_next_row()
 
     def tick(self) -> None:
-        """ Called every time the main loop is executed when the bot is ringing. """
+        """ Move the ringing on by one place """
 
         bell = self._row[self._place]
         user_controlled = self._user_assigned_bell(bell)
@@ -270,6 +270,10 @@ class Bot:
             self._place = 0
             self.start_next_row()
 
+            next_stroke = Stroke.from_index(self._row_number)
+
+            # ===== SET FLAGS FOR HANDBELL-STYLE RINGING =====
+
             # Implement handbell-style 'up down in'
             if self._do_up_down_in and self._is_ringing_rounds and self._row_number == 2:
                 self._should_start_method = True
@@ -279,17 +283,19 @@ class Bot:
                 self._should_stand = False
                 self._is_ringing = False
 
+            # ===== CONVERT THE FLAGS INTO ACTIONS =====
+
+            if self._should_start_method and self._is_ringing_rounds \
+               and next_stroke == self.row_generator.start_stroke():
+                self._should_start_method = False
+                self._is_ringing_rounds = False
+                self.start_method()
+
             # If we're starting a handstroke, we should convert all the flags into actions
-            if self._row_number % 2 == 0:
+            if next_stroke.is_hand():
                 if self._should_stand:
                     self._should_stand = False
                     self._is_ringing = False
-
-                if self._should_start_method and self._is_ringing_rounds:
-                    self._should_start_method = False
-                    self._is_ringing_rounds = False
-
-                    self.start_method()
 
                 if self._should_start_ringing_rounds and not self._is_ringing_rounds:
                     self._should_start_ringing_rounds = False

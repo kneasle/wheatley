@@ -17,7 +17,8 @@ class PlaceNotationGenerator(RowGenerator):
     DefaultBob: ClassVar[CallDef] = CallDef({0: '14'})
     DefaultSingle: ClassVar[CallDef] = CallDef({0: '1234'})
 
-    def __init__(self, stage: int, method: str, bob: CallDef = None, single: CallDef = None) -> None:
+    def __init__(self, stage: int, method: str, bob: CallDef = None, single: CallDef = None,
+                 start_index: int = 0) -> None:
         super().__init__(stage)
 
         if bob is None:
@@ -29,6 +30,7 @@ class PlaceNotationGenerator(RowGenerator):
         self.lead_len = len(self.method_pn)
         # Store the method place notation as a string for the summary string
         self.method_pn_string = method
+        self.start_index = start_index
 
         def parse_call_dict(unparsed_calls: CallDef) -> Dict[int, List[Places]]:
             """ Parse a dict of type `int => str` to `int => [PlaceNotation]`. """
@@ -55,7 +57,8 @@ class PlaceNotationGenerator(RowGenerator):
         return f"place notation '{self.method_pn_string}'"
 
     def _gen_row(self, previous_row: Row, stroke: Stroke, index: int) -> Row:
-        lead_index = index % self.lead_len
+        assert self.lead_len > 0
+        lead_index = (index + self.start_index) % self.lead_len
 
         if self._has_bob and self.bobs_pn.get(lead_index):
             self._generating_call_pn = list(self.bobs_pn[lead_index])
@@ -72,6 +75,9 @@ class PlaceNotationGenerator(RowGenerator):
             place_notation = self.method_pn[lead_index]
 
         return self.permute(previous_row, place_notation)
+
+    def start_stroke(self) -> Stroke:
+        return Stroke.from_index(self.start_index)
 
     @staticmethod
     def grandsire(stage: int) -> RowGenerator:

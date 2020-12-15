@@ -1,3 +1,6 @@
+# 0.5.3
+- Prevent installing the wrong version of socketio to work with RingingRoom
+
 # 0.5.2
 - Bump numpy version to exactly `1.19.3` on Windows to fix
   [this issue](https://tinyurl.com/y3dm3h86).

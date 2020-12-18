@@ -30,6 +30,10 @@ class Stroke:
         """ Returns the opposite Stroke to the current one. """
         return Stroke(not self._is_handstroke)
 
+    def char(self) -> str:
+        """ Returns a single-character string of 'H' or 'B'. """
+        return "H" if self._is_handstroke else "B"
+
     def __str__(self) -> str:
         return "HANDSTROKE" if self._is_handstroke else "BACKSTROKE"
 

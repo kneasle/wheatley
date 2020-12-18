@@ -97,15 +97,34 @@ def get_version_number() -> str:
         return "<NO VERSION FILE FOUND>"
 
 
-def configure_logging() -> None:
-    """ Sets up the logging for the bot. """
+def configure_logging(verbose: bool, quietness: int) -> None:
+    """ Sets up the logging for Wheatley. """
     logging.basicConfig(level=logging.WARNING)
 
-    logging.getLogger(Bot.logger_name).setLevel(logging.INFO)
-    logging.getLogger(RingingRoomTower.logger_name).setLevel(logging.INFO)
-    logging.getLogger(RowGenerator.logger_name).setLevel(logging.INFO)
-    logging.getLogger(RegressionRhythm.logger_name).setLevel(logging.INFO)
-    logging.getLogger(WaitForUserRhythm.logger_name).setLevel(logging.INFO)
+    # Verboseness is a numerical represntation of the log level, with the following cases:
+    # >= 1 -> DEBUG
+    #    0 -> INFO
+    #   -1 -> WARNING
+    #   -2 -> ERROR
+    # < -2 -> CRITICAL (Wheatley doesn't emit any CRITICAL logs, so this is essentially silent)
+    verboseness: int = (1 if verbose else 0) - quietness
+
+    if verboseness >= 1:
+        log_level = logging.DEBUG
+    elif verboseness == 0:
+        log_level = logging.INFO
+    elif verboseness == -1:
+        log_level = logging.WARNING
+    elif verboseness == -2:
+        log_level = logging.ERROR
+    else:  # verboseness <= -3
+        log_level = logging.CRITICAL
+
+    logging.getLogger(Bot.logger_name).setLevel(log_level)
+    logging.getLogger(RingingRoomTower.logger_name).setLevel(log_level)
+    logging.getLogger(RowGenerator.logger_name).setLevel(log_level)
+    logging.getLogger(RegressionRhythm.logger_name).setLevel(log_level)
+    logging.getLogger(WaitForUserRhythm.logger_name).setLevel(log_level)
 
 
 def server_main(override_args: Optional[List[str]], stop_on_join_tower: bool) -> None:
@@ -137,6 +156,19 @@ def server_main(override_args: Optional[List[str]], stop_on_join_tower: bool) ->
         help="Set to the time when 'Look to' was called if Wheatley was spawned because 'look to' was \
               called and Wheatley is needed."
     )
+    parser.add_argument(
+        "-v", "--verbose",
+        action="count",
+        default=0,
+        help="Makes Wheatley print more (DEBUG) output."
+    )
+    parser.add_argument(
+        "-q", "--quiet",
+        action="count",
+        default=0,
+        help="Makes Wheatley print less output.  `-q` only prints WARNINGs and ERRORs; `-qq` only prints \
+              ERRORs; `-qqq` prints nothing."
+    )
 
     # Parse arguments
     # `[1:]` is apparently needed, because sys.argv[0] is the working file of the Python interpreter
@@ -144,7 +176,7 @@ def server_main(override_args: Optional[List[str]], stop_on_join_tower: bool) ->
     args = parser.parse_args(sys.argv[1:] if override_args is None else override_args)
 
     # Run the program
-    configure_logging()
+    configure_logging(args.verbose, args.quiet)
 
     # Log the version string to 'DEBUG'
     logging.debug(f"Running Wheatley v{__version__}")
@@ -343,6 +375,19 @@ def console_main(override_args: Optional[List[str]], stop_on_join_tower: bool) -
         action="version",
         version=f"Wheatley v{__version__}"
     )
+    parser.add_argument(
+        "-v", "--verbose",
+        action="count",
+        default=0,
+        help="Makes Wheatley print more (DEBUG) output."
+    )
+    parser.add_argument(
+        "-q", "--quiet",
+        action="count",
+        default=0,
+        help="Makes Wheatley print less output.  `-q` only prints WARNINGs and ERRORs; `-qq` only prints \
+              ERRORs; `-qqq` prints nothing."
+    )
 
 
     # Parse arguments
@@ -355,7 +400,7 @@ def console_main(override_args: Optional[List[str]], stop_on_join_tower: bool) -
         print("Deprecation warning: `--wait` has been replaced with `--keep-going`!")
 
     # Run the program
-    configure_logging()
+    configure_logging(args.verbose, args.quiet)
 
     try:
         tower_url = get_load_balancing_url(args.room_id, args.url)

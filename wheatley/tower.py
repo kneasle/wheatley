@@ -76,11 +76,7 @@ class RingingRoomTower:
 
             bell_num: int = bell.number
             is_handstroke: bool = stroke.is_hand()
-            self._emit(
-                "c_bell_rung",
-                {"bell": bell_num, "stroke": is_handstroke, "tower_id": self.tower_id},
-                ""
-            )
+            self._emit("c_bell_rung", {"bell": bell_num, "stroke": is_handstroke, "tower_id": self.tower_id})
 
             return True
         except Exception as e:
@@ -113,27 +109,23 @@ class RingingRoomTower:
 
     def make_call(self, call: str) -> None:
         """ Broadcasts a given call to the other users of the tower. """
-        self._emit("c_call", {"call": call, "tower_id": self.tower_id}, f"Call '{call}'")
+        self.logger.info(f"(EMIT): Calling '{call}'")
+        self._emit("c_call", {"call": call, "tower_id": self.tower_id})
 
     def set_at_hand(self) -> None:
         """ Sets all the bells at hand. """
-        self._emit("c_set_bells", {"tower_id": self.tower_id}, "Set at hand")
+        self.logger.info("(EMIT): Setting bells at handstroke")
+        self._emit("c_set_bells", {"tower_id": self.tower_id})
 
     def set_number_of_bells(self, number: int) -> None:
         """ Set the number of bells in the tower. """
-        self._emit(
-            "c_size_change",
-            {"new_size": number, "tower_id": self.tower_id},
-            f"Set number of bells '{number}'"
-        )
+        self.logger.info(f"(EMIT): Setting size to {number}")
+        self._emit("c_size_change", {"new_size": number, "tower_id": self.tower_id})
 
     def set_is_ringing(self, value: bool) -> None:
         """ Broadcast to all the users that Wheatley has started or stopped ringing. """
-        self._emit(
-            "c_wheatley_is_ringing",
-            {"is_ringing": value, "tower_id": self.tower_id},
-            f"Setting is ringing to {value}"
-        )
+        self.logger.info(f"(EMIT): Telling RR clients to set is_ringing to {value}")
+        self._emit("c_wheatley_is_ringing", {"is_ringing": value, "tower_id": self.tower_id})
 
     def wait_loaded(self) -> None:
         """ Pause the thread until the socket-io connection is open and stable. """
@@ -155,7 +147,7 @@ class RingingRoomTower:
         """ Generates the socket-io client and attaches callbacks. """
         self._socket_io_client = socketio.Client()
         self._socket_io_client.connect(self._url)
-        self.logger.info(f"Connected to {self._url}")
+        self.logger.debug(f"Connected to {self._url}")
 
         self._socket_io_client.on("s_bell_rung", self._on_bell_rung)
         self._socket_io_client.on("s_global_state", self._on_global_bell_state)
@@ -241,15 +233,16 @@ logged in as '{self._user_name_map[user_id_that_left]}'.")
 
     def _join_tower(self) -> None:
         """ Joins the tower as an anonymous user. """
+        self.logger.info(f"(EMIT): Joining tower {self.tower_id}")
         self._emit(
             "c_join",
             {"anonymous_user": True, "tower_id": self.tower_id},
-            f"Joining tower {self.tower_id}"
         )
 
     def _request_global_state(self) -> None:
         """ Send a request to the server to get the current state of the tower. """
-        self._emit('c_request_global_state', {"tower_id": self.tower_id}, "Request state")
+        self.logger.debug("(EMIT): Requesting global state.")
+        self._emit('c_request_global_state', {"tower_id": self.tower_id})
 
     def _on_bell_rung(self, data: JSON) -> None:
         """ Callback called when the client receives a signal that a bell has been rung. """
@@ -328,15 +321,12 @@ logged in as '{self._user_name_map[user_id_that_left]}'.")
         if not found_callback:
             self.logger.warning(f"No callback found for '{call}'")
 
-    def _emit(self, event: str, data: Any, message: str) -> None:
+    def _emit(self, event: str, data: Any) -> None:
         """ Emit a socket-io signal. """
         if self._socket_io_client is None or not self._socket_io_client.connected:
             raise SocketIOClientError("Not Connected")
 
         self._socket_io_client.emit(event, data)
-
-        if message:
-            self.logger.info(f"EMIT: {message}")
 
     @staticmethod
     def _bells_set_at_hand(number: int) -> List[Stroke]:
@@ -346,4 +336,3 @@ logged in as '{self._user_name_map[user_id_that_left]}'.")
 
 class SocketIOClientError(Exception):
     """Errors related to SocketIO Client"""
-    pass

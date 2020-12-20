@@ -202,8 +202,6 @@ def server_main(override_args: Optional[List[str]], stop_on_join_tower: bool) ->
     with tower:
         tower.wait_loaded()
 
-        print("=== LOADED ===")
-
         if args.look_to_time is not None:
             bot.look_to_has_been_called(args.look_to_time)
 
@@ -424,8 +422,6 @@ def console_main(override_args: Optional[List[str]], stop_on_join_tower: bool) -
 
     with tower:
         tower.wait_loaded()
-
-        print("=== LOADED ===")
 
         if not stop_on_join_tower:
             bot.main_loop()

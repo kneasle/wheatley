@@ -54,16 +54,18 @@ class WaitForUserRhythm(Rhythm):
                                               user_controlled, stroke)
         if user_controlled:
             delay_for_user = 0.0
+            self.logger.debug(f"Waiting for {bell}...")
             while bell in self._expected_bells[stroke]:
                 self.sleep(self.sleep_time)
                 delay_for_user += self.sleep_time
-                self.logger.debug(f"Waiting for {bell}")
                 if self._should_return_to_mainloop:
+                    self.logger.debug("Returning to mainloop")
                     break
+            self.logger.debug(f"Finished waiting for {bell}")
 
             if delay_for_user:
                 self.delay += delay_for_user
-                self.logger.info(f"Delayed for {delay_for_user}")
+                self.logger.debug(f"Delayed for {delay_for_user:.3f}s")
 
         # Reset the flag to say that we've returned to the mainloop
         self._should_return_to_mainloop = False

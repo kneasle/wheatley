@@ -1,12 +1,15 @@
 # 0.6.0 (W.I.P.)
-- Print summary string of what Wheatley is going to ring.
+- Add support for loading CompLib urls (_including 'share' links to private comps_) with `--comp-url` (actually added in `0.5.0`).
 - Add proper support for backstroke starts (with 3 rows of rounds for `--up-down-in`).
 - Allow support of the new tower sizes - `5`, `14` and `16`.
-- Add support for loading CompLib urls (including 'share' links to private comps) with `--comp-url` (actually added in `0.5.0`).
 - Add `-v`/`--verbose` and `-q`/`--quiet` to change how much stuff Wheatley prints.
-- Allow Wheatley to ring with any (positive) number of cover bells.
-- Add `--start-index` to specify how many rows into a lead of a method Wheatley should start.
+- Print summary string of what Wheatley is going to ring before every touch.
 - Tell users when Wheatley is waiting for `Look To`.
+- Add `--start-index` to specify how many rows into a lead of a method Wheatley should start.
+
+## Technical changes
+
+- Allow Wheatley to ring with any (positive) number of cover bells.
 - Change place notation parsing to comply with CompLib and the XML specification.
 - Add full static typing, and fix some `None`-related bugs.
 - Prevent installing the wrong version of socketio to work with RingingRoom.

@@ -338,7 +338,7 @@ def console_main(override_args: Optional[List[str]], stop_on_join_tower: bool) -
         "-I", "--inertia",
         type=float,
         default=0.5,
-        help="Overrides Wheatley's 'inertia' - now much Wheatley will take other ringers' positions \
+        help="Overrides Wheatley's 'inertia' - how much Wheatley will take other ringers' positions \
               into account when deciding when to ring.  0.0 means he will cling as closely as \
               possible to the current rhythm, 1.0 means that he will completely ignore the other \
               ringers."

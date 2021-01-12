@@ -157,6 +157,11 @@ def server_main(override_args: Optional[List[str]], stop_on_join_tower: bool) ->
               called and Wheatley is needed."
     )
     parser.add_argument(
+        "-i", "--id",
+        type=int,
+        help="The instance ID of this Wheatley process."
+    )
+    parser.add_argument(
         "-v", "--verbose",
         action="count",
         default=0,
@@ -186,7 +191,7 @@ def server_main(override_args: Optional[List[str]], stop_on_join_tower: bool) ->
     stop_at_rounds = True
     peal_speed = 180
     inertia = 1
-    initial_inertia = 1
+    initial_inertia = 0
     max_bells_in_dataset = 15
     handstroke_gap = 1
     use_wait = True
@@ -197,7 +202,7 @@ def server_main(override_args: Optional[List[str]], stop_on_join_tower: bool) ->
     rhythm = create_rhythm(peal_speed, inertia, max_bells_in_dataset, handstroke_gap, use_wait,
                            initial_inertia)
     bot = Bot(tower, PlaceHolderGenerator(), use_up_down_in, stop_at_rounds, rhythm, user_name="Wheatley",
-              server_mode=True)
+              server_instance_id=args.id)
 
     with tower:
         tower.wait_loaded()

@@ -34,9 +34,10 @@ class Bot:
 
     def __init__(self, tower: RingingRoomTower, row_generator: RowGenerator, do_up_down_in: bool,
                  stop_at_rounds: bool, rhythm: Rhythm, user_name: Optional[str] = None,
-                 server_mode: bool = False) -> None:
+                 server_instance_id: Optional[int] = None) -> None:
         """ Initialise a Bot with all the parts it needs to run. """
-        self._server_mode = server_mode
+        # If this is None then Wheatley is in client mode, otherwise Wheatley is in server mode
+        self._server_instance_id = server_instance_id
         self._last_activity_time = time.time()
 
         self._rhythm = rhythm
@@ -91,6 +92,10 @@ class Bot:
         """ Convenient property to find the number of bells in the current tower. """
         return self._tower.number_of_bells
 
+    @property
+    def _server_mode(self) -> bool:
+        return self._server_instance_id is not None
+
     # Callbacks
     def _on_setting_change(self, key: str, value: Any) -> None:
         def log_invalid_key(message: str) -> None:
@@ -144,6 +149,9 @@ class Bot:
     def _on_look_to(self) -> None:
         if self._check_number_of_bells():
             self.look_to_has_been_called(time.time())
+        # All Wheatley instances should return a 'Roll Call' message after `Look To` is called.
+        if self._server_instance_id is not None:
+            self._tower.emit_roll_call(self._server_instance_id)
 
     # This has to be made public, because the server's main function might have to call it
     def look_to_has_been_called(self, call_time: float) -> None:

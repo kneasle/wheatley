@@ -127,6 +127,11 @@ class RingingRoomTower:
         self.logger.info(f"(EMIT): Telling RR clients to set is_ringing to {value}")
         self._emit("c_wheatley_is_ringing", {"is_ringing": value, "tower_id": self.tower_id})
 
+    def emit_roll_call(self, instance_id: int) -> None:
+        """ Broadcasts a 'roll call' reply to the Ringing Room server. """
+        self.logger.info("(EMIT): Replying to roll call")
+        self._emit("c_roll_call", {"tower_id": self.tower_id, "instance_id": instance_id})
+
     def wait_loaded(self) -> None:
         """ Pause the thread until the socket-io connection is open and stable. """
         if self._socket_io_client is None or not self._socket_io_client.connected:

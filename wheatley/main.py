@@ -179,7 +179,7 @@ def server_main(override_args: Optional[List[str]], stop_on_join_tower: bool) ->
     configure_logging(args.verbose, args.quiet)
 
     # Log the version string to 'DEBUG'
-    logging.debug(f"Running Wheatley v{__version__}")
+    logging.debug(f"Running Wheatley {__version__}")
 
     # Args that we are currently 'missing'
     use_up_down_in = True
@@ -371,7 +371,7 @@ def console_main(override_args: Optional[List[str]], stop_on_join_tower: bool) -
     parser.add_argument(
         "--version",
         action="version",
-        version=f"Wheatley v{__version__}"
+        version=f"Wheatley {__version__}"
     )
     parser.add_argument(
         "-v", "--verbose",

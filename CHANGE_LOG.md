@@ -10,6 +10,7 @@
   - Moved some overly verbose `INFO` messages into `DEBUG`.
   - Capped all numbers to 3 decimal places.
   - Made debug 'wait' logging slightly less verbose.
+- Fix broken version string (`Wheatley vv0.6.0` will now be `Wheatley v0.6.0`)
 
 ## Technical changes
 
@@ -18,6 +19,8 @@
 - Change place notation parsing to comply with CompLib and the XML specification.
 - Add full static typing, and fix some `None`-related bugs.
 - Prevent installing the wrong version of socketio to work with RingingRoom.
+- Reimplement the Ringing Rom integration code, and fix buggy expansion of PN when running on the
+  server.
 
 # 0.5.2
 - Bump numpy version to exactly `1.19.3` on Windows to fix

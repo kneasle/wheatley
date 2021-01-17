@@ -21,9 +21,9 @@ STAGES = {
     "royal": 10,
     "cinques": 11,
     "maximus": 12,
-    "septuples": 13,
+    "sextuples": 13,
     "fourteen": 14,
-    "sextuples": 15,
+    "septuples": 15,
     "sixteen": 16,
 }
 

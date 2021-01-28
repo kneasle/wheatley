@@ -2,8 +2,8 @@
 
 ## User-facing changes
 
-- Add support for loading CompLib urls (_including 'share' links to private comps_) with
-  `--comp-url` (actually added in `0.5.0`).
+- Add support for loading private CompLib urls from 'share' links using `--complib-share-link
+  <link>`.
 - Add proper support for backstroke starts (with 3 rows of rounds for `--up-down-in`).
 - Add `--start-index` to specify how many rows into a lead of a method Wheatley should start.
 - Add `-v`/`--verbose` and `-q`/`--quiet` to change how much stuff Wheatley prints.
@@ -19,6 +19,7 @@
 
 - Allow support of the new tower sizes - `5`, `14` and `16`.
 - Allow Wheatley to ring with any (positive) number of cover bells.
+- Un-jankify error message for inputting an incorrect method title.
 - Change place notation parsing to comply with CompLib and the XML specification.
 - Add full static typing, and fix some `None`-related bugs.
 - Reimplement the Ringing Room integration code, and fix buggy expansion of PN when running on the

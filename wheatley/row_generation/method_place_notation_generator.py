@@ -87,7 +87,8 @@ class MethodPlaceNotationGenerator(PlaceNotationGenerator):
 
         # Unpack the title
         title_elems = method_parsed_xml.findall(xmlns + 'method/' + xmlns + 'title')
-        assert len(title_elems) > 0
+        if len(title_elems) == 0:
+            raise AttributeError("No method title found in XML")
         title: Optional[str] = title_elems[0].text
         assert title is not None
 

@@ -28,9 +28,9 @@ from wheatley.row_generation.place_holder_generator import PlaceHolderGenerator
 
 def create_row_generator(args: argparse.Namespace) -> RowGenerator:
     """ Generates a row generator according to the given CLI arguments. """
-    if "comp_url" in args and args.comp_url is not None:
+    if "complib_share_link" in args and args.complib_share_link is not None:
         try:
-            row_gen = ComplibCompositionGenerator.from_url(args.comp_url)
+            row_gen = ComplibCompositionGenerator.from_url(args.complib_share_link)
         except (PrivateCompError, InvalidCompError) as e:
             sys.exit(f"Bad value for '--comp': {e}")
     elif "comp" in args and args.comp is not None:
@@ -265,9 +265,11 @@ def console_main(override_args: Optional[List[str]], stop_on_join_tower: bool) -
         help="The ID of the complib composition you want to ring"
     )
     comp_method_group.add_argument(
-        "--comp-url",
+        "--complib-share-link",
         type=str,
-        help="The URL of the complib composition you want to ring"
+        help="The link from the 'share' button of the private complib composition you want to ring.  For \
+              example, \
+              https://complib.org/composition/73905?accessKey=67622abc16397c0e7df32d5f98e3b206bef980c6."
     )
     comp_method_group.add_argument(
         "-m", "--method",

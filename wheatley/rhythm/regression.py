@@ -198,20 +198,22 @@ class RegressionRhythm(Rhythm):
 
         if key == "sensitivity":
             self.logger.warning(f"NOT IMPLEMENTED: setting sensitivity to {value}.")
-
-        if key == 'inertia':
+        if key == "inertia":
             try:
                 new_inertia = float(value)
-
                 if new_inertia > 1 or new_inertia < 0:
                     log_warning(f"{new_inertia} is not between 0 and 1")
                 else:
                     self._preferred_inertia = new_inertia
-
                     self.logger.warning(f"Setting 'self._preferred_inertia' to '{value}'")
             except ValueError:
                 log_warning(f"{value} is not an number")
-
+        if key == "peal_speed":
+            new_peal_speed = int(value)
+            if new_peal_speed <= 0:
+                log_warning(f"{new_peal_speed} is not positive")
+            else:
+                self._peal_speed = new_peal_speed
 
     def on_bell_ring(self, bell: Bell, stroke: Stroke, real_time: float) -> None:
         """

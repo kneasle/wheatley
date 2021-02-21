@@ -7,12 +7,14 @@
 - Add proper support for backstroke starts (with 3 rows of rounds for `--up-down-in`).
 - Add `--start-index` to specify how many rows into a lead of a method Wheatley should start.
 - Add `-v`/`--verbose` and `-q`/`--quiet` to change how much stuff Wheatley prints.
-- Print summary string of what Wheatley is going to ring before every touch.
+- Print summary string of what Wheatley is going to ring before every touch, as well as how to stop
+  Wheatley (i.e. using `<ctrl-C>`).
 - Tell users when Wheatley is waiting for `Look To`.
 - Make the error messages friendlier.
   - Moved some overly verbose `INFO` messages into `DEBUG`.
   - Capped all numbers to 3 decimal places.
   - Made debug 'wait' logging slightly less verbose.
+  - Wheatley simply prints `Bye!` when interrupted with `<ctrl-C>`
 - Fix broken version string (`Wheatley vv0.6.0` will now be `Wheatley v0.6.0`)
 
 ## Technical changes
@@ -22,8 +24,8 @@
 - Un-jankify error message for inputting an incorrect method title.
 - Change place notation parsing to comply with CompLib and the XML specification.
 - Add full static typing, and fix some `None`-related bugs.
-- Reimplement the Ringing Room integration code, and fix buggy expansion of PN when running on the
-  server.
+- Reimplement the Ringing Room integration code, and fix buggy expansion of place notation when
+  running on the server.
 
 
 

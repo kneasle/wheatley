@@ -427,11 +427,14 @@ def console_main(override_args: Optional[List[str]], stop_on_join_tower: bool) -
     bot = Bot(tower, row_generator, args.use_up_down_in or args.handbell_style,
               args.stop_at_rounds or args.handbell_style, rhythm, user_name=args.name)
 
-    with tower:
-        tower.wait_loaded()
-
-        if not stop_on_join_tower:
-            bot.main_loop()
+    # Catch keyboard interrupts and just print 'Bye!' instead a load of guff
+    try:
+        with tower:
+            tower.wait_loaded()
+            if not stop_on_join_tower:
+                bot.main_loop()
+    except KeyboardInterrupt:
+        print("Bye!")
 
 def main(override_args: Optional[List[str]]=None, stop_on_join_tower: bool=False) -> None:
     """

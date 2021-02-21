@@ -1,6 +1,7 @@
 """ A module to contain the abstract base class that all row generators inherit from. """
 
 import logging
+from typing import Dict, List, Tuple
 from abc import ABCMeta, abstractmethod
 
 from wheatley.aliases import Row, Places
@@ -34,20 +35,26 @@ class RowGenerator(metaclass=ABCMeta):
     def reset_calls(self) -> None:
         """ Clear the pending call flags. """
         self.logger.info("Reset calls")
-
         self._has_bob = False
         self._has_single = False
 
     def next_row(self, stroke: Stroke) -> Row:
+        """
+        Generates the next row (with no calls).  `rg.next_row(s)` is exactly equivalent to
+        `rg.next_row_and_calls(s)[0]`, and does not call `_gen_row` directly.
+        """
+        return self.next_row_and_calls(stroke)[0]
+
+    def next_row_and_calls(self, stroke: Stroke) -> Tuple[Row, List[str]]:
         """ Generate the next row, and mutate state accordingly. """
-        self._row = self._gen_row(self._row, stroke, self._index)
+        self._row, calls = self._gen_row_and_calls(self._row, stroke, self._index)
 
         self._index += 1
 
         message = " ".join([str(bell) for bell in self._row])
         self.logger.info(message)
 
-        return self._row
+        return (self._row, calls)
 
     def set_bob(self) -> None:
         """ Set the flag that a bob has been made. """
@@ -65,10 +72,28 @@ class RowGenerator(metaclass=ABCMeta):
     def _gen_row(self, previous_row: Row, stroke: Stroke, index: int) -> Row:
         pass
 
+    # If this isn't overridden by a child class, then we assume that it won't produce calls, and
+    # therefore we simply return no calls on every Row).
+    def _gen_row_and_calls(self, previous_row: Row, stroke: Stroke, index: int) -> Tuple[Row, List[str]]:
+        return (self._gen_row(previous_row, stroke, index), [])
+
     def start_stroke(self) -> Stroke: # pylint: disable=no-self-use
         """ Gets the stroke of the first row.  This defaults to HANDSTROKE, but should be overridden by
         other RowGenerators if different start strokes are possible. """
         return HANDSTROKE
+
+    def early_calls(self) -> Dict[int, List[str]]: # pylint: disable=no-self-use
+        """
+        Returns the calls that should be called **before** going into the changes.  This map
+        goes from <number of rows before the first row of method> to <list of calls that should be
+        called on that row>.  For example, if we call a 'single' at the start of Original (as in
+        https://complib.org/composition/68549), then the `early_calls` should return
+        `{2: ["Go Original"], 1: ["Single"]}`.
+
+        If this is not overridden, then it is assumed that the child class doesn't want to call any
+        calls, so we return a default empty set
+        """
+        return {}
 
     @abstractmethod
     def summary_string(self) -> str:

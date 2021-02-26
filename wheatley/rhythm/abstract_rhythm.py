@@ -37,8 +37,12 @@ class Rhythm(metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def change_setting(self, key: str, value: Any) -> None:
+    def change_setting(self, key: str, value: Any, real_time: float) -> None:
         """ Called when the Ringing Room server asks Wheatley to change a setting. """
+        # We need the `real_time` param because `WaitForUserRhythm` lies to its inner rhythm about
+        # the real time (in order to hold up over people without killing the regression), and
+        # `RegressionRhythm` needs the current 'time' so that it can update its line accurately when
+        # the peal speed is changed.
 
     @abstractmethod
     def on_bell_ring(self, bell: Bell, stroke: Stroke, real_time: float) -> None:

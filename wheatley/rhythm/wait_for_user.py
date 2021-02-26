@@ -87,8 +87,9 @@ class WaitForUserRhythm(Rhythm):
         if expected_bell not in self._early_bells[expected_stroke]:
             self._expected_bells[expected_stroke].add(expected_bell)
 
-    def change_setting(self, key: str, value: Any) -> None:
-        self._inner_rhythm.change_setting(key, value)
+    def change_setting(self, key: str, value: Any, real_time: float) -> None:
+        # Keep lying to _inner_rhythm about what the current time is
+        self._inner_rhythm.change_setting(key, value, real_time - self.delay)
 
     def on_bell_ring(self, bell: Bell, stroke: Stroke, real_time: float) -> None:
         """

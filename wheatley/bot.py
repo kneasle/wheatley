@@ -115,7 +115,7 @@ class Bot:
             except ValueError:
                 log_invalid_key(f"{value} cannot be converted into a bool")
         else:
-            self._rhythm.change_setting(key, value)
+            self._rhythm.change_setting(key, value, time.time())
 
     def _on_row_gen_change(self, row_gen_json: JSON) -> None:
         try:

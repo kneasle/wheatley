@@ -33,7 +33,7 @@ class Bot:
     logger_name = "BOT"
 
     def __init__(self, tower: RingingRoomTower, row_generator: RowGenerator, do_up_down_in: bool,
-                 stop_at_rounds: bool, rhythm: Rhythm, user_name: Optional[str] = None,
+                 stop_at_rounds: bool, call_comps: bool, rhythm: Rhythm, user_name: Optional[str] = None,
                  server_instance_id: Optional[int] = None) -> None:
         """ Initialise a Bot with all the parts it needs to run. """
         # If this is None then Wheatley is in client mode, otherwise Wheatley is in server mode
@@ -43,6 +43,7 @@ class Bot:
         self._rhythm = rhythm
         self._do_up_down_in = do_up_down_in
         self._stop_at_rounds = stop_at_rounds
+        self._call_comps = call_comps
         self._user_name = user_name
 
         self.row_generator = row_generator

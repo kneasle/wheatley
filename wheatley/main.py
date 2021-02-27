@@ -195,14 +195,15 @@ def server_main(override_args: Optional[List[str]], stop_on_join_tower: bool) ->
     max_bells_in_dataset = 15
     handstroke_gap = 1
     use_wait = True
+    call_comps = True
 
     tower_url = "http://127.0.0.1:" + str(args.port)
 
     tower = RingingRoomTower(args.room_id, tower_url)
     rhythm = create_rhythm(peal_speed, inertia, max_bells_in_dataset, handstroke_gap, use_wait,
                            initial_inertia)
-    bot = Bot(tower, PlaceHolderGenerator(), use_up_down_in, stop_at_rounds, rhythm, user_name="Wheatley",
-              server_instance_id=args.id)
+    bot = Bot(tower, PlaceHolderGenerator(), use_up_down_in, stop_at_rounds, call_comps, rhythm,
+              user_name="Wheatley", server_instance_id=args.id)
 
     with tower:
         tower.wait_loaded()
@@ -324,6 +325,11 @@ def console_main(override_args: Optional[List[str]], stop_on_join_tower: bool) -
               default, he will ring 'towerbell style', i.e. only taking instructions from the \
               ringing-room calls. This is equivalent to using the '-us' flags."
     )
+    row_gen_group.add_argument(
+        "--no-calls",
+        action="store_true",
+        help="If set, Wheatley will not call anything when ringing compositions."
+    )
 
     # Rhythm arguments
     rhythm_group = parser.add_argument_group("Rhythm arguments")
@@ -425,7 +431,7 @@ def console_main(override_args: Optional[List[str]], stop_on_join_tower: bool) -
     rhythm = create_rhythm(peal_speed, args.inertia, args.max_bells_in_dataset, args.handstroke_gap,
                            not args.keep_going)
     bot = Bot(tower, row_generator, args.use_up_down_in or args.handbell_style,
-              args.stop_at_rounds or args.handbell_style, rhythm, user_name=args.name)
+              args.stop_at_rounds or args.handbell_style, not args.no_calls, rhythm, user_name=args.name)
 
     # Catch keyboard interrupts and just print 'Bye!' instead a load of guff
     try:

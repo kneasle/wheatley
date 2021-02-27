@@ -4,6 +4,7 @@
 
 - Add support for loading private CompLib urls from 'share' links using `--complib-share-link
   <link>`.
+- Wheatley now calls CompLib compositions (use `--no-calls` to suppress this)
 - Add proper support for backstroke starts (with 3 rows of rounds for `--up-down-in`).
 - Add `--start-index` to specify how many rows into a lead of a method Wheatley should start.
 - Add `-v`/`--verbose` and `-q`/`--quiet` to change how much stuff Wheatley prints.

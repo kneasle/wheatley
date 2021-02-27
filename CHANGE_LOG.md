@@ -26,6 +26,7 @@
 - Add full static typing, and fix some `None`-related bugs.
 - Reimplement the Ringing Room integration code, and fix buggy expansion of place notation when
   running on the server.
+- Allow peal speed to be changed correctly whilst Wheatley is ringing.
 
 
 

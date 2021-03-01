@@ -179,7 +179,7 @@ class RingingRoomTower:
                 callback(key, value)
 
     def _on_row_gen_change(self, data: JSON) -> None:
-        self.logger.info(f"RECEIVED: Row gen changed: {data}\
+        self.logger.debug(f"RECEIVED: Row gen changed: {data}\
 {' (ignoring)' if len(self.invoke_on_row_gen_change) == 0 else ''}")
 
         for callback in self.invoke_on_row_gen_change:

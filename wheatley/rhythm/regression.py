@@ -24,9 +24,7 @@ def fill(index: int, item: float, length: int) -> List[float]:
     Make an array that contains `length` 0s, but with the value at `index` replaced with `item`.
     """
     a = [0.0 for _ in range(length)]
-
     a[index] = item
-
     return a
 
 
@@ -51,7 +49,15 @@ def calculate_regression(data_set: List[Tuple[float, float, float]]) -> Tuple[fl
     return beta[0][0], beta[1][0]
 
 
-# ===== REGRESSION FUNCTIONS =====
+
+# ===== UTILITY FUNCTIONS =====
+
+def peal_speed_to_blow_interval(peal_minutes: float, num_bells: int) -> float:
+    """ Calculate the blow interval from the peal speed, assuming a peal of 5040 changes """
+    peal_speed_seconds = peal_minutes * 60
+    seconds_per_whole_pull = peal_speed_seconds / 2520  # 2520 whole pulls = 5040 rows
+    return seconds_per_whole_pull / (num_bells * 2 + 1)
+
 
 def inverse_lerp(a: float, b: float, c: float) -> float:
     """
@@ -118,36 +124,33 @@ class RegressionRhythm(Rhythm):
         self._should_return_to_mainloop = False
 
     def _add_data_point(self, row_number: int, place: int, real_time: float, weight: float) -> None:
+        # Always manage the data set, even when inertia is 1 (in case inertia gets changed whilst
+        # Wheatley is ringing)
         blow_time = self.index_to_blow_time(row_number, place)
-
         self.data_set.append((blow_time, real_time, weight))
-
         for (b, r, w) in self.data_set:
             self.logger.debug(f"Datapoint: {b:4.1f} {r - self._real_start_time:8.3f}s {w:.3f}")
+        # Filter out datapoints with extremely low weights
+        self.data_set = list(filter(lambda d: d[2] > WEIGHT_REJECTION_THRESHOLD, self.data_set))
+        # Eventually forget about datapoints
+        if len(self.data_set) >= self._max_bells_in_dataset:
+            del self.data_set[0]
 
-        # Only calculate the regression line if there are at least two datapoints, otherwise
-        # just store the datapoint
+        # The inertia is set to 0 for the first row, to make sure that there's a smooth pullof
+        inertia = self._preferred_inertia if row_number > 0 else self._initial_inertia
+        # Early return if inertia == 1, since there's no point doing any regression if the result
+        # will be ignored
+        if inertia == 1:
+            return
+
+        # Only calculate the regression line if there are enough datapoints to gain a meaningful result
         if len(self.data_set) >= self._min_bells_in_dataset:
             (new_start_time, new_blow_interval) = calculate_regression(self.data_set)
-
             # Lerp between the new times and the old times, according to the desired inertia
-            # The inertia is set to 0 for the first change, to make sure that there's a smooth
-            # pullof
-            regression_preferred_inertia = self._preferred_inertia if row_number > 0 else \
-                                           self._initial_inertia
-
-            self._start_time = lerp(new_start_time, self._start_time, regression_preferred_inertia)
-            self._blow_interval = lerp(new_blow_interval, self._blow_interval,
-                                       regression_preferred_inertia)
-
+            self._start_time = lerp(new_start_time, self._start_time, inertia)
+            self._blow_interval = lerp(new_blow_interval, self._blow_interval, inertia)
+            self.logger.debug(f"Start time: {self._start_time:.3f}")
             self.logger.debug(f"Bell interval: {self._blow_interval:.3f}")
-
-            # Filter out datapoints with extremely low weights
-            self.data_set = list(filter(lambda d: d[2] > WEIGHT_REJECTION_THRESHOLD, self.data_set))
-
-            # Eventually forget about datapoints
-            if len(self.data_set) >= self._max_bells_in_dataset:
-                del self.data_set[0]
 
     def return_to_mainloop(self) -> None:
         """
@@ -192,7 +195,7 @@ class RegressionRhythm(Rhythm):
         self.logger.debug(f"Expected bell {expected_bell} at index {row_number}:{place} at {expected_stroke}")
         self._expected_bells[(expected_bell, expected_stroke)] = (row_number, place)
 
-    def change_setting(self, key: str, value: Any) -> None:
+    def change_setting(self, key: str, value: Any, real_time: float) -> None:
         def log_warning(message: str) -> None:
             self.logger.warning(f"Invalid value for setting '{key}': {message}")
 
@@ -214,6 +217,25 @@ class RegressionRhythm(Rhythm):
                 log_warning(f"{new_peal_speed} is not positive")
             else:
                 self._peal_speed = new_peal_speed
+                # Don't try to calculate the regression line if _blow_interval is 0 (because the lin
+                # alg will cause a DivisionByZeroError).
+                if self._blow_interval == 0:
+                    return
+                # Make sure that the `Peal Speed` control on Ringing Room can update the speed in
+                # real time - this change makes no difference to the CLI version, because
+                # `self._peal_speed` cannot be changed whilst Wheatley is running.  This is not a
+                # long term solution (famous last words ;P), but for the initial RR release, I think
+                # this should happen.
+                peal_speed_interval = peal_speed_to_blow_interval(self._peal_speed, self.stage)
+                current_bell_time = self.real_time_to_blow_time(real_time)
+                # We want to find the line which has gradient `peal_speed_interval` and intersects with
+                # our current line at the current time (so that Wheatley's perception of time doesn't
+                # simply jump).
+                self._blow_interval = peal_speed_interval
+                self._start_time = real_time - current_bell_time * self._blow_interval
+                self.logger.info(
+                    f"Changing peal speed to {self._peal_speed} (bell interval {self._blow_interval:.3})"
+                )
 
     def on_bell_ring(self, bell: Bell, stroke: Stroke, real_time: float) -> None:
         """
@@ -262,9 +284,7 @@ class RegressionRhythm(Rhythm):
         self.data_set = []
 
         # Calculate the blow interval from the peal speed, asuming a peal of 5040 changes
-        peal_speed_seconds = self._peal_speed * 60
-        seconds_per_whole_pull = peal_speed_seconds / 2520  # 2520 = 5040 / 2
-        self._blow_interval = seconds_per_whole_pull / (self.stage * 2 + 1)
+        self._blow_interval = peal_speed_to_blow_interval(self._peal_speed, self.stage)
 
         # Set real start time to make debug output more succinct
         self._real_start_time = start_time

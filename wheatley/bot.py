@@ -6,7 +6,7 @@ program.
 
 import time
 import logging
-from typing import Optional, Any
+from typing import Optional, Any, List
 
 from wheatley import calls
 from wheatley.aliases import JSON, Row
@@ -33,7 +33,7 @@ class Bot:
     logger_name = "BOT"
 
     def __init__(self, tower: RingingRoomTower, row_generator: RowGenerator, do_up_down_in: bool,
-                 stop_at_rounds: bool, rhythm: Rhythm, user_name: Optional[str] = None,
+                 stop_at_rounds: bool, call_comps: bool, rhythm: Rhythm, user_name: Optional[str] = None,
                  server_instance_id: Optional[int] = None) -> None:
         """ Initialise a Bot with all the parts it needs to run. """
         # If this is None then Wheatley is in client mode, otherwise Wheatley is in server mode
@@ -43,11 +43,12 @@ class Bot:
         self._rhythm = rhythm
         self._do_up_down_in = do_up_down_in
         self._stop_at_rounds = stop_at_rounds
+        self._call_comps = call_comps
         self._user_name = user_name
 
         self.row_generator = row_generator
-        # This is the row generator that will be used after 'Look to' is called for the next time, allowing
-        # for changing the method or composition whilst Wheatley is running.
+        # This is the row generator that will be used after 'Look to' is called for the next time,
+        # allowing for changing the method or composition whilst Wheatley is running.
         self.next_row_generator: Optional[RowGenerator] = None
 
         self._tower = tower
@@ -67,7 +68,14 @@ class Bot:
 
         self._is_ringing = False
         self._is_ringing_rounds = True
-        self._should_start_method = False
+        # This is used as a counter - once `Go` or `Look To` is received, the number of rounds left
+        # is calculated and then decremented at the start of every subsequent row until it reaches
+        # 0, at which point the method starts.  We keep a counter rather than a simple flag so that
+        # calls can be called **before** going into changes when Wheatley is calling (useful for
+        # calling the first method name in spliced and early calls in Original, Erin, etc.).  The
+        # value `None` is used to represent the case where we don't know when we will be starting
+        # the method (and therefore there it makes no sense to decrement this counter).
+        self._rounds_left_before_method: Optional[int] = None
         self._should_start_ringing_rounds = False
         self._should_stand = False
 
@@ -75,6 +83,9 @@ class Bot:
         self._place = 0
         self._rounds: Row = rounds(MAX_BELL)
         self._row: Row = self._rounds
+        # This is used because the row's calls are generated at the **end** of each row (or on
+        # `Look To`), but need to be called at the **start** of the next row.
+        self._calls: List[str] = []
 
         self.logger = logging.getLogger(self.logger_name)
 
@@ -171,24 +182,49 @@ class Bot:
         self.row_generator = self.next_row_generator or self.row_generator
         self.next_row_generator = None
 
-        # Clear all the flags
+        # Clear all the flags and counters
         self._should_stand = False
-        self._should_start_method = False
         self._should_start_ringing_rounds = False
+        # Set _rounds_left_before_method if we are ringing up-down-in (3 rounds for backstroke
+        # start; 2 for handstroke)
+        if not self._do_up_down_in:
+            self._rounds_left_before_method = None
+        elif self.row_generator.start_stroke().is_hand():
+            self._rounds_left_before_method = 2
+        else:
+            self._rounds_left_before_method = 3
 
         # Reset the state, so that Wheatley starts by ringing rounds
         self._is_ringing = True
         self._is_ringing_rounds = True
 
         # Start at the first place of the first row
-        self._row_number = 0
-        self._place = 0
-        self.start_next_row()
+        self.start_next_row(is_first_row=True)
 
     def _on_go(self) -> None:
         """ Callback called when a user calls 'Go'. """
         if self._is_ringing_rounds:
-            self._should_start_method = True
+            # Calculate how many more rows of rounds we should ring before going into changes (1 if
+            # the person called 'Go' on the same stroke as the RowGenerator starts, otherwise 0).
+            # These values are one less than expected because we are setting
+            # _rounds_left_before_method **after** the row has started.
+            self._rounds_left_before_method = 1 if self.stroke == self.row_generator.start_stroke() else 0
+            # Make sure to call all of the calls that we have missed in the right order (in case the
+            # person calling `Go` called it stupidly late)
+            early_calls = [
+                (ind, calls)
+                for (ind, calls) in self.row_generator.early_calls().items()
+                if ind > self._rounds_left_before_method
+            ]
+            # Sort early calls by the number of rows **before** the method start.  Note that we are
+            # sorting by a quantity that counts **down** with time, hence the reversed sort.
+            early_calls.sort(key=lambda x: x[0], reverse=True)
+            # In this case, we don't want to wait until the next row before making these calls
+            # because the rows on which these calls should have been called have already passed.
+            # Therefore, we simply get them out as quickly as possible so they have the best chance
+            # of being heard.
+            for (_index, calls) in early_calls:
+                self._make_calls(calls)
 
     def _on_bob(self) -> None:
         """ Callback called when a user calls 'Bob'. """
@@ -231,34 +267,81 @@ class Bot:
                 self.stroke
             )
 
-    def start_next_row(self) -> None:
-        """
-        Creates a new row from the row generator and tells the rhythm to expect the new bells.
-        """
-
+    def generate_next_row(self) -> None:
+        """ Creates a new row from the row generator and tells the rhythm to expect the new bells. """
         if self._is_ringing_rounds:
             self._row = self._rounds
         else:
-            self._row = self.row_generator.next_row(self.stroke)
+            self._row, self._calls = self.row_generator.next_row_and_calls(self.stroke)
+            # Add cover bells if needed
             if len(self._row) < len(self._rounds):
-                # Add cover bells if needed
                 self._row.extend(self._rounds[len(self._row):])
 
+    def start_next_row(self, is_first_row: bool) -> None:
+        # Generate the next row and update row indices
+        self._place = 0
+        if is_first_row:
+            self._row_number = 0
+        else:
+            self._row_number += 1
+
+        # Useful local variables
+        has_just_rung_rounds = self._row == self._rounds
+        next_stroke = Stroke.from_index(self._row_number)
+
+        # Implement handbell-style stopping at rounds
+        if self._stop_at_rounds and has_just_rung_rounds and not self._is_ringing_rounds:
+            self._should_stand = False
+            self._is_ringing = False
+
+        # Set any early calls specified by the row generator to be called at the start of the next
+        # row
+        if self._rounds_left_before_method is not None:
+            self._calls = self.row_generator.early_calls().get(self._rounds_left_before_method) or []
+
+        # Start the method if necessary
+        if self._rounds_left_before_method == 0:
+            # Sanity check that we are in fact starting on the correct stroke (which is no longer
+            # trivially guaranteed since we use a counter rather than a flag to determine when to
+            # start the method)
+            assert next_stroke == self.row_generator.start_stroke()
+            self._rounds_left_before_method = None
+            self._is_ringing_rounds = False
+            # If the tower size somehow changed, then call 'Stand' but keep ringing rounds (Wheatley
+            # calling 'Stand' will still generate a callback to `self._on_stand_next`, so we don't
+            # need to handle that here)
+            if not self._check_number_of_bells():
+                self._make_call("Stand")
+                self._is_ringing_rounds = True
+            self.row_generator.reset()
+        if self._rounds_left_before_method is not None:
+            self._rounds_left_before_method -= 1
+
+        # If we're starting a handstroke ...
+        if next_stroke.is_hand():
+            # ... and 'Stand' has been called, then stand
+            if self._should_stand:
+                self._should_stand = False
+                self._is_ringing = False
+            # ... and "That's All" has been called, then start ringing rounds.
+            # TODO: Replace this with more intuitive behaviour
+            if self._should_start_ringing_rounds and not self._is_ringing_rounds:
+                self._should_start_ringing_rounds = False
+                self._is_ringing_rounds = True
+
+        # If we've set `_is_ringing` to False, then no more rounds can happen so early return to
+        # avoid erroneous calls
+        if not self._is_ringing:
+            return
+
+        # Generate the next row, and tell the rhythm detection where the next row's bells are
+        # expected to ring
+        self.generate_next_row()
         for (index, bell) in enumerate(self._row):
             self.expect_bell(index, bell)
 
-    def start_method(self) -> None:
-        """
-        Called when the ringing is about to go into changes.
-        Resets the row_generator and starts the next row.
-        """
-        if self._check_number_of_bells():
-            self.row_generator.reset()
-            self.start_next_row()
-
     def tick(self) -> None:
         """ Move the ringing on by one place """
-
         bell = self._row[self._place]
         user_controlled = self._user_assigned_bell(bell)
 
@@ -268,47 +351,16 @@ class Bot:
         if not user_controlled:
             self._tower.ring_bell(bell, self.stroke)
 
+        # If we are ringing the first bell in the row, then also make any calls that are needed.
+        if self._place == 0:
+            self._make_calls(self._calls)
+
+        # Move one place through the ringing
         self._place += 1
 
+        # Start a new row if we get to a place that's bigger than the number of bells
         if self._place >= self.number_of_bells:
-            # Determine if we're finishing a handstroke
-            has_just_rung_rounds = self._row == self._rounds
-
-            # Generate the next row and update row indices
-            self._row_number += 1
-            self._place = 0
-            self.start_next_row()
-
-            next_stroke = Stroke.from_index(self._row_number)
-
-            # ===== SET FLAGS FOR HANDBELL-STYLE RINGING =====
-
-            # Implement handbell-style 'up down in'
-            if self._do_up_down_in and self._is_ringing_rounds and self._row_number == 2:
-                self._should_start_method = True
-
-            # Implement handbell-style stopping at rounds
-            if self._stop_at_rounds and has_just_rung_rounds and not self._is_ringing_rounds:
-                self._should_stand = False
-                self._is_ringing = False
-
-            # ===== CONVERT THE FLAGS INTO ACTIONS =====
-
-            if self._should_start_method and self._is_ringing_rounds \
-               and next_stroke == self.row_generator.start_stroke():
-                self._should_start_method = False
-                self._is_ringing_rounds = False
-                self.start_method()
-
-            # If we're starting a handstroke, we should convert all the flags into actions
-            if next_stroke.is_hand():
-                if self._should_stand:
-                    self._should_stand = False
-                    self._is_ringing = False
-
-                if self._should_start_ringing_rounds and not self._is_ringing_rounds:
-                    self._should_start_ringing_rounds = False
-                    self._is_ringing_rounds = True
+            self.start_next_row(is_first_row=False)
 
     def main_loop(self) -> None:
         """
@@ -346,3 +398,13 @@ class Bot:
     def _bot_assigned_bell(self, bell: Bell) -> bool:
         """ Returns `True` if this bell **is** assigned to Wheatley. """
         return self._tower.is_bell_assigned_to(bell, self._user_name)
+
+    def _make_calls(self, calls: List[str]) -> None:
+        """ Broadcast a sequence of calls """
+        for c in calls:
+            self._make_call(c)
+
+    def _make_call(self, call: str) -> None:
+        """ Broadcast a call, unless we've been told not to call anything. """
+        if self._call_comps:
+            self._tower.make_call(call)

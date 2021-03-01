@@ -26,7 +26,7 @@ INACTIVITY_EXIT_TIME = 300
 
 class Bot:
     """
-    A class to hold all the information that the bot will use to glue together the rhythm,
+    A class to hold all the information that Wheatley will use to glue together the rhythm,
     row_gen and socket-io parts together into a useful program.
     """
 
@@ -176,7 +176,7 @@ class Bot:
         self._should_start_method = False
         self._should_start_ringing_rounds = False
 
-        # Reset the state, so that the bot starts by ringing rounds
+        # Reset the state, so that Wheatley starts by ringing rounds
         self._is_ringing = True
         self._is_ringing_rounds = True
 
@@ -312,8 +312,8 @@ class Bot:
 
     def main_loop(self) -> None:
         """
-        The main_loop of the bot.
-        The main thread will get stuck forever in this function whilst the bot rings.
+        Wheatley's main loop.  The main thread will get stuck forever in this function whilst
+        Wheatley rings.
         """
         while True:
             # Log a message to say that Wheatley is waiting for 'Look To!'
@@ -340,10 +340,9 @@ class Bot:
                 self._tower.set_is_ringing(False)
 
     def _user_assigned_bell(self, bell: Bell) -> bool:
-        """ True when the bell is assigned to a different user name than given to the bot """
+        """ Returns `True` if this bell is not assigned to Wheatley. """
         return not self._bot_assigned_bell(bell)
 
     def _bot_assigned_bell(self, bell: Bell) -> bool:
-        """ True when the bell is assigned to the user name given to the bot
-        or bell is unassigned when user name is not set"""
+        """ Returns `True` if this bell **is** assigned to Wheatley. """
         return self._tower.is_bell_assigned_to(bell, self._user_name)

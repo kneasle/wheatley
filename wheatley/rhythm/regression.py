@@ -290,13 +290,13 @@ class RegressionRhythm(Rhythm):
         self._real_start_time = start_time
 
         if not user_controls_treble:
-            # If the bot is ringing the first bell, then add it as a datapoint anyway, so that after
+            # If Wheatley is ringing the first bell, then add it as a datapoint anyway, so that after
             # the 2nd bell is rung, a regression line can be made
             self._add_data_point(0, 0, start_time, 1)
             self._start_time = start_time
         else:
-            # If the bot isn't ringing the first bell, then set the expected time of the first bell
-            # to infinity so that the bot will wait indefinitely for the first bell to ring, and
+            # If Wheatley isn't ringing the first bell, then set the expected time of the first bell
+            # to infinity so that Wheatley will wait indefinitely for the first bell to ring, and
             # then it will extrapolate from that time
             self._start_time = float('inf')
 

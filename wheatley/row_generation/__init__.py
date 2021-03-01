@@ -1,4 +1,4 @@
-""" Module to handle generation of rows for the bot to ring. """
+""" Module to handle generation of rows for Wheatley to ring. """
 
 from .complib_composition_generator import ComplibCompositionGenerator
 from .dixonoids_generator import DixonoidsGenerator

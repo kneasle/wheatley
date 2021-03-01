@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 """
-The file containing the main function for the bot, as well as all the command line argument parsing
-required to make the bot easily configurable.
+The file containing the main function for Wheatley, as well as all the command line argument parsing
+required to make Wheatley easily configurable.
 """
 
 import argparse
@@ -216,9 +216,9 @@ def server_main(override_args: Optional[List[str]], stop_on_join_tower: bool) ->
 
 def console_main(override_args: Optional[List[str]], stop_on_join_tower: bool) -> None:
     """
-    The main function of the bot.
+    The main function of Wheatley, when called from the Command Line.
     This parses the CLI arguments, creates the Rhythm, RowGenerator and Bot objects, then starts
-    the bot's mainloop.
+    Wheatley's mainloop.
 
     The two optional arguments are used by the integration tester to give Wheatley artificial argument values
     (override_args) and make Wheatley exit with error code 0 on joining a tower so that hanging forever
@@ -250,8 +250,8 @@ def console_main(override_args: Optional[List[str]], stop_on_join_tower: bool) -
         "--name",
         default=None,
         type=str,
-        help="If set, then the bot will ring bells assigned to the given name. \
-             When not set, the bot rings unassigned bells."
+        help="If set, then Wheatley will ring bells assigned to the given name. \
+             When not set, Wheatley rings unassigned bells."
     )
 
     # Row generation arguments

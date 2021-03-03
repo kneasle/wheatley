@@ -369,7 +369,7 @@ class Bot:
         """
         while True:
             # Log a message to say that Wheatley is waiting for 'Look To!'
-            self.logger.info("Waiting for 'Look To!'...")
+            self.logger.info("Waiting for 'Look To'...")
             # Sit in an infinite loop whilst we're not ringing, and exit Wheatley if enough time
             # has passed
             self._last_activity_time = time.time()
@@ -379,7 +379,11 @@ class Bot:
                     self.logger.info(f"Timed out - no activity for {INACTIVITY_EXIT_TIME}s. Exiting.")
                     return
 
-            self.logger.info(f"Starting to ring {self.row_generator.summary_string()}")
+            if self._do_up_down_in:
+                self.logger.info(f"Starting to ring {self.row_generator.summary_string()}")
+            else:
+                self.logger.info(f"Waiting for 'Go' to ring {self.row_generator.summary_string()}...")
+
             if self._server_mode:
                 self._tower.set_is_ringing(True)
 

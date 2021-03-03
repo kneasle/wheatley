@@ -25,7 +25,7 @@ class RowGenerator(metaclass=ABCMeta):
 
     def reset(self) -> None:
         """ Reset the row generator. """
-        self.logger.info("Reset")
+        self.logger.debug("Reset")
 
         self._has_bob = False
         self._has_single = False
@@ -34,7 +34,7 @@ class RowGenerator(metaclass=ABCMeta):
 
     def reset_calls(self) -> None:
         """ Clear the pending call flags. """
-        self.logger.info("Reset calls")
+        self.logger.debug("Reset calls")
         self._has_bob = False
         self._has_single = False
 

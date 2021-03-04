@@ -2,7 +2,8 @@
 
 import logging
 
-from typing import Any, Dict, Set
+from collections import defaultdict
+from typing import Any, Dict, Set, List
 
 from wheatley.stroke import Stroke, HANDSTROKE, BACKSTROKE
 from wheatley.bell import Bell
@@ -25,8 +26,10 @@ class WaitForUserRhythm(Rhythm):
 
         self._current_stroke = HANDSTROKE
 
-        self._expected_bells: Dict[Stroke, Set] = {HANDSTROKE: set(), BACKSTROKE: set()}
+        self._rung_bells: Dict[Stroke, Dict[str, Set]] = {HANDSTROKE: defaultdict(lambda: set()), BACKSTROKE: defaultdict(lambda: set())}
         self._early_bells: Dict[Stroke, Set] = {HANDSTROKE: set(), BACKSTROKE: set()}
+        self._bells_to_user: Dict[Bell, str] = {}
+        self._wait_user_count: Dict[str, int] = defaultdict(lambda: 0)
 
         self.delay = 0.0
 
@@ -38,7 +41,7 @@ class WaitForUserRhythm(Rhythm):
         """
         When called, this function requires that Wheatley's main thread should return from
         wait_for_bell_time and give control back to the mainloop within a reasonable amount of time
-        (i.e. 1/10 of a second is acceptable, but anything approacing a second is not)
+        (i.e. 1/10 of a second is acceptable, but anything approaching a second is not)
         """
         self._should_return_to_mainloop = True
         self._inner_rhythm.return_to_mainloop()
@@ -54,8 +57,12 @@ class WaitForUserRhythm(Rhythm):
                                               user_controlled, stroke)
         if user_controlled:
             delay_for_user = 0.0
-            self.logger.debug(f"Waiting for {bell}...")
-            while bell in self._expected_bells[stroke]:
+            user = self._bells_to_user[bell]
+            self._wait_user_count[user] += 1
+
+            self.logger.debug(f"Waiting for {bell}: {user}...")
+
+            while self._wait_user_count[user] > len(self._rung_bells[stroke][user]):
                 self.sleep(self.sleep_time)
                 delay_for_user += self.sleep_time
                 if self._should_return_to_mainloop:
@@ -70,22 +77,27 @@ class WaitForUserRhythm(Rhythm):
         # Reset the flag to say that we've returned to the mainloop
         self._should_return_to_mainloop = False
 
-    def expect_bell(self, expected_bell: Bell, row_number: int, place: int, expected_stroke: Stroke) -> None:
+    def expect_bell(self, expected_bell: Bell, user: str, row_number: int, place: int, expected_stroke: Stroke) -> None:
         """
         Indicates that a given Bell is expected to be rung at a given row, place and stroke.
         Used by the rhythm so that when that bell is rung later, it can tell where that bell
         _should_ have been in the ringing, and so can use that knowledge to inform the speed of the
         ringing.
         """
-        self._inner_rhythm.expect_bell(expected_bell, row_number, place, expected_stroke)
+        self._inner_rhythm.expect_bell(expected_bell, user, row_number, place, expected_stroke)
 
+        # Start of a new row
         if expected_stroke != self._current_stroke:
             self._current_stroke = expected_stroke
-            self._expected_bells[expected_stroke].clear()
+            self._rung_bells[expected_stroke].clear()
             self._early_bells[expected_stroke.opposite()].clear()
+            self._wait_user_count.clear()
 
-        if expected_bell not in self._early_bells[expected_stroke]:
-            self._expected_bells[expected_stroke].add(expected_bell)
+        # If a bell has rung early (so is already at expected_stroke) mark it as already rung
+        if expected_bell in self._early_bells[expected_stroke]:
+            self._rung_bells[expected_stroke][user].add(expected_stroke)
+
+        self._bells_to_user[expected_bell] = user
 
     def change_setting(self, key: str, value: Any, real_time: float) -> None:
         # Keep lying to _inner_rhythm about what the current time is
@@ -98,13 +110,11 @@ class WaitForUserRhythm(Rhythm):
         self._inner_rhythm.on_bell_ring(bell, stroke, real_time - self.delay)
 
         if stroke == self._current_stroke:
-            try:
-                self._expected_bells[self._current_stroke].remove(bell)
-            except KeyError:
-                pass
-            else:
-                self.logger.debug(f"{bell} rung at {stroke}")
+            user = self._bells_to_user[bell]
+            self._rung_bells[self._current_stroke][user].add(bell)
+            self.logger.debug(f"{bell} rung at {stroke}")
 
+            # If bell had rung early, but rung again onto correct stroke
             try:
                 self._early_bells[self._current_stroke.opposite()].remove(bell)
             except KeyError:
@@ -118,8 +128,8 @@ class WaitForUserRhythm(Rhythm):
     def initialise_line(self, stage: int, user_controls_treble: bool, start_time: float,
                         number_of_user_controlled_bells: int) -> None:
         """ Allow the Rhythm object to initialise itself when 'Look to' is called. """
-        self._expected_bells[HANDSTROKE].clear()
-        self._expected_bells[BACKSTROKE].clear()
+        self._rung_bells[HANDSTROKE].clear()
+        self._rung_bells[BACKSTROKE].clear()
 
         self._early_bells[HANDSTROKE].clear()
         self._early_bells[BACKSTROKE].clear()

@@ -262,6 +262,7 @@ class Bot:
         if self._user_assigned_bell(bell):
             self._rhythm.expect_bell(
                 bell,
+                self._tower.get_assigned_user_name(bell),
                 self._row_number,
                 index,
                 self.stroke

@@ -28,7 +28,7 @@ class Rhythm(metaclass=ABCMeta):
         """ Sleeps the thread until a given Bell should have rung. """
 
     @abstractmethod
-    def expect_bell(self, expected_bell: Bell, row_number: int, place: int, expected_stroke: Stroke) -> None:
+    def expect_bell(self, expected_bell: Bell, user: str, row_number: int, place: int, expected_stroke: Stroke) -> None:
         """
         Indicates that a given Bell is expected to be rung at a given row, place and stroke.
         Used by the rhythm so that when that bell is rung later, it can tell where that bell
@@ -55,6 +55,6 @@ class Rhythm(metaclass=ABCMeta):
                         number_of_user_controlled_bells: int) -> None:
         """ Allow the Rhythm object to initialise itself when 'Look to' is called. """
 
-    def sleep(self, seconds: float) -> None: #  pylint: disable=no-self-use
+    def sleep(self, seconds: float) -> None:  # pylint: disable=no-self-use
         """ Sleeps for given number of seconds. Allows mocking in tests"""
         time.sleep(seconds)

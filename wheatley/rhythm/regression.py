@@ -185,7 +185,7 @@ class RegressionRhythm(Rhythm):
 
         self._should_return_to_mainloop = False
 
-    def expect_bell(self, expected_bell: Bell, row_number: int, place: int, expected_stroke: Stroke) -> None:
+    def expect_bell(self, expected_bell: Bell, user: str, row_number: int, place: int, expected_stroke: Stroke) -> None:
         """
         Indicates that a given Bell is expected to be rung at a given row, place and stroke.
         Used by the rhythm so that when that bell is rung later, it can tell where that bell

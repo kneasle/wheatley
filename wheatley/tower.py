@@ -83,6 +83,13 @@ class RingingRoomTower:
             self.logger.error(e)
             return False
 
+    def get_assigned_user_name(self, bell: Bell) -> Optional[str]:
+        """ Returns the user name assigned to a bell """
+        assigned_user_id = self._assigned_users.get(bell, None)
+        if assigned_user_id is None:
+            return None
+        return self.user_name_from_id(assigned_user_id)
+
     def is_bell_assigned_to(self, bell: Bell, user_name: Optional[str]) -> bool:
         """ Returns true if a given bell is assigned to the given user name. """
         try:

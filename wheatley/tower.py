@@ -109,27 +109,27 @@ class RingingRoomTower:
 
     def make_call(self, call: str) -> None:
         """ Broadcasts a given call to the other users of the tower. """
-        self.logger.info(f"(EMIT): Calling '{call}'")
+        self.logger.info(f"EMIT: Calling '{call}'")
         self._emit("c_call", {"call": call, "tower_id": self.tower_id})
 
     def set_at_hand(self) -> None:
         """ Sets all the bells at hand. """
-        self.logger.info("(EMIT): Setting bells at handstroke")
+        self.logger.info("EMIT: Setting bells at handstroke")
         self._emit("c_set_bells", {"tower_id": self.tower_id})
 
     def set_number_of_bells(self, number: int) -> None:
         """ Set the number of bells in the tower. """
-        self.logger.info(f"(EMIT): Setting size to {number}")
+        self.logger.info(f"EMIT: Setting size to {number}")
         self._emit("c_size_change", {"new_size": number, "tower_id": self.tower_id})
 
     def set_is_ringing(self, value: bool) -> None:
         """ Broadcast to all the users that Wheatley has started or stopped ringing. """
-        self.logger.info(f"(EMIT): Telling RR clients to set is_ringing to {value}")
+        self.logger.info(f"EMIT: Telling RR clients to set is_ringing to {value}")
         self._emit("c_wheatley_is_ringing", {"is_ringing": value, "tower_id": self.tower_id})
 
     def emit_roll_call(self, instance_id: int) -> None:
         """ Broadcasts a 'roll call' reply to the Ringing Room server. """
-        self.logger.info("(EMIT): Replying to roll call")
+        self.logger.info("EMIT: Replying to roll call")
         self._emit("c_roll_call", {"tower_id": self.tower_id, "instance_id": instance_id})
 
     def wait_loaded(self) -> None:
@@ -238,7 +238,7 @@ logged in as '{self._user_name_map[user_id_that_left]}'.")
 
     def _join_tower(self) -> None:
         """ Joins the tower as an anonymous user. """
-        self.logger.info(f"(EMIT): Joining tower {self.tower_id}")
+        self.logger.info(f"EMIT: Joining tower {self.tower_id}")
         self._emit(
             "c_join",
             {"anonymous_user": True, "tower_id": self.tower_id},
@@ -246,7 +246,7 @@ logged in as '{self._user_name_map[user_id_that_left]}'.")
 
     def _request_global_state(self) -> None:
         """ Send a request to the server to get the current state of the tower. """
-        self.logger.debug("(EMIT): Requesting global state.")
+        self.logger.debug("EMIT: Requesting global state.")
         self._emit('c_request_global_state', {"tower_id": self.tower_id})
 
     def _on_bell_rung(self, data: JSON) -> None:
@@ -324,7 +324,7 @@ logged in as '{self._user_name_map[user_id_that_left]}'.")
             call_callback()
             found_callback = True
         if not found_callback:
-            self.logger.warning(f"No callback found for '{call}'")
+            self.logger.debug(f"No callback found for '{call}'")
 
     def _emit(self, event: str, data: Any) -> None:
         """ Emit a socket-io signal. """

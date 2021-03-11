@@ -219,7 +219,7 @@ def json_to_row_generator(json: JSON, logger: logging.Logger) -> RowGenerator:
             raise_error('url', "'url' is not defined", e)
 
         try:
-            row_gen = ComplibCompositionGenerator.from_url(comp_url)
+            row_gen = ComplibCompositionGenerator.from_arg(comp_url)
         except PrivateCompError as e:
             raise_error('complib request', "Comp id '{comp_url}' is private", e)
         except InvalidCompError as e:

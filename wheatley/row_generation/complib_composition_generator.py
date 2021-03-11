@@ -2,6 +2,7 @@
 
 import json
 from typing import Dict, Optional, List, Tuple
+from urllib.parse import urlparse
 
 import requests
 
@@ -45,7 +46,7 @@ class InvalidComplibURLError(Exception):
         self._error = error
 
     def __str__(self) -> str:
-        return f"Invalid CompLib URL {self._url}: {self._error}"
+        return f"Invalid CompLib URL '{self._url}': {self._error}"
 
 
 # The 'removeprefix' function from Python 3.9
@@ -56,23 +57,88 @@ def removeprefix(string: str, prefix: str) -> str:
     return string[:]
 
 
+def parse_arg(arg: str) -> Tuple[int, Optional[str], Optional[int]]:
+    """ Parses a URL or a plain ID into a tuple of (ID, access key, substituted method ID). """
+    # === CONVERT ID NUMBER INTO A NORMALISED URL ===
+    # If the arg doesn't contain 'complib.org', we assume it's simply an ID (perhaps with an access
+    # key) and so turn it into a URL
+    if "complib.org" in arg:
+        url = arg
+    else:
+        url = "https://complib.org/composition/" + arg
+    # Make sure that the URL starts with `https://`
+    if not url.startswith('http'):
+        url = 'https://' + url
+
+    # === PARSE URL, AND SPLIT PATH SEGMENTS ===
+    # `url` looks like a URL, so try to parse it
+    parsed_url = urlparse(url)
+    # Naively split the URL path with `/`s.  This is technically wrong because it doesn't handle
+    # escaping properly, but we don't worry about that because CompLib URLs shouldn't have any
+    # escaped `/`s anyway.
+    path_segs = parsed_url.path.split("/")
+
+    # === PARSE COMP ID FROM PATH SEGMENTS ===
+    # Check that we have an absolute path, and remove the '' at the front of the list of path
+    # segments
+    assert path_segs[0] == ''
+    path_segs = path_segs[1:]
+    # Raise helpful error messages if obvious things are wrong (these errors can't happen if the
+    # user used a straight ID)
+    if len(path_segs) <= 1:
+        raise InvalidComplibURLError(url, "URL needs more path segments.")
+    if path_segs[0] != "composition":
+        raise InvalidComplibURLError(url, "Not a composition.")
+    # Parse the 2nd URL segment into the comp ID
+    try:
+        comp_id = int(path_segs[1])
+    except ValueError as e:
+        raise InvalidComplibURLError(url, f"Composition ID '{path_segs[1]}' is not a number.") from e
+
+    # === PARSE ACCESS KEY FROM THE QUERY STRING ===
+    access_key = None
+    substituted_method_id = None
+    for q in parsed_url.query.split("&"):
+        parts = q.split("=")
+        if len(parts) != 2:
+            continue
+        if parts[0] == "accessKey":
+            access_key = parts[1]
+        if parts[0] == "substitutedmethodid":
+            try:
+                substituted_method_id = int(parts[1])
+            except ValueError as e:
+                raise InvalidComplibURLError(
+                    url,
+                    f"Substituted method ID '{parts[1]}' is not a number."
+                ) from e
+
+    return (comp_id, access_key, substituted_method_id)
+
+
 class ComplibCompositionGenerator(RowGenerator):
     """ The RowGenerator subclass for generating rows from a CompLib composition. """
 
     complib_url = "https://api.complib.org/composition/"
 
-    def __init__(self, comp_id: int, access_key: Optional[str]=None) -> None:
+    def __init__(self, comp_id: int, access_key: Optional[str]=None,
+                 substituted_method_id: Optional[int]=None) -> None:
         def process_call_string(calls: str) -> List[str]:
             """ Parse a sequence of calls, and remove 'Stand'. """
             stripped_calls = [x.strip() for x in calls.split(";")]
             return [c for c in stripped_calls if c != 'Stand']
 
-        # Generate URL and request the rows
-        url = self.complib_url + str(comp_id) + "/rows"
+        # Generate URL from the params
+        query_sections: List[str] = []
         if access_key:
-            url += "?accessKey=" + access_key
+            query_sections.append(f"accessKey={access_key}")
+        if substituted_method_id:
+            query_sections.append(f"substitutedmethodid={substituted_method_id}")
+        url = self.complib_url + str(comp_id) + "/rows"
+        if query_sections:
+            url += "?" + "&".join(query_sections)
+        # Create an HTTP request for the rows, and deal with potential error codes
         request_rows = requests.get(url)
-        # Check for the status of the requests
         if request_rows.status_code == 404:
             raise InvalidCompError(comp_id)
         if request_rows.status_code == 403:
@@ -110,35 +176,10 @@ class ComplibCompositionGenerator(RowGenerator):
         super().__init__(response_rows['stage'])
 
     @classmethod
-    def from_url(cls, url: str) -> RowGenerator:
-        """ Generates a ComplibCompositionGenerator from a URL to that composition. """
-        # ==== CANONICALISATION ====
-        # Always strip the 'https://' and 'www.' from the front of the URL
-        canonical_url = url
-        canonical_url = removeprefix(canonical_url, "https://")
-        canonical_url = removeprefix(canonical_url, "www.")
-
-        parts = canonical_url.split("?accessKey=")
-        main_url = parts[0]
-        try:
-            access_key: Optional[str] = parts[1]
-        except IndexError:
-            access_key = None
-
-        main_url_parts = main_url.split("/")
-
-        try:
-            if not main_url_parts[0].endswith("complib.org"):
-                raise InvalidComplibURLError(url, "Doesn't point to 'complib.org'.")
-            if main_url_parts[1] != "composition":
-                raise InvalidComplibURLError(url, "Not a composition.")
-            comp_id = int(main_url_parts[2])
-        except KeyError as e:
-            raise InvalidComplibURLError(url, "URL has too few segments.") from e
-        except ValueError as e:
-            raise InvalidComplibURLError(url, f"ID {main_url_parts[2]} is not an integer.") from e
-
-        return cls(comp_id, access_key)
+    def from_arg(cls, arg: str) -> 'ComplibCompositionGenerator':
+        """ Generates a ComplibCompositionGenerator from either a URL or the ID of a comp. """
+        comp_id, access_key, substituted_method_id = parse_arg(arg)
+        return cls(comp_id, access_key, substituted_method_id)
 
     def summary_string(self) -> str:
         """ Returns a short string summarising the RowGenerator. """

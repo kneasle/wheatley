@@ -2,6 +2,7 @@ import unittest
 
 from wheatley.parsing import parse_peal_speed, PealSpeedParseError, parse_call, CallParseError
 from wheatley.aliases import CallDef
+from wheatley.row_generation.complib_composition_generator import parse_arg, InvalidComplibURLError
 
 
 class ParseTests(unittest.TestCase):
@@ -63,6 +64,95 @@ class ParseTests(unittest.TestCase):
                 with self.assertRaises(CallParseError) as e:
                     parse_call(input_arg)
                 self.assertEqual(expected_message, e.exception.message)
+
+    def test_url_conversion_public(self):
+        # All of these test cases should point to comp #73916, with no access key
+        test_cases = [
+            "https://complib.org/composition/73916",
+            "http://complib.org/composition/73916",
+            "http://www.complib.org/composition/73916",
+            "complib.org/composition/73916",
+            "73916",
+            "http://www.complib.org/composition/73916/rows",
+            "api.complib.org/composition/73916/rows",
+            "http://www.api.complib.org/composition/73916",
+            "https://www.api.complib.org/composition/73916/rows",
+        ]
+        for input_url in test_cases:
+            with self.subTest(input=input_url):
+                _id, key, substituted_method_id = parse_arg(input_url)
+                self.assertEqual(_id, 73916)
+                self.assertEqual(key, None)
+                self.assertEqual(substituted_method_id, None)
+
+    def test_url_conversion_private(self):
+        # All of these test cases should point to comp #65575, with access key "8b9f...da5d"
+        test_cases = [
+            "https://complib.org/composition/65575?accessKey=8b9fcc4fb35c428c31e711f657a3e4aac1b3da5d",
+            "complib.org/composition/65575/rows?accessKey=8b9fcc4fb35c428c31e711f657a3e4aac1b3da5d",
+            "www.complib.org/composition/65575?accessKey=8b9fcc4fb35c428c31e711f657a3e4aac1b3da5d",
+            "www.complib.org/composition/65575/rows?accessKey=8b9fcc4fb35c428c31e711f657a3e4aac1b3da5d",
+            "www.api.complib.org/composition/65575/rows?accessKey=8b9fcc4fb35c428c31e711f657a3e4aac1b3da5d",
+            "https://www.api.complib.org/composition/65575/rows?accessKey=8b9fcc4fb35c428c31e711f657a3e4aac1b3da5d",
+            "api.complib.org/composition/65575?accessKey=8b9fcc4fb35c428c31e711f657a3e4aac1b3da5d",
+            "65575?accessKey=8b9fcc4fb35c428c31e711f657a3e4aac1b3da5d",
+        ]
+        for input_url in test_cases:
+            with self.subTest(input=input_url):
+                _id, key, substituted_method_id = parse_arg(input_url)
+                self.assertEqual(_id, 65575)
+                self.assertEqual(key, "8b9fcc4fb35c428c31e711f657a3e4aac1b3da5d")
+                self.assertEqual(substituted_method_id, None)
+
+    def test_url_conversion_subst_method(self):
+        test_cases = [
+            "https://complib.org/composition/36532?substitutedmethodid=20336",
+            "complib.org/composition/36532?substitutedmethodid=20336",
+            "www.complib.org/composition/36532?substitutedmethodid=20336",
+            "https://www.complib.org/composition/36532?substitutedmethodid=20336",
+            "https://www.api.complib.org/composition/36532/rows?substitutedmethodid=20336",
+            "api.complib.org/composition/36532/rows?substitutedmethodid=20336",
+            "36532?substitutedmethodid=20336",
+        ]
+        for input_url in test_cases:
+            with self.subTest(input=input_url):
+                _id, key, substituted_method_id = parse_arg(input_url)
+                self.assertEqual(_id, 36532)
+                self.assertEqual(key, None)
+                self.assertEqual(substituted_method_id, 20336)
+
+    def test_url_conversion_priv_subst_method(self):
+        test_cases = [
+            "https://complib.org/composition/51155?substitutedmethodid=27600&accessKey=9e1fcd2b11435552cf236be93c7ff73058870995",
+            "https://www.complib.org/composition/51155?substitutedmethodid=27600&accessKey=9e1fcd2b11435552cf236be93c7ff73058870995",
+            "api.complib.org/composition/51155?substitutedmethodid=27600&accessKey=9e1fcd2b11435552cf236be93c7ff73058870995",
+            "complib.org/composition/51155?substitutedmethodid=27600&accessKey=9e1fcd2b11435552cf236be93c7ff73058870995",
+            "https://complib.org/composition/51155?accessKey=9e1fcd2b11435552cf236be93c7ff73058870995&substitutedmethodid=27600",
+            "https://api.complib.org/composition/51155/rows?accessKey=9e1fcd2b11435552cf236be93c7ff73058870995&substitutedmethodid=27600",
+            "https://complib.org/composition/51155/rows?accessKey=9e1fcd2b11435552cf236be93c7ff73058870995&substitutedmethodid=27600",
+            "51155?substitutedmethodid=27600&accessKey=9e1fcd2b11435552cf236be93c7ff73058870995"
+        ]
+        for input_url in test_cases:
+            with self.subTest(input=input_url):
+                _id, key, substituted_method_id = parse_arg(input_url)
+                self.assertEqual(_id, 51155)
+                self.assertEqual(key, "9e1fcd2b11435552cf236be93c7ff73058870995")
+                self.assertEqual(substituted_method_id, 27600)
+
+    def test_url_conversion_errors(self):
+        test_cases = [
+            ("complib.org/method/12345", "Not a composition."),
+            ("", "Composition ID '' is not a number."),
+            ("complib.org", "URL needs more path segments."),
+            ("complib.org/composition", "URL needs more path segments."),
+            ("complib.org/composition/36532?substitutedmethodid=", "Substituted method ID '' is not a number."),
+            ("36532?substitutedmethodid=", "Substituted method ID '' is not a number."),
+            ("?substitutedmethodid=pengtekkas", "Composition ID '' is not a number."),
+        ]
+        for input_url, exp_err_str in test_cases:
+            with self.subTest(input=input_url, exp_err_str=exp_err_str):
+                with self.assertRaisesRegex(InvalidComplibURLError, exp_err_str):
+                    parse_arg(input_url)
 
 
 if __name__ == '__main__':

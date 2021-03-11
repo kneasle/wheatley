@@ -28,19 +28,14 @@ from wheatley.row_generation.place_holder_generator import PlaceHolderGenerator
 
 def create_row_generator(args: argparse.Namespace) -> RowGenerator:
     """ Generates a row generator according to the given CLI arguments. """
-    if "complib_share_link" in args and args.complib_share_link is not None:
+    if "comp" in args and args.comp is not None:
         try:
-            row_gen = ComplibCompositionGenerator.from_url(args.complib_share_link)
-        except (PrivateCompError, InvalidCompError) as e:
-            sys.exit(f"Bad value for '--comp': {e}")
-    elif "comp" in args and args.comp is not None:
-        try:
-            row_gen = ComplibCompositionGenerator(args.comp)
+            return ComplibCompositionGenerator.from_arg(args.comp)
         except (PrivateCompError, InvalidCompError) as e:
             sys.exit(f"Bad value for '--comp': {e}")
     elif "method" in args:
         try:
-            row_gen = generator_from_special_title(args.method) or \
+            return generator_from_special_title(args.method) or \
                       MethodPlaceNotationGenerator(
                           args.method,
                           parse_call(args.bob),
@@ -50,10 +45,7 @@ def create_row_generator(args: argparse.Namespace) -> RowGenerator:
         except MethodNotFoundError as e:
             sys.exit(f"Bad value for '--method': {e}")
     else:
-        assert False, \
-            "This shouldn't be possible because one of --method and --comp should always be defined"
-
-    return row_gen
+        assert False, "This shouldn't be possible because one of --method and --comp should always be defined"
 
 
 def create_rhythm(peal_speed: int, inertia: float, max_bells_in_dataset: int, handstroke_gap: float,
@@ -262,15 +254,8 @@ def console_main(override_args: Optional[List[str]], stop_on_join_tower: bool) -
     comp_method_group = row_gen_group.add_mutually_exclusive_group(required=True)
     comp_method_group.add_argument(
         "-c", "--comp",
-        type=int,
-        help="The ID of the complib composition you want to ring"
-    )
-    comp_method_group.add_argument(
-        "--complib-share-link",
         type=str,
-        help="The link from the 'share' button of the private complib composition you want to ring.  For \
-              example, \
-              https://complib.org/composition/73905?accessKey=67622abc16397c0e7df32d5f98e3b206bef980c6."
+        help="The ID or URL of the complib composition you want to ring"
     )
     comp_method_group.add_argument(
         "-m", "--method",

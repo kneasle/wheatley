@@ -18,7 +18,7 @@ class CompLibGeneratorTests(TestCase):
             )
         ]:
             with self.subTest(url=url, expected_title=expected_title):
-                self.assertEqual(ComplibCompositionGenerator.from_url(url).comp_title, expected_title)
+                self.assertEqual(ComplibCompositionGenerator.from_arg(url).comp_title, expected_title)
 
 
 if __name__ == '__main__':

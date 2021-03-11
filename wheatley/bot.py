@@ -91,7 +91,7 @@ class Bot:
 
         # Log what we're going to ring, and how to stop Wheatley
         self.logger.info(f"Wheatley will ring {self.row_generator.summary_string()}")
-        self.logger.info(f"Press `Control-C` to stop Wheatley ringing, e.g. to change method.")
+        self.logger.info("Press `Control-C` to stop Wheatley ringing, e.g. to change method.")
 
     # Convenient properties that are frequently used
     @property

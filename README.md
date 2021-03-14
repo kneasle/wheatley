@@ -32,6 +32,9 @@ If you have any issues/suggestions, either
 
 
 ## Quickstart
+
+Wheatley needs a working Python3 environment - see [the Windows simple setup guide](SIMPLE_WINDOWS.md) for help.
+
 ### Installation (using Pip)
 Run the following command to install or update to the
 [latest version of Wheatley](https://pypi.org/project/wheatley/):

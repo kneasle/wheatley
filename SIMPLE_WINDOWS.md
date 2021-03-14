@@ -8,7 +8,7 @@ You need a Python3 environment in order to run Wheatley. Install the latest vers
 
 When the file has downloaded, run it and install with defaults, ticking the "add to PATH" option on the first page. This can take a few minutes to complete.
 
-To test this has installed correctly, you need to open a Command Prompt. Press the START button in Windows and type 'cmd' then click on the Command Prompt application.
+To test this has installed correctly, you need to open a Command Prompt. Press the START button in Windows and type `cmd` then click on the Command Prompt application.
 
 In the Command Prompt, test the Python3 environment by typing:
 

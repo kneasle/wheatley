@@ -275,7 +275,10 @@ class Bot:
             self._row, self._calls = self.row_generator.next_row_and_calls(self.stroke)
             # Add cover bells if needed
             if len(self._row) < len(self._rounds):
-                self._row.extend(self._rounds[len(self._row):])
+                self._row = Row(self._row + self._rounds[len(self._row):])
+
+        bells = " ".join([str(bell) for bell in self._row])
+        self.logger.info(f"ROW: {bells}")
 
     def start_next_row(self, is_first_row: bool) -> None:
         # Generate the next row and update row indices

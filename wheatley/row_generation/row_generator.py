@@ -51,8 +51,7 @@ class RowGenerator(metaclass=ABCMeta):
 
         self._index += 1
 
-        message = " ".join([str(bell) for bell in self._row])
-        self.logger.info(message)
+        self.logger.debug(self._row)
 
         return (self._row, calls)
 

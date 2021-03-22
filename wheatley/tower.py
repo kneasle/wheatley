@@ -169,18 +169,30 @@ class RingingRoomTower:
         self._join_tower()
         self._request_global_state()
 
+    # The values in data could have any types, so we don't need any type checking here.
     def _on_setting_change(self, data: JSON) -> None:
-        # The values in data could have any types, so we don't need any type checking here.
-        self.logger.info(f"RECEIVED: Settings changed: {data}\
-{' (ignoring)' if len(self.invoke_on_setting_change) == 0 else ''}")
+        # Log a message (to info if the setting change is used, debug otherwise)
+        is_ignored = len(self.invoke_on_setting_change) == 0
+        log_message = f"RECEIVED: Settings changed: {data}" \
+            + "{' (ignoring)' if is_ignored else ''}"
+        if is_ignored:
+            self.logger.debug(log_message)
+        else:
+            self.logger.info(log_message)
 
         for key, value in data.items():
             for callback in self.invoke_on_setting_change:
                 callback(key, value)
 
     def _on_row_gen_change(self, data: JSON) -> None:
-        self.logger.debug(f"RECEIVED: Row gen changed: {data}\
-{' (ignoring)' if len(self.invoke_on_row_gen_change) == 0 else ''}")
+        # Log a message (to info if the setting change is used, debug otherwise)
+        is_ignored = len(self.invoke_on_row_gen_change) == 0
+        log_message = f"RECEIVED: Row gen changed: {data}" \
+            + "{' (ignoring)' if is_ignored else ''}"
+        if is_ignored:
+            self.logger.debug(log_message)
+        else:
+            self.logger.info(log_message)
 
         for callback in self.invoke_on_row_gen_change:
             callback(data)

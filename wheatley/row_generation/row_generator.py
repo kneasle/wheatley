@@ -6,19 +6,17 @@ from abc import ABCMeta, abstractmethod
 
 from wheatley.aliases import Row, Places
 from wheatley.stroke import Stroke, HANDSTROKE
-from wheatley.row_generation.helpers import generateStartingRow
-from wheatley.bell import Bell
-
+from wheatley.row_generation.helpers import generate_starting_row
 
 class RowGenerator(metaclass=ABCMeta):
     """ Abstract base class for behaviours common to all row generators. """
 
     logger_name = "ROWGEN"
 
-    def __init__(self, stage: int, start_row: str) -> None:
+    def __init__(self, stage: int, start_row: str = None) -> None:
         self.stage = stage
         self.custom_start_row = start_row
-        self.start_row = generateStartingRow(stage, start_row)
+        self.start_row = generate_starting_row(stage, start_row)
         self.logger = logging.getLogger(self.logger_name)
 
         self._has_bob = False

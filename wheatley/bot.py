@@ -13,7 +13,7 @@ from wheatley.aliases import JSON, Row
 from wheatley.stroke import Stroke
 from wheatley.bell import Bell, MAX_BELL
 from wheatley.rhythm import Rhythm
-from wheatley.row_generation.helpers import generateStartingRow
+from wheatley.row_generation.helpers import generate_starting_row
 from wheatley.tower import RingingRoomTower
 from wheatley.parsing import to_bool, json_to_row_generator, RowGenParseError
 from wheatley.row_generation import RowGenerator
@@ -139,7 +139,7 @@ class Bot:
     def _on_size_change(self) -> None:
         self._check_number_of_bells()
         self._check_starting_row()
-        self._rounds = generateStartingRow(self.number_of_bells, self.row_generator.custom_start_row)
+        self._rounds = generate_starting_row(self.number_of_bells, self.row_generator.custom_start_row)
 
     def _check_starting_row(self) -> bool:
         if len(self._rounds) != self.row_generator.stage:

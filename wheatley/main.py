@@ -292,6 +292,11 @@ def console_main(override_args: Optional[List[str]], stop_on_join_tower: bool) -
               would refer to the lead **end**).  Defaults to 0 (i.e. a standard start)."
     )
     row_gen_group.add_argument(
+        "--start-row",
+        type=str,
+        help="Determines the initial row."
+    )
+    row_gen_group.add_argument(
         "-u", "--use-up-down-in",
         action="store_true",
         help="If set, then the Wheatley will automatically go into changes after two rounds have been \

@@ -13,7 +13,7 @@ from wheatley.aliases import JSON, Row
 from wheatley.stroke import Stroke
 from wheatley.bell import Bell, MAX_BELL
 from wheatley.rhythm import Rhythm
-from wheatley.row_generation.helpers import rounds
+from wheatley.row_generation.helpers import generateStartingRow
 from wheatley.tower import RingingRoomTower
 from wheatley.parsing import to_bool, json_to_row_generator, RowGenParseError
 from wheatley.row_generation import RowGenerator
@@ -81,8 +81,9 @@ class Bot:
 
         self._row_number = 0
         self._place = 0
-        self._rounds: Row = rounds(MAX_BELL)
+        self._rounds: Row = row_generator.start_row
         self._row: Row = self._rounds
+
         # This is used because the row's calls are generated at the **end** of each row (or on
         # `Look To`), but need to be called at the **start** of the next row.
         self._calls: List[str] = []
@@ -137,7 +138,15 @@ class Bot:
 
     def _on_size_change(self) -> None:
         self._check_number_of_bells()
-        self._rounds = rounds(self.number_of_bells)
+        self._check_starting_row()
+        self._rounds = generateStartingRow(self.number_of_bells, self.row_generator.custom_start_row)
+
+    def _check_starting_row(self) -> bool:
+        if len(self._rounds) != self.row_generator.stage:
+            self.logger.warning(f"Row generation requires {self.row_generator.stage} bells in the starting row "
+                                + "Wheatley will not ring!")
+            return False
+        return True
 
     def _check_number_of_bells(self) -> bool:
         """ Returns whether Wheatley can ring with the current number of bells with reasons why not """
@@ -159,7 +168,7 @@ class Bot:
         return True
 
     def _on_look_to(self) -> None:
-        if self._check_number_of_bells():
+        if self._check_starting_row() and self._check_number_of_bells():
             self.look_to_has_been_called(time.time())
         # All Wheatley instances should return a 'Roll Call' message after `Look To` is called.
         if self._server_instance_id is not None:

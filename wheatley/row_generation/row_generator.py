@@ -6,7 +6,8 @@ from abc import ABCMeta, abstractmethod
 
 from wheatley.aliases import Row, Places
 from wheatley.stroke import Stroke, HANDSTROKE
-from wheatley.row_generation.helpers import rounds
+from wheatley.row_generation.helpers import generateStartingRow
+from wheatley.bell import Bell
 
 
 class RowGenerator(metaclass=ABCMeta):
@@ -14,14 +15,16 @@ class RowGenerator(metaclass=ABCMeta):
 
     logger_name = "ROWGEN"
 
-    def __init__(self, stage: int) -> None:
+    def __init__(self, stage: int, start_row: str) -> None:
         self.stage = stage
+        self.custom_start_row = start_row
+        self.start_row = generateStartingRow(stage, start_row)
         self.logger = logging.getLogger(self.logger_name)
 
         self._has_bob = False
         self._has_single = False
         self._index = 0
-        self._row = self.rounds()
+        self._row = self.start_row
 
     def reset(self) -> None:
         """ Reset the row generator. """
@@ -30,7 +33,7 @@ class RowGenerator(metaclass=ABCMeta):
         self._has_bob = False
         self._has_single = False
         self._index = 0
-        self._row = self.rounds()
+        self._row = self.start_row
 
     def reset_calls(self) -> None:
         """ Clear the pending call flags. """
@@ -62,10 +65,6 @@ class RowGenerator(metaclass=ABCMeta):
     def set_single(self) -> None:
         """ Set the flag that a single has been made. """
         self._has_single = True
-
-    def rounds(self) -> Row:
-        """ Generate rounds of the stage given by this RowGenerator. """
-        return rounds(self.stage)
 
     @abstractmethod
     def _gen_row(self, previous_row: Row, stroke: Stroke, index: int) -> Row:

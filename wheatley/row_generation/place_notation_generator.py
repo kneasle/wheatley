@@ -18,8 +18,8 @@ class PlaceNotationGenerator(RowGenerator):
     DefaultSingle: ClassVar[CallDef] = CallDef({0: '1234'})
 
     def __init__(self, stage: int, method: str, bob: CallDef = None, single: CallDef = None,
-                 start_index: int = 0) -> None:
-        super().__init__(stage)
+                 start_index: int = 0, start_row: str = None) -> None:
+        super().__init__(stage, start_row)
 
         if bob is None:
             bob = PlaceNotationGenerator.DefaultBob

@@ -74,3 +74,11 @@ def convert_to_bell_string(bell: int) -> str:
 def rounds(number_of_bells: int) -> Row:
     """ Generate rounds on the given number of bells. """
     return Row([Bell.from_number(i) for i in range(1, number_of_bells + 1)])
+
+
+def generateStartingRow(number_of_bells: int, start_row: str) -> Row:
+    """ Generate the starting row as rounds or a custom input. """
+    if start_row is None:
+        return rounds(number_of_bells)
+
+    return Row([Bell.from_str(i) for i in start_row])

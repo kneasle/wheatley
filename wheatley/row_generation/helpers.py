@@ -76,7 +76,7 @@ def rounds(number_of_bells: int) -> Row:
     return Row([Bell.from_number(i) for i in range(1, number_of_bells + 1)])
 
 
-def generate_starting_row(number_of_bells: int, start_row: str) -> Row:
+def generate_starting_row(number_of_bells: int, start_row: str = None) -> Row:
     """ Generate the starting row as rounds or a custom input. """
     if start_row is None:
         return rounds(number_of_bells)

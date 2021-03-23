@@ -36,12 +36,13 @@ def create_row_generator(args: argparse.Namespace) -> RowGenerator:
     elif "method" in args:
         try:
             return generator_from_special_title(args.method) or \
-                      MethodPlaceNotationGenerator(
-                          args.method,
-                          parse_call(args.bob),
-                          parse_call(args.single),
-                          args.start_index
-                      )
+                MethodPlaceNotationGenerator(
+                args.method,
+                parse_call(args.bob),
+                parse_call(args.single),
+                args.start_row,
+                args.start_index
+            )
         except MethodNotFoundError as e:
             sys.exit(f"Bad value for '--method': {e}")
     else:

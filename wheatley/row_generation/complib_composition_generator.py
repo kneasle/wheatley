@@ -188,7 +188,7 @@ class ComplibCompositionGenerator(RowGenerator):
     def _gen_row_and_calls(self, _previous_row: Row, _stroke: Stroke, index: int) -> Tuple[Row, List[str]]:
         if index < len(self.loaded_rows):
             return self.loaded_rows[index]
-        return (self.rounds(), [])
+        return (self.start_row, [])
 
     def _gen_row(self, previous_row: Row, stroke: Stroke, index: int) -> Row:
         # Technically, this should be unreachable, but Python doesn't have an error for that (I miss

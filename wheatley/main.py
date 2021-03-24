@@ -28,7 +28,9 @@ from wheatley.row_generation.place_holder_generator import PlaceHolderGenerator
 
 def create_row_generator(args: argparse.Namespace) -> RowGenerator:
     """ Generates a row generator according to the given CLI arguments. """
-    if "comp" in args and args.comp is not None:
+    if "comp" in args and args.comp is not None and "start_row" in args and args.start_row is not None:
+        sys.exit("You may not specify a custom start row with a composition")
+    elif "comp" in args and args.comp is not None:
         try:
             return ComplibCompositionGenerator.from_arg(args.comp)
         except (PrivateCompError, InvalidCompError) as e:
@@ -37,12 +39,12 @@ def create_row_generator(args: argparse.Namespace) -> RowGenerator:
         try:
             return generator_from_special_title(args.method) or \
                 MethodPlaceNotationGenerator(
-                args.method,
-                parse_call(args.bob),
-                parse_call(args.single),
-                args.start_row,
-                args.start_index
-            )
+                    args.method,
+                    parse_call(args.bob),
+                    parse_call(args.single),
+                    args.start_row,
+                    args.start_index
+                )
         except MethodNotFoundError as e:
             sys.exit(f"Bad value for '--method': {e}")
     else:
@@ -50,7 +52,7 @@ def create_row_generator(args: argparse.Namespace) -> RowGenerator:
 
 
 def create_rhythm(peal_speed: int, inertia: float, max_bells_in_dataset: int, handstroke_gap: float,
-                  use_wait: bool, initial_inertia: float=0) -> Rhythm:
+                  use_wait: bool, initial_inertia: float = 0) -> Rhythm:
     """ Generates a rhythm object according to the given CLI arguments. """
     # Sets the minimum number of bells that Wheatley will use in order to deduce a rhythm.  Setting this to
     # larger numbers will make Wheatley more stable during the pull-off, whereas smaller numbers will make
@@ -433,7 +435,7 @@ def console_main(override_args: Optional[List[str]], stop_on_join_tower: bool) -
     except KeyboardInterrupt:
         print("Bye!")
 
-def main(override_args: Optional[List[str]]=None, stop_on_join_tower: bool=False) -> None:
+def main(override_args: Optional[List[str]] = None, stop_on_join_tower: bool = False) -> None:
     """
     The root main function for Wheatley.  If the first argument given to Wheatley is 'server-mode', then
     this will run `server_main` (the main function for running Wheatley on RR's servers) otherwise it will

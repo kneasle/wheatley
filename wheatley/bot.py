@@ -168,7 +168,8 @@ class Bot:
                                 + f"but the current tower has {self._tower.number_of_bells}. "
                                 + "Wheatley will not ring!")
             return False
-        if self._tower.number_of_bells > self.row_generator.stage + 1:
+        if (self._tower.number_of_bells > self.row_generator.stage + 1
+                and self.row_generator.custom_start_row is None):
             if self.row_generator.stage % 2:
                 expected = self.row_generator.stage + 1
             else:

@@ -121,8 +121,8 @@ class ComplibCompositionGenerator(RowGenerator):
 
     complib_url = "https://api.complib.org/composition/"
 
-    def __init__(self, comp_id: int, access_key: Optional[str]=None,
-                 substituted_method_id: Optional[int]=None) -> None:
+    def __init__(self, comp_id: int, access_key: Optional[str] = None,
+                 substituted_method_id: Optional[int] = None) -> None:
         def process_call_string(calls: str) -> List[str]:
             """ Parse a sequence of calls, and remove 'Stand'. """
             stripped_calls = [x.strip() for x in calls.split(";")]

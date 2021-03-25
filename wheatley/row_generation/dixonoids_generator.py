@@ -21,8 +21,9 @@ class DixonoidsGenerator(RowGenerator):
     DefaultBob = {1: ["x", "4"]}
     DefaultSingle = {1: ["x", "1234"]}
 
-    def __init__(self, stage: int, start_row: str = None, plain_rules: Dict[int, List[str]] = None,
-                 bob_rules: Dict[int, List[str]] = None, single_rules: Dict[int, List[str]] = None) -> None:
+    def __init__(self, stage: int, plain_rules: Dict[int, List[str]] = None,
+                 bob_rules: Dict[int, List[str]] = None, single_rules: Dict[int, List[str]] = None,
+                 start_row: str = None) -> None:
         """
         Initialises a dixonoid generator.
 

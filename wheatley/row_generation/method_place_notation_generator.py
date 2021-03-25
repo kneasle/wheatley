@@ -37,7 +37,7 @@ def generator_from_special_title(method_title: str, start_row: str = None) -> Op
     if method_name in ["plain hunt", "plain hunt on"]:
         return PlainHuntGenerator(stage, start_row)
     if method_name == "dixon's bob" and stage == 6:
-        return DixonoidsGenerator(stage, start_row = start_row)
+        return DixonoidsGenerator(stage, start_row=start_row)
     return None
 
 

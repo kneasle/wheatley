@@ -84,8 +84,9 @@ class RegressionRhythm(Rhythm):
 
     logger_name = "RHYTHM:Regression"
 
-    def __init__(self, inertia: float, peal_speed: float=178, handstroke_gap: float=1,
-                 min_bells_in_dataset: int=4, max_bells_in_dataset: int=15, initial_inertia: float=0) -> None:
+    def __init__(self, inertia: float, peal_speed: float = 178, handstroke_gap: float = 1,
+                 min_bells_in_dataset: int = 4, max_bells_in_dataset: int = 15,
+                 initial_inertia: float = 0) -> None:
         """
         Initialises a new RegressionRhythm with a given default peal speed and handstroke gap.
         `peal_speed` is the number of minutes in a peal of 5040 changes, and `handstroke_gap`

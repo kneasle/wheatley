@@ -28,7 +28,7 @@ STAGES = {
 }
 
 
-def convert_pn(pn_str: str, expect_symmetric: bool=False) -> List[Places]:
+def convert_pn(pn_str: str, expect_symmetric: bool = False) -> List[Places]:
     """ Convert a place notation string into a list of places. """
     if "," in pn_str:
         return list(itertools.chain.from_iterable(convert_pn(part, True) for part in pn_str.split(",")))
@@ -47,8 +47,8 @@ def convert_pn(pn_str: str, expect_symmetric: bool=False) -> List[Places]:
     # We suppress the type error here, because mypy will assign the list comprehension type 'List[object]',
     # not 'List[Places]'.
     converted: List[Places] = [[convert_bell_string(y) for y in place] # type: ignore
-                 if place != '-' else _CROSS_PN
-                 for place in deduplicated_string]
+                               if place != '-' else _CROSS_PN
+                               for place in deduplicated_string]
 
     if symmetric:
         return converted + list(reversed(converted[:-1]))
@@ -81,4 +81,14 @@ def generate_starting_row(number_of_bells: int, start_row: str = None) -> Row:
     if start_row is None:
         return rounds(number_of_bells)
 
-    return Row([Bell.from_str(i) for i in start_row])
+    custom_start_row = [Bell.from_str(i) for i in start_row]
+    if len(custom_start_row) > len(set(custom_start_row)):
+        raise ValueError(f"starting row '{start_row}' contains the same bell multiple times")
+
+    # If there are more bells than given in the starting row
+    # add the missing ones in sequential order as cover bells
+    for i in range(1, number_of_bells):
+        if Bell.from_number(i) not in custom_start_row:
+            custom_start_row.append(Bell.from_number(i))
+
+    return Row(custom_start_row)

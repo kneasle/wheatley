@@ -80,7 +80,7 @@ class PlaceNotationGenerator(RowGenerator):
         return Stroke.from_index(self.start_index)
 
     @staticmethod
-    def grandsire(stage: int) -> RowGenerator:
+    def grandsire(stage: int, start_row: str = None) -> RowGenerator:
         """ Generates Grandsire on a given stage. """
         stage_bell = convert_to_bell_string(stage)
 
@@ -90,15 +90,16 @@ class PlaceNotationGenerator(RowGenerator):
         main_body[0] = "3"
         notation = ".".join(main_body)
 
-        return PlaceNotationGenerator(stage, notation, bob=CallDef({-1: "3"}), single=CallDef({-1: "3.123"}))
+        return PlaceNotationGenerator(stage, notation, bob=CallDef({-1: "3"}), single=CallDef({-1: "3.123"}),
+                                      start_row=start_row)
 
     @staticmethod
-    def stedman(stage: int) -> RowGenerator:
+    def stedman(stage: int, start_row: str = None) -> RowGenerator:
         """ Generates Stedman on a given stage (even bell Stedman will cause an exception). """
         assert stage % 2 == 1
 
         if stage == 5:
-            return PlaceNotationGenerator.stedman_doubles()
+            return PlaceNotationGenerator.stedman_doubles(start_row)
 
         stage_bell = convert_to_bell_string(stage)
         stage_bell_1 = convert_to_bell_string(stage - 1)
@@ -107,12 +108,15 @@ class PlaceNotationGenerator(RowGenerator):
         notation = f"3.1.{stage_bell}.3.1.3.1.3.{stage_bell}.1.3.1"
 
         return PlaceNotationGenerator(stage, notation, bob=CallDef({3: stage_bell_2, 9: stage_bell_2}),
-                                      single=CallDef({3: f"{stage_bell_2}{stage_bell_1}{stage_bell}",
-                                              9: f"{stage_bell_2}{stage_bell_1}{stage_bell}"}))
+                                      single=CallDef({
+                                          3: f"{stage_bell_2}{stage_bell_1}{stage_bell}",
+                                          9: f"{stage_bell_2}{stage_bell_1}{stage_bell}"}),
+                                      start_row=start_row)
 
     @staticmethod
-    def stedman_doubles() -> RowGenerator:
+    def stedman_doubles(start_row: str = None) -> RowGenerator:
         """ Generates Stedman on a given stage (even bell Stedman will cause an exception). """
         notation = "3.1.5.3.1.3.1.3.5.1.3.1"
 
-        return PlaceNotationGenerator(5, notation, bob=CallDef({}), single=CallDef({6: "345", 12: "145"}))
+        return PlaceNotationGenerator(5, notation, bob=CallDef({}), single=CallDef({6: "345", 12: "145"}),
+                                      start_row=start_row)

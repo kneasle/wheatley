@@ -37,7 +37,7 @@ def create_row_generator(args: argparse.Namespace) -> RowGenerator:
             sys.exit(f"Bad value for '--comp': {e}")
     elif "method" in args:
         try:
-            return generator_from_special_title(args.method) or \
+            return generator_from_special_title(args.method, args.start_row) or \
                 MethodPlaceNotationGenerator(
                     args.method,
                     parse_call(args.bob),

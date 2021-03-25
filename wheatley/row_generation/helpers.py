@@ -87,7 +87,7 @@ def generate_starting_row(number_of_bells: int, start_row: str = None) -> Row:
 
     # If there are more bells than given in the starting row
     # add the missing ones in sequential order as cover bells
-    for i in range(1, number_of_bells):
+    for i in range(1, number_of_bells + 1):
         if Bell.from_number(i) not in custom_start_row:
             custom_start_row.append(Bell.from_number(i))
 

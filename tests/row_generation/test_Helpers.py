@@ -80,6 +80,7 @@ class HelpersGenerateStartingRowTests(unittest.TestCase):
         self.assertListEqual(Row([Bell(3), Bell(2), Bell(1), Bell(0)]), generate_starting_row(4, "4321"))
         self.assertListEqual(Row([Bell(3), Bell(2), Bell(1), Bell(0)]), generate_starting_row(4, "432"))
         self.assertListEqual(Row([Bell(3), Bell(1), Bell(0), Bell(2)]), generate_starting_row(4, "42"))
+        self.assertListEqual(Row([Bell(1), Bell(0), Bell(2), Bell(3)]), generate_starting_row(4, "2"))
 
     def test_generate_with_invalid_custom_row(self):
         with self.assertRaisesRegex(ValueError, "starting row '4324' contains the same bell multiple times"):

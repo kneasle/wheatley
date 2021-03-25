@@ -146,7 +146,8 @@ class Bot:
         self._check_starting_row()
 
     def _check_starting_row(self) -> bool:
-        if len(self.row_generator.custom_start_row) < self.number_of_bells:
+        if (self.row_generator.custom_start_row is not None and
+                len(self.row_generator.custom_start_row) < self.number_of_bells):
             self.logger.info("The starting row contains fewer bells than the tower"
                              + f"({self._tower.number_of_bells}) "
                              + "Wheatly will add the extra bells to the end of the change")

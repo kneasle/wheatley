@@ -57,11 +57,11 @@ def command_to_converted_args(location, command):
     # Bit of a hack, but this will convert commands starting with 'wheatley' to start with './run-wheatley'
     # and make sure that [ID NUMBER] is replaced with a valid room ID.  This way, the tests will run on the
     # version contained in the current commit, rather than a release version.
-    edited_command = "./run-" + command.replace("[ID NUMBER]", ROOM_ID) \
+    edited_command = "python ./run-" + command.replace("[ID NUMBER]", ROOM_ID) \
                                        .replace("[METHOD TITLE]", '"' + EXAMPLE_METHOD + '"')
 
     args = shlex.split(edited_command)
-    args.insert(1, "integration-test")
+    args.insert(2, "integration-test")
 
     return (args, location, edited_command)
 
@@ -95,6 +95,7 @@ class CommandError:
 
 def run_test(args):
     try:
+        print(args)
         check_output(args, stderr=STDOUT, timeout=5)
     except CalledProcessError as e:
         return CommandError(e.returncode, e.output.decode('utf-8'))

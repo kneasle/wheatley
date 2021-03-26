@@ -68,7 +68,7 @@ class Bot:
 
         self._is_ringing = False
         self._is_ringing_rounds = True
-        self._is_ringing_opening_rounds = True
+        self._is_ringing_opening_row = True
         # This is used as a counter - once `Go` or `Look To` is received, the number of rounds left
         # is calculated and then decremented at the start of every subsequent row until it reaches
         # 0, at which point the method starts.  We keep a counter rather than a simple flag so that
@@ -82,7 +82,7 @@ class Bot:
 
         self._row_number = 0
         self._place = 0
-        self._opening_rounds: Row = row_generator.start_row
+        self._opening_row: Row = row_generator.start_row
         self._rounds: Row = rounds(self.number_of_bells)
         self._row: Row = self._rounds
 
@@ -140,7 +140,7 @@ class Bot:
 
     def _on_size_change(self) -> None:
         self._check_number_of_bells()
-        self._opening_rounds = generate_starting_row(
+        self._opening_row = generate_starting_row(
             self.number_of_bells, self.row_generator.custom_start_row)
         self._rounds = rounds(self.number_of_bells)
         self._check_starting_row()
@@ -152,9 +152,9 @@ class Bot:
                              + f"({self._tower.number_of_bells}) "
                              + "Wheatly will add the extra bells to the end of the change")
 
-        if len(self._opening_rounds) != self.number_of_bells:
+        if len(self._opening_row) != self.number_of_bells:
             self.logger.warning(f"The current tower has fewer bells ({self._tower.number_of_bells}) "
-                                + f"than the starting row {self._opening_rounds}. Wheatley will not ring!")
+                                + f"than the starting row {self._opening_row}. Wheatley will not ring!")
             return False
         return True
 
@@ -168,8 +168,8 @@ class Bot:
                                 + f"but the current tower has {self._tower.number_of_bells}. "
                                 + "Wheatley will not ring!")
             return False
-        if (self._tower.number_of_bells > self.row_generator.stage + 1
-                and self.row_generator.custom_start_row is None):
+        if self._tower.number_of_bells > self.row_generator.stage + 1 \
+                and self.row_generator.custom_start_row is None:
             if self.row_generator.stage % 2:
                 expected = self.row_generator.stage + 1
             else:
@@ -217,7 +217,7 @@ class Bot:
         # Reset the state, so that Wheatley starts by ringing rounds
         self._is_ringing = True
         self._is_ringing_rounds = True
-        self._is_ringing_opening_rounds = True
+        self._is_ringing_opening_row = True
 
         # Start at the first place of the first row
         self.start_next_row(is_first_row=True)
@@ -290,15 +290,15 @@ class Bot:
 
     def generate_next_row(self) -> None:
         """ Creates a new row from the row generator and tells the rhythm to expect the new bells. """
-        if self._is_ringing_opening_rounds:
-            self._row = self._opening_rounds
+        if self._is_ringing_opening_row:
+            self._row = self._opening_row
         elif self._is_ringing_rounds:
             self._row = self._rounds
         else:
             self._row, self._calls = self.row_generator.next_row_and_calls(self.stroke)
             # Add cover bells if needed
-            if len(self._row) < len(self._opening_rounds):
-                self._row = Row(self._row + self._opening_rounds[len(self._row):])
+            if len(self._row) < len(self._opening_row):
+                self._row = Row(self._row + self._opening_row[len(self._row):])
 
         bells = " ".join([str(bell) for bell in self._row])
         self.logger.info(f"ROW: {bells}")
@@ -333,7 +333,7 @@ class Bot:
             assert next_stroke == self.row_generator.start_stroke()
             self._rounds_left_before_method = None
             self._is_ringing_rounds = False
-            self._is_ringing_opening_rounds = False
+            self._is_ringing_opening_row = False
             # If the tower size somehow changed, then call 'Stand' but keep ringing rounds (Wheatley
             # calling 'Stand' will still generate a callback to `self._on_stand_next`, so we don't
             # need to handle that here)

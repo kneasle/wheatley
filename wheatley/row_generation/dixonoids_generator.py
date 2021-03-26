@@ -1,6 +1,6 @@
 """ Module to hold DixonoidsGenerator, a class for generating dixonoids. """
 
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from wheatley.aliases import Places, Row
 from wheatley.stroke import Stroke
@@ -23,7 +23,7 @@ class DixonoidsGenerator(RowGenerator):
 
     def __init__(self, stage: int, plain_rules: Dict[int, List[str]] = None,
                  bob_rules: Dict[int, List[str]] = None, single_rules: Dict[int, List[str]] = None,
-                 start_row: str = None) -> None:
+                 start_row: Optional[str] = None) -> None:
         """
         Initialises a dixonoid generator.
 

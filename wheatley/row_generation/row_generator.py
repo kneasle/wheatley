@@ -1,9 +1,10 @@
 """ A module to contain the abstract base class that all row generators inherit from. """
 
 import logging
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Optional
 from abc import ABCMeta, abstractmethod
 
+from wheatley.row_generation.helpers import rounds
 from wheatley.aliases import Row, Places
 from wheatley.stroke import Stroke, HANDSTROKE
 from wheatley.row_generation.helpers import generate_starting_row
@@ -13,7 +14,7 @@ class RowGenerator(metaclass=ABCMeta):
 
     logger_name = "ROWGEN"
 
-    def __init__(self, stage: int, start_row: str = None) -> None:
+    def __init__(self, stage: int, start_row: Optional[str] = None) -> None:
         self.stage = stage
         self.custom_start_row = start_row
         self.start_row = generate_starting_row(stage, start_row)
@@ -63,6 +64,10 @@ class RowGenerator(metaclass=ABCMeta):
     def set_single(self) -> None:
         """ Set the flag that a single has been made. """
         self._has_single = True
+
+    def rounds(self) -> Row:
+        """ Generate rounds of the stage given by this RowGenerator. """
+        return rounds(self.stage)
 
     @abstractmethod
     def _gen_row(self, previous_row: Row, stroke: Stroke, index: int) -> Row:

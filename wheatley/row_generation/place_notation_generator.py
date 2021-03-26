@@ -1,6 +1,6 @@
 """ A module to hold the row generator that generates rows given some place notations. """
 
-from typing import ClassVar, List, Dict
+from typing import ClassVar, List, Dict, Optional
 
 from wheatley.aliases import CallDef, Row, Places
 from wheatley.stroke import Stroke
@@ -18,7 +18,7 @@ class PlaceNotationGenerator(RowGenerator):
     DefaultSingle: ClassVar[CallDef] = CallDef({0: '1234'})
 
     def __init__(self, stage: int, method: str, bob: CallDef = None, single: CallDef = None,
-                 start_index: int = 0, start_row: str = None) -> None:
+                 start_index: int = 0, start_row: Optional[str] = None) -> None:
         super().__init__(stage, start_row)
 
         if bob is None:
@@ -80,7 +80,7 @@ class PlaceNotationGenerator(RowGenerator):
         return Stroke.from_index(self.start_index)
 
     @staticmethod
-    def grandsire(stage: int, start_row: str = None) -> RowGenerator:
+    def grandsire(stage: int, start_row: Optional[str] = None) -> RowGenerator:
         """ Generates Grandsire on a given stage. """
         stage_bell = convert_to_bell_string(stage)
 
@@ -94,7 +94,7 @@ class PlaceNotationGenerator(RowGenerator):
                                       start_row=start_row)
 
     @staticmethod
-    def stedman(stage: int, start_row: str = None) -> RowGenerator:
+    def stedman(stage: int, start_row: Optional[str] = None) -> RowGenerator:
         """ Generates Stedman on a given stage (even bell Stedman will cause an exception). """
         assert stage % 2 == 1
 
@@ -114,7 +114,7 @@ class PlaceNotationGenerator(RowGenerator):
                                       start_row=start_row)
 
     @staticmethod
-    def stedman_doubles(start_row: str = None) -> RowGenerator:
+    def stedman_doubles(start_row: Optional[str] = None) -> RowGenerator:
         """ Generates Stedman on a given stage (even bell Stedman will cause an exception). """
         notation = "3.1.5.3.1.3.1.3.5.1.3.1"
 

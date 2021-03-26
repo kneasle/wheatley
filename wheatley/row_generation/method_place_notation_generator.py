@@ -14,7 +14,8 @@ from .place_notation_generator import PlaceNotationGenerator
 from .row_generator import RowGenerator
 
 
-def generator_from_special_title(method_title: str, start_row: str = None) -> Optional[RowGenerator]:
+def generator_from_special_title(method_title: str, start_row: Optional[str] = None) \
+    -> Optional[RowGenerator]:
     """ Creates a row generator from special method titles. """
     lowered_title = method_title.lower().strip()
     if " " not in lowered_title:

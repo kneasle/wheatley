@@ -1,6 +1,6 @@
 """ Helper functions for the row generation module. """
 
-from typing import List
+from typing import List, Optional
 
 import itertools
 import re
@@ -76,7 +76,7 @@ def rounds(number_of_bells: int) -> Row:
     return Row([Bell.from_number(i) for i in range(1, number_of_bells + 1)])
 
 
-def generate_starting_row(number_of_bells: int, start_row_string: str = None) -> Row:
+def generate_starting_row(number_of_bells: int, start_row_string: Optional[str] = None) -> Row:
     """ Generate the starting row as rounds or a custom input. """
     if start_row_string is None:
         return rounds(number_of_bells)

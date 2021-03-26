@@ -6,11 +6,49 @@ from typing import Dict, NoReturn, Optional
 import logging
 
 from wheatley.aliases import CallDef, JSON
+from wheatley.bell import Bell
 from wheatley.row_generation import RowGenerator
 from wheatley.row_generation.place_notation_generator import PlaceNotationGenerator
 from wheatley.row_generation.complib_composition_generator import ComplibCompositionGenerator, \
                                                                   PrivateCompError, InvalidCompError
 
+class StartRowParseError(ValueError):
+    """
+    An error thrown with a helpful error message when the user inputs a start row string that
+    cannot be parsed by the parser.
+    """
+
+    def __init__(self, start_row_string: str, message: str) -> None:
+        super().__init__()
+
+        self.start_row_string = start_row_string
+        self.message = message
+
+    def __str__(self) -> str:
+        return f"Error parsing start row '{self.start_row_string}': {self.message}"
+
+def parse_start_row(start_row: str) -> int:
+    """
+    Parses a start row written in the format "12345" to ensure all characters are valid bells
+    and there are no missing bells.
+    """
+    def exit_with_message(error_text: str) -> NoReturn:
+        """ Raise an exception with a useful error message. """
+        raise StartRowParseError(start_row, error_text)
+
+    max_bell: int = 0
+    for char in start_row:
+        try:
+            bell = Bell.from_str(char)
+        except ValueError as e:
+            exit_with_message(str(e))
+
+        max_bell = max(max_bell, bell.number)
+
+    if max_bell > len(start_row):
+        exit_with_message(f"Start row does not contain all bells from 1 to {max_bell}")
+
+    return max_bell
 
 class PealSpeedParseError(ValueError):
     """

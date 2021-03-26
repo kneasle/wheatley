@@ -16,7 +16,8 @@ from wheatley.rhythm import Rhythm, RegressionRhythm, WaitForUserRhythm
 from wheatley.tower import RingingRoomTower
 from wheatley.bot import Bot
 from wheatley.page_parser import get_load_balancing_url, TowerNotFoundError, InvalidURLError
-from wheatley.parsing import parse_peal_speed, PealSpeedParseError, parse_call
+from wheatley.parsing import parse_peal_speed, PealSpeedParseError, parse_call, \
+    parse_start_row, StartRowParseError
 
 from wheatley.row_generation import RowGenerator, ComplibCompositionGenerator
 from wheatley.row_generation import MethodPlaceNotationGenerator
@@ -412,6 +413,11 @@ def console_main(override_args: Optional[List[str]], stop_on_join_tower: bool) -
         sys.exit(f"Bad value for 'room_id': {e}")
     except InvalidURLError as e:
         sys.exit(f"Bad value for '--url': {e}")
+
+    try:
+        parse_start_row(args.start_row)
+    except StartRowParseError as e:
+        sys.exit(f"{e}")
 
     tower = RingingRoomTower(args.room_id, tower_url)
     row_generator = create_row_generator(args)

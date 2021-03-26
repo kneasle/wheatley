@@ -1,6 +1,7 @@
 import unittest
 
-from wheatley.parsing import parse_peal_speed, PealSpeedParseError, parse_call, CallParseError
+from wheatley.parsing import parse_peal_speed, PealSpeedParseError, parse_call, CallParseError, \
+    parse_start_row, StartRowParseError
 from wheatley.aliases import CallDef
 from wheatley.row_generation.complib_composition_generator import parse_arg, InvalidComplibURLError
 
@@ -154,6 +155,25 @@ class ParseTests(unittest.TestCase):
                 with self.assertRaisesRegex(InvalidComplibURLError, exp_err_str):
                     parse_arg(input_url)
 
+    def test_parse_start_row(self):
+        test_cases = [("654321", 6),
+                      ("1", 1)]
+
+        for (input_arg, expected_output) in test_cases:
+            with self.subTest(input=input_arg, expected_output=expected_output):
+                output = parse_start_row(input_arg)
+                self.assertEqual(output, expected_output)
+                
+    def test_parse_start_row_errors(self):
+        test_cases = [("6", "Start row does not contain all bells from 1 to 6"),
+                      ("64321", "Start row does not contain all bells from 1 to 6"),
+                      ("4321G", "'G' is not known bell symbol")]
+
+        for (input_arg, expected_message) in test_cases:
+            with self.subTest(input=input_arg, expected_message=expected_message):
+                with self.assertRaises(StartRowParseError) as e:
+                    parse_start_row(input_arg)
+                self.assertEqual(expected_message, e.exception.message)
 
 if __name__ == '__main__':
     unittest.main()

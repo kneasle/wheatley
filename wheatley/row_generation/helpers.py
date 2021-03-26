@@ -76,19 +76,19 @@ def rounds(number_of_bells: int) -> Row:
     return Row([Bell.from_number(i) for i in range(1, number_of_bells + 1)])
 
 
-def generate_starting_row(number_of_bells: int, start_row: str = None) -> Row:
+def generate_starting_row(number_of_bells: int, start_row_string: str = None) -> Row:
     """ Generate the starting row as rounds or a custom input. """
-    if start_row is None:
+    if start_row_string is None:
         return rounds(number_of_bells)
 
-    custom_start_row = [Bell.from_str(i) for i in start_row]
-    if len(custom_start_row) > len(set(custom_start_row)):
-        raise ValueError(f"starting row '{start_row}' contains the same bell multiple times")
+    start_row = [Bell.from_str(i) for i in start_row_string]
+    if len(start_row) > len(set(start_row)):
+        raise ValueError(f"starting row '{start_row_string}' contains the same bell multiple times")
 
     # If there are more bells than given in the starting row
     # add the missing ones in sequential order as cover bells
     for i in range(1, number_of_bells + 1):
-        if Bell.from_number(i) not in custom_start_row:
-            custom_start_row.append(Bell.from_number(i))
+        if Bell.from_number(i) not in start_row:
+            start_row.append(Bell.from_number(i))
 
-    return Row(custom_start_row)
+    return Row(start_row)

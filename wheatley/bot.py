@@ -297,8 +297,8 @@ class Bot:
         else:
             self._row, self._calls = self.row_generator.next_row_and_calls(self.stroke)
             # Add cover bells if needed
-            if len(self._row) < len(self._rounds):
-                self._row = Row(self._row + self._rounds[len(self._row):])
+            if len(self._row) < len(self._opening_rounds):
+                self._row = Row(self._row + self._opening_rounds[len(self._row):])
 
         bells = " ".join([str(bell) for bell in self._row])
         self.logger.info(f"ROW: {bells}")

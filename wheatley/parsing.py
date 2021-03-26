@@ -36,11 +36,15 @@ def parse_start_row(start_row: str) -> int:
         """ Raise an exception with a useful error message. """
         raise StartRowParseError(start_row, error_text)
 
+    if start_row is None:
+        return 0
+
     max_bell: int = 0
 
     if start_row is None:
         return max_bell
 
+    # First loop checks for invalid bells and finds the largest bell in the row
     for char in start_row:
         try:
             bell = Bell.from_str(char)
@@ -49,10 +53,20 @@ def parse_start_row(start_row: str) -> int:
 
         max_bell = max(max_bell, bell.number)
 
-    if max_bell > len(start_row):
-        exit_with_message(f"Start row does not contain all bells from 1 to {max_bell}")
+    # Second loop checks if there are duplicates and if every bell is specified
+    expected_bells = list(range(1, max_bell + 1))
+    for char in start_row:
+        bell_number = Bell.from_str(char).number
 
-    return max_bell
+        if bell_number not in expected_bells:
+            exit_with_message(f"Start row contains bell {bell_number} mutiple times")
+
+        expected_bells.remove(bell_number)
+
+    if len(expected_bells) > 0:
+        exit_with_message(f"Start row does not contain bell(s) {expected_bells}")
+
+    return len(start_row)
 
 class PealSpeedParseError(ValueError):
     """

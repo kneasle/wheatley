@@ -165,9 +165,10 @@ class ParseTests(unittest.TestCase):
                 self.assertEqual(output, expected_output)
                 
     def test_parse_start_row_errors(self):
-        test_cases = [("6", "Start row does not contain all bells from 1 to 6"),
-                      ("64321", "Start row does not contain all bells from 1 to 6"),
-                      ("4321G", "'G' is not known bell symbol")]
+        test_cases = [("6", "Start row does not contain bell(s) [1, 2, 3, 4, 5]"),
+                      ("64321", "Start row does not contain bell(s) [5]"),
+                      ("4321G", "'G' is not known bell symbol"),
+                      ("654326", "Start row contains bell 6 mutiple times")]
 
         for (input_arg, expected_message) in test_cases:
             with self.subTest(input=input_arg, expected_message=expected_message):

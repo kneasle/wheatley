@@ -37,6 +37,10 @@ def parse_start_row(start_row: str) -> int:
         raise StartRowParseError(start_row, error_text)
 
     max_bell: int = 0
+
+    if start_row is None:
+        return max_bell
+
     for char in start_row:
         try:
             bell = Bell.from_str(char)

@@ -148,9 +148,9 @@ class Bot:
     def _check_starting_row(self) -> bool:
         if (self.row_generator.custom_start_row is not None and
                 len(self.row_generator.custom_start_row) < self.number_of_bells):
-            self.logger.info("The starting row contains fewer bells than the tower"
-                             + f"({self._tower.number_of_bells}) "
-                             + "Wheatly will add the extra bells to the end of the change")
+            self.logger.info(f"The starting row '{self.row_generator.custom_start_row}' "
+                             + f"contains fewer bells than the tower ({self._tower.number_of_bells}). "
+                             + "Wheatley will add the extra bells to the end of the change.")
 
         if len(self._opening_row) != self.number_of_bells:
             self.logger.warning(f"The current tower has fewer bells ({self._tower.number_of_bells}) "

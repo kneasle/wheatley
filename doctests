@@ -7,7 +7,9 @@ and argument errors.
 """
 
 from subprocess import STDOUT, check_output, CalledProcessError, TimeoutExpired
+import os
 import shlex
+import sys
 
 # ID of a tower that I made called 'DO NOT ENTER'
 ROOM_ID = "238915467"
@@ -59,9 +61,20 @@ def command_to_converted_args(location, command):
     # version contained in the current commit, rather than a release version.
     edited_command = "python ./run-" + command.replace("[ID NUMBER]", ROOM_ID) \
                                        .replace("[METHOD TITLE]", '"' + EXAMPLE_METHOD + '"')
+    insert_arg_index = 2
+
+    # Check if running inside venv, if so we need to activate in each process
+    if sys.prefix != sys.base_prefix:
+        # Windows path `\` gets dropped, but Windows is happy to accept `/` instead
+        activate_script = sys.prefix.replace("\\", "/") + "/Scripts/activate"
+        if os.name == 'nt':
+            activate_script += ".bat"
+        edited_command = activate_script + " & " + edited_command
+        insert_arg_index = 4
+
 
     args = shlex.split(edited_command)
-    args.insert(2, "integration-test")
+    args.insert(insert_arg_index, "integration-test")
 
     return (args, location, edited_command)
 

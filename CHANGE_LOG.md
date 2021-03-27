@@ -1,4 +1,4 @@
-# 0.6.0 (W.I.P.)
+# 0.6.0
 
 ## User-facing changes
 

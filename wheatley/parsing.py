@@ -2,7 +2,7 @@
 A module to contain all the functions that parse command line arguments, and their error classes.
 """
 
-from typing import Dict, NoReturn, Optional
+from typing import Dict, NoReturn, Optional, Tuple
 import logging
 
 from wheatley.aliases import CallDef, JSON
@@ -11,6 +11,7 @@ from wheatley.row_generation import RowGenerator
 from wheatley.row_generation.place_notation_generator import PlaceNotationGenerator
 from wheatley.row_generation.complib_composition_generator import ComplibCompositionGenerator, \
                                                                   PrivateCompError, InvalidCompError
+from wheatley.row_generation.helpers import valid_pn
 
 class StartRowParseError(ValueError):
     """
@@ -295,3 +296,42 @@ def to_bool(value: str) -> bool:
     if value in ["False", "false", False]:
         return False
     raise ValueError(f"Value {value} cannot be converted into a bool")
+
+
+class PlaceNotationError(ValueError):
+    """
+    An error thrown with a helpful error message when the user inputs a place
+    notation string that cannot be parsed.
+    """
+
+    def __init__(self, place_notation: str, message: str) -> None:
+        super().__init__()
+
+        self.place_notation = place_notation
+        self.message = message
+
+    def __str__(self) -> str:
+        return f"Error in place notation '{self.place_notation}': {self.message}"
+
+
+def parse_place_notation(input_string: str) -> Tuple[int, str]:
+    """
+    Parse a stage and place notation throwing an error when an invalid stage
+    or place notation specifier is found
+    """
+
+    # Looking for a string that matches <stage>:<place notation> where the
+    # place notation is a series of bell numbers and 'x' characters
+    parts = input_string.split(':')
+    if len(parts) == 2:
+        stage_part = parts[0]
+        if len(stage_part) == 0 or not stage_part.isnumeric():
+            raise PlaceNotationError(input_string, 'Stage must be a number')
+        stage = int(stage_part)
+        place_notation = parts[1]
+        if not valid_pn(place_notation):
+            raise PlaceNotationError(input_string, 'Place notation is invalid')
+    else:
+        raise PlaceNotationError(input_string, '<stage>:<place notation> required')
+
+    return stage, place_notation

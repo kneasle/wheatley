@@ -1,7 +1,7 @@
 import unittest
 
 from wheatley.parsing import parse_peal_speed, PealSpeedParseError, parse_call, CallParseError, \
-    parse_start_row, StartRowParseError
+                             parse_start_row, StartRowParseError, parse_place_notation, PlaceNotationError
 from wheatley.aliases import CallDef
 from wheatley.row_generation.complib_composition_generator import parse_arg, InvalidComplibURLError
 
@@ -64,6 +64,25 @@ class ParseTests(unittest.TestCase):
             with self.subTest(input=input_arg, expected_message=expected_message):
                 with self.assertRaises(CallParseError) as e:
                     parse_call(input_arg)
+                self.assertEqual(expected_message, e.exception.message)
+
+    def test_place_notation_parsing(self):
+        test_cases = [("5:5.1.5.1.5", (5, "5.1.5.1.5")),
+                      ("6:x16,12", (6, "x16,12"))]
+
+        for (input_arg, expected_tuple) in test_cases:
+            with self.subTest(input=input_arg, expected_tuple=expected_tuple):
+                self.assertEqual(expected_tuple, parse_place_notation(input_arg))
+
+    def test_place_notation_parsing_errors(self):
+        test_cases = [("x16x16x16,12", "<stage>:<place notation> required"),
+                      ("x:x16x16x16,12", "Stage must be a number"),
+                      ("6:z16x16x16,12", "Place notation is invalid")]
+
+        for (input_arg, expected_message) in test_cases:
+            with self.subTest(input=input_arg, expected_message=expected_message):
+                with self.assertRaises(PlaceNotationError) as e:
+                    parse_place_notation(input_arg)
                 self.assertEqual(expected_message, e.exception.message)
 
     def test_url_conversion_public(self):

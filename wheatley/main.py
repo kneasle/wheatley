@@ -16,8 +16,8 @@ from wheatley.rhythm import Rhythm, RegressionRhythm, WaitForUserRhythm
 from wheatley.tower import RingingRoomTower
 from wheatley.bot import Bot
 from wheatley.page_parser import get_load_balancing_url, TowerNotFoundError, InvalidURLError
-from wheatley.parsing import parse_peal_speed, PealSpeedParseError, parse_call, \
-    parse_start_row, StartRowParseError
+from wheatley.parsing import parse_peal_speed, PealSpeedParseError, parse_call, parse_start_row, \
+                             StartRowParseError, parse_place_notation, PlaceNotationError
 
 from wheatley.row_generation import RowGenerator, ComplibCompositionGenerator
 from wheatley.row_generation import MethodPlaceNotationGenerator
@@ -25,6 +25,7 @@ from wheatley.row_generation.complib_composition_generator import PrivateCompErr
 from wheatley.row_generation.method_place_notation_generator import MethodNotFoundError, \
                                                                     generator_from_special_title
 from wheatley.row_generation.place_holder_generator import PlaceHolderGenerator
+from wheatley.row_generation.place_notation_generator import PlaceNotationGenerator
 
 
 def create_row_generator(args: argparse.Namespace) -> RowGenerator:
@@ -36,7 +37,7 @@ def create_row_generator(args: argparse.Namespace) -> RowGenerator:
             return ComplibCompositionGenerator.from_arg(args.comp)
         except (PrivateCompError, InvalidCompError) as e:
             sys.exit(f"Bad value for '--comp': {e}")
-    elif "method" in args:
+    elif "method" in args and args.method is not None:
         try:
             return generator_from_special_title(args.method, args.start_row) or \
                 MethodPlaceNotationGenerator(
@@ -48,8 +49,20 @@ def create_row_generator(args: argparse.Namespace) -> RowGenerator:
                 )
         except MethodNotFoundError as e:
             sys.exit(f"Bad value for '--method': {e}")
+    elif "place_notation" in args and args.place_notation is not None:
+        try:
+            stage, place_notation = parse_place_notation(args.place_notation)
+            return PlaceNotationGenerator(
+                stage,
+                place_notation,
+                parse_call(args.bob),
+                parse_call(args.single),
+                args.start_index
+            )
+        except PlaceNotationError as e:
+            sys.exit(f"Bad value for '--place-notation': {e}")
     else:
-        assert False, "This shouldn't be possible because one of --method and --comp should always be defined"
+        assert False, "This shouldn't be possible because one of --method, --comp or --place-notation should always be defined"
 
 
 def create_rhythm(peal_speed: int, inertia: float, max_bells_in_dataset: int, handstroke_gap: float,
@@ -254,17 +267,23 @@ def console_main(override_args: Optional[List[str]], stop_on_join_tower: bool) -
     # Row generation arguments
     row_gen_group = parser.add_argument_group("Row generation arguments")
 
-    # An mutual exclusion group to disallow specifying both a method *and* a CompLib comp
-    comp_method_group = row_gen_group.add_mutually_exclusive_group(required=True)
-    comp_method_group.add_argument(
+    # An mutual exclusion group to disallow specifying more than one of a method,
+    # a CompLib comp or a place notation
+    comp_method_place_group = row_gen_group.add_mutually_exclusive_group(required=True)
+    comp_method_place_group.add_argument(
         "-c", "--comp",
         type=str,
         help="The ID or URL of the complib composition you want to ring"
     )
-    comp_method_group.add_argument(
+    comp_method_place_group.add_argument(
         "-m", "--method",
         type=str,
         help="The title of the method you want to ring"
+    )
+    comp_method_place_group.add_argument(
+        "-p", "--place-notation",
+        type=str,
+        help="The place notation description of the method you want to ring"
     )
 
     row_gen_group.add_argument(

@@ -43,7 +43,7 @@ def calculate_regression(data_set: List[Tuple[float, float, float]]) -> Tuple[fl
     w = numpy.array([fill(i, w, num_datapoints) for (i, w) in enumerate(weights)])
     y = numpy.array([[x] for x in real_times])
 
-    # Calculate (X^T * W * X)^-1 * (X^T * W * y) 
+    # Calculate (X^T * W * X)^-1 * (X^T * W * y)
     beta = numpy.linalg.inv(x.transpose().dot(w).dot(x)).dot(x.transpose()).dot(w).dot(y)
 
     return beta[0][0], beta[1][0]

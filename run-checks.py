@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 import argparse
+import os
+
 import mypy.api
 import pytest
 import pylint.lint
@@ -65,10 +67,10 @@ class Check:
 
 
 # Ignore first argument (this file name)
-args = sys.argv[1:]
-parsed_args = parser.parse_args(args)
+mypy_args = sys.argv[1:]
+parsed_args = parser.parse_args(mypy_args)
 # Run all if no option specified
-run_all = len(args) == 0
+run_all = len(mypy_args) == 0
 
 if run_all or parsed_args.unit_tests:
     with Check("Unit tests"):
@@ -90,12 +92,16 @@ if run_all or parsed_args.fuzz:
 if run_all or parsed_args.lint:
     with Check("Linting"):
         print("python -m pylint wheatley")
-        pylint.lint.Run(['wheatley'])
+        pylint_args = ['wheatley']
+        if os.name != 'nt':
+            pylint_args.append('--enable=unexpected-line-ending-format')
+        pylint.lint.Run(pylint_args)
 
 if run_all or parsed_args.type_check:
     with Check("Type check"):
         print("python -m mypy wheatley --pretty --disallow-incomplete-defs --disallow-untyped-defs")
-        stdout, stderr, exit_status = mypy.api.run(['wheatley', '--pretty', '--disallow-incomplete-defs', '--disallow-untyped-defs'])
+        mypy_args = ['wheatley', '--pretty', '--disallow-incomplete-defs', '--disallow-untyped-defs']
+        stdout, stderr, exit_status = mypy.api.run(mypy_args)
         print(stdout)
         print(stderr, file=sys.stderr)
         if exit_status:

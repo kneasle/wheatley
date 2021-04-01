@@ -1,3 +1,12 @@
+# 0.7.0
+
+## User-facing changes
+
+- Start ringing at a custom row (using `--start-row <row>`).  This doesn't work for CompLib
+  compositions.
+- Ring arbitrary place notation on a given stage (using
+  `--place-notation <stage>:<place-notation>`).  `--bob` and `--single` still apply.
+
 # 0.6.0
 
 ## User-facing changes

@@ -83,6 +83,11 @@ For help with what parameters Wheatley has and what they do, type `wheatley --he
     wheatley [ID NUMBER] --comp 65034
     ```
 
+*   Ring rows specified by place notation, in this case Plain Bob Minor:
+    ```bash
+    wheatley [ID NUMBER] --place-notation 6:x16x16x16,12
+    ```
+
 *   Ring at a peal speed of 3 hours 30 minutes (i.e. quite slowly):
     ```bash
     wheatley [ID NUMBER] --method [METHOD TITLE] --peal-speed 3h30

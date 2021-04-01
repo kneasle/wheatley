@@ -28,7 +28,33 @@ STAGES = {
 }
 
 
-def convert_pn(pn_str: str, expect_symmetric: bool = False) -> List[Places]:
+def valid_pn(pn_str: str) -> bool:
+    """
+    Check that a place notation string can be converted into a list of places.
+    """
+    if "," in pn_str:
+        for part in pn_str.split(","):
+            if not valid_pn(part):
+                return False
+        return True
+
+    # Assumes a valid place notation string is delimited by `.`
+    # These can optionally be omitted around an `-` or `x`
+    # We substitute to ensure `-` is surrounded by `.` and replace any `..` caused by `--` => `.-..-.
+    dot_delimited_string = re.sub("[.]*[x-][.]*", ".-.", pn_str).strip('.&+ ')
+    deduplicated_string = dot_delimited_string.replace('..', '.').split('.')
+
+    # Walk the places checking for either a bell crossing or a valid bell string
+    for place in deduplicated_string:
+        if place != '-':
+            for y in place:
+                if not y.upper() in BELL_NAMES:
+                    return False
+
+    return True
+
+
+def convert_pn(pn_str: str, expect_symmetric: bool=False) -> List[Places]:
     """ Convert a place notation string into a list of places. """
     if "," in pn_str:
         return list(itertools.chain.from_iterable(convert_pn(part, True) for part in pn_str.split(",")))

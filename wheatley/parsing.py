@@ -6,11 +6,67 @@ from typing import Dict, NoReturn, Optional
 import logging
 
 from wheatley.aliases import CallDef, JSON
+from wheatley.bell import Bell
 from wheatley.row_generation import RowGenerator
 from wheatley.row_generation.place_notation_generator import PlaceNotationGenerator
 from wheatley.row_generation.complib_composition_generator import ComplibCompositionGenerator, \
                                                                   PrivateCompError, InvalidCompError
 
+class StartRowParseError(ValueError):
+    """
+    An error thrown with a helpful error message when the user inputs a start row string that
+    cannot be parsed by the parser.
+    """
+
+    def __init__(self, start_row_string: str, message: str) -> None:
+        super().__init__()
+
+        self.start_row_string = start_row_string
+        self.message = message
+
+    def __str__(self) -> str:
+        return f"Error parsing start row '{self.start_row_string}': {self.message}"
+
+def parse_start_row(start_row: str) -> int:
+    """
+    Parses a start row written in the format "12345" to ensure all characters are valid bells
+    and there are no missing bells.
+    """
+    def exit_with_message(error_text: str) -> NoReturn:
+        """ Raise an exception with a useful error message. """
+        raise StartRowParseError(start_row, error_text)
+
+    if start_row is None:
+        return 0
+
+    max_bell: int = 0
+
+    if start_row is None:
+        return max_bell
+
+    # First loop checks for invalid bells and finds the largest bell in the row
+    for char in start_row:
+        try:
+            bell = Bell.from_str(char)
+        except ValueError as e:
+            exit_with_message(str(e))
+
+        max_bell = max(max_bell, bell.number)
+
+    # Second loop checks if there are duplicates and if every bell is specified
+    expected_bells = list(range(1, max_bell + 1))
+    for char in start_row:
+        bell_number = Bell.from_str(char).number
+
+        if bell_number not in expected_bells:
+            exit_with_message(f"Start row contains bell {bell_number} mutiple times")
+
+        expected_bells.remove(bell_number)
+
+    if len(expected_bells) > 0:
+        exit_with_message(f"Start row does not contain bell(s) {expected_bells}")
+
+    return len(start_row)
 
 class PealSpeedParseError(ValueError):
     """

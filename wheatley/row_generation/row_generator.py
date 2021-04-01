@@ -1,27 +1,29 @@
 """ A module to contain the abstract base class that all row generators inherit from. """
 
 import logging
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Optional
 from abc import ABCMeta, abstractmethod
 
+from wheatley.row_generation.helpers import rounds
 from wheatley.aliases import Row, Places
 from wheatley.stroke import Stroke, HANDSTROKE
-from wheatley.row_generation.helpers import rounds
-
+from wheatley.row_generation.helpers import generate_starting_row
 
 class RowGenerator(metaclass=ABCMeta):
     """ Abstract base class for behaviours common to all row generators. """
 
     logger_name = "ROWGEN"
 
-    def __init__(self, stage: int) -> None:
+    def __init__(self, stage: int, start_row: Optional[str] = None) -> None:
         self.stage = stage
+        self.custom_start_row = start_row
+        self.start_row = generate_starting_row(stage, start_row)
         self.logger = logging.getLogger(self.logger_name)
 
         self._has_bob = False
         self._has_single = False
         self._index = 0
-        self._row = self.rounds()
+        self._row = self.start_row
 
     def reset(self) -> None:
         """ Reset the row generator. """
@@ -30,7 +32,7 @@ class RowGenerator(metaclass=ABCMeta):
         self._has_bob = False
         self._has_single = False
         self._index = 0
-        self._row = self.rounds()
+        self._row = self.start_row
 
     def reset_calls(self) -> None:
         """ Clear the pending call flags. """

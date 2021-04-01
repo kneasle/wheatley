@@ -16,7 +16,8 @@ from wheatley.rhythm import Rhythm, RegressionRhythm, WaitForUserRhythm
 from wheatley.tower import RingingRoomTower
 from wheatley.bot import Bot
 from wheatley.page_parser import get_load_balancing_url, TowerNotFoundError, InvalidURLError
-from wheatley.parsing import parse_peal_speed, PealSpeedParseError, parse_call
+from wheatley.parsing import parse_peal_speed, PealSpeedParseError, parse_call, \
+    parse_start_row, StartRowParseError
 
 from wheatley.row_generation import RowGenerator, ComplibCompositionGenerator
 from wheatley.row_generation import MethodPlaceNotationGenerator
@@ -28,20 +29,23 @@ from wheatley.row_generation.place_holder_generator import PlaceHolderGenerator
 
 def create_row_generator(args: argparse.Namespace) -> RowGenerator:
     """ Generates a row generator according to the given CLI arguments. """
-    if "comp" in args and args.comp is not None:
+    if "comp" in args and args.comp is not None and "start_row" in args and args.start_row is not None:
+        sys.exit("You may not specify a custom start row with a composition")
+    elif "comp" in args and args.comp is not None:
         try:
             return ComplibCompositionGenerator.from_arg(args.comp)
         except (PrivateCompError, InvalidCompError) as e:
             sys.exit(f"Bad value for '--comp': {e}")
     elif "method" in args:
         try:
-            return generator_from_special_title(args.method) or \
-                      MethodPlaceNotationGenerator(
-                          args.method,
-                          parse_call(args.bob),
-                          parse_call(args.single),
-                          args.start_index
-                      )
+            return generator_from_special_title(args.method, args.start_row) or \
+                MethodPlaceNotationGenerator(
+                    args.method,
+                    parse_call(args.bob),
+                    parse_call(args.single),
+                    args.start_row,
+                    args.start_index
+                )
         except MethodNotFoundError as e:
             sys.exit(f"Bad value for '--method': {e}")
     else:
@@ -49,7 +53,7 @@ def create_row_generator(args: argparse.Namespace) -> RowGenerator:
 
 
 def create_rhythm(peal_speed: int, inertia: float, max_bells_in_dataset: int, handstroke_gap: float,
-                  use_wait: bool, initial_inertia: float=0) -> Rhythm:
+                  use_wait: bool, initial_inertia: float = 0) -> Rhythm:
     """ Generates a rhythm object according to the given CLI arguments. """
     # Sets the minimum number of bells that Wheatley will use in order to deduce a rhythm.  Setting this to
     # larger numbers will make Wheatley more stable during the pull-off, whereas smaller numbers will make
@@ -292,6 +296,11 @@ def console_main(override_args: Optional[List[str]], stop_on_join_tower: bool) -
               would refer to the lead **end**).  Defaults to 0 (i.e. a standard start)."
     )
     row_gen_group.add_argument(
+        "--start-row",
+        type=str,
+        help="Determines the initial row."
+    )
+    row_gen_group.add_argument(
         "-u", "--use-up-down-in",
         action="store_true",
         help="If set, then the Wheatley will automatically go into changes after two rounds have been \
@@ -405,6 +414,11 @@ def console_main(override_args: Optional[List[str]], stop_on_join_tower: bool) -
     except InvalidURLError as e:
         sys.exit(f"Bad value for '--url': {e}")
 
+    try:
+        parse_start_row(args.start_row)
+    except StartRowParseError as e:
+        sys.exit(f"{e}")
+
     tower = RingingRoomTower(args.room_id, tower_url)
     row_generator = create_row_generator(args)
 
@@ -427,7 +441,7 @@ def console_main(override_args: Optional[List[str]], stop_on_join_tower: bool) -
     except KeyboardInterrupt:
         print("Bye!")
 
-def main(override_args: Optional[List[str]]=None, stop_on_join_tower: bool=False) -> None:
+def main(override_args: Optional[List[str]] = None, stop_on_join_tower: bool = False) -> None:
     """
     The root main function for Wheatley.  If the first argument given to Wheatley is 'server-mode', then
     this will run `server_main` (the main function for running Wheatley on RR's servers) otherwise it will

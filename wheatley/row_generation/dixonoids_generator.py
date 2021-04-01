@@ -1,6 +1,6 @@
 """ Module to hold DixonoidsGenerator, a class for generating dixonoids. """
 
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from wheatley.aliases import Places, Row
 from wheatley.stroke import Stroke
@@ -22,7 +22,8 @@ class DixonoidsGenerator(RowGenerator):
     DefaultSingle = {1: ["x", "1234"]}
 
     def __init__(self, stage: int, plain_rules: Dict[int, List[str]] = None,
-                 bob_rules: Dict[int, List[str]] = None, single_rules: Dict[int, List[str]] = None) -> None:
+                 bob_rules: Dict[int, List[str]] = None, single_rules: Dict[int, List[str]] = None,
+                 start_row: Optional[str] = None) -> None:
         """
         Initialises a dixonoid generator.
 
@@ -33,7 +34,7 @@ class DixonoidsGenerator(RowGenerator):
         :param single_rules: Dictionary of leading bell: [handstroke pn, backstroke pn]
                           Only include bells which lead when a single is rung
         """
-        super().__init__(stage)
+        super().__init__(stage, start_row)
 
         if plain_rules is None:
             plain_rules = self.DixonsRules

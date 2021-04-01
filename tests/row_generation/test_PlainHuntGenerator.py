@@ -73,6 +73,20 @@ class PlainHuntGeneratorTests(TestCase):
                           [4, 2, 6, 1, 8, 3, 10, 5, 12, 7, 11, 9]],
                          rows)
 
+    def test_minimus_custom_start_row(self):
+        stage = 4
+        generator = PlainHuntGenerator(stage, "4321")
+
+        rows = gen_rows(generator, 8)
+        self.assertEqual([[3, 4, 1, 2],
+                          [3, 1, 4, 2],
+                          [1, 3, 2, 4],
+                          [1, 2, 3, 4],
+                          [2, 1, 4, 3],
+                          [2, 4, 1, 3],
+                          [4, 2, 3, 1],
+                          [4, 3, 2, 1]],
+                         rows)
 
 if __name__ == '__main__':
     unittest.main()

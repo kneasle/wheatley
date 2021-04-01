@@ -14,7 +14,8 @@ from .place_notation_generator import PlaceNotationGenerator
 from .row_generator import RowGenerator
 
 
-def generator_from_special_title(method_title: str) -> Optional[RowGenerator]:
+def generator_from_special_title(method_title: str, start_row: Optional[str] = None) \
+    -> Optional[RowGenerator]:
     """ Creates a row generator from special method titles. """
     lowered_title = method_title.lower().strip()
     if " " not in lowered_title:
@@ -31,13 +32,13 @@ def generator_from_special_title(method_title: str) -> Optional[RowGenerator]:
         raise MethodNotFoundError(method_title)
 
     if method_name == "grandsire" and stage >= 5:
-        return PlaceNotationGenerator.grandsire(stage)
+        return PlaceNotationGenerator.grandsire(stage, start_row)
     if method_name == "stedman" and stage % 2 and stage >= 5:
-        return PlaceNotationGenerator.stedman(stage)
+        return PlaceNotationGenerator.stedman(stage, start_row)
     if method_name in ["plain hunt", "plain hunt on"]:
-        return PlainHuntGenerator(stage)
+        return PlainHuntGenerator(stage, start_row)
     if method_name == "dixon's bob" and stage == 6:
-        return DixonoidsGenerator(stage)
+        return DixonoidsGenerator(stage, start_row=start_row)
     return None
 
 
@@ -59,7 +60,8 @@ class MethodNotFoundError(ValueError):
 class MethodPlaceNotationGenerator(PlaceNotationGenerator):
     """ A class to generate rows given a method title. """
 
-    def __init__(self, method_title: str, bob: CallDef, single: CallDef, start_row: int = 0) -> None:
+    def __init__(self, method_title: str, bob: CallDef, single: CallDef,
+                 start_row: str, start_index: int = 0) -> None:
         method_xml = self._fetch_method(method_title)
 
         try:
@@ -73,6 +75,7 @@ class MethodPlaceNotationGenerator(PlaceNotationGenerator):
             method_pn,
             bob,
             single,
+            start_index,
             start_row
         )
 

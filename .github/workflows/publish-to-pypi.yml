@@ -20,11 +20,11 @@ jobs:
         python3 -m pip install setuptools wheel twine
         pip3 install -r requirements.txt
     - name: Run linter
-      run: python3 -m pylint wheatley/**/*.py
-    - name: Run tests
-      run: python3 -m pytest
-    - name: Run fuzzer
-      run: ./fuzz
+      run: python3 run-checks.py --lint
+    - name: Run typechecker
+      run: python3 run-checks.py --type-check
+    - name: Run unit tests
+      run: python3 run-checks.py --unit-test
     - name: Make version file
       run: |
         echo ${{ github.ref }} | sed 's:.*/v::' > wheatley/version.txt

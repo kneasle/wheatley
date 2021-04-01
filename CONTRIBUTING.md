@@ -39,11 +39,7 @@ In order to make the code more reliable, all incoming PRs are passed through sev
 automatically look out for and catch mistakes.  All of these can be run with the following:
 
 ```bash
-python -m mypy wheatley --pretty --disallow-incomplete-defs --disallow-untyped-defs
-python -m pylint wheatley
-python -m pytest
-./doctests
-./fuzz
+python ./run-checks.py
 ```
 
 ### Typechecker
@@ -56,7 +52,7 @@ The typechecker can be run locally with the following command and will produce r
 messages if anything is wrong:
 
 ```bash
-python -m mypy wheatley --pretty --disallow-incomplete-defs --disallow-untyped-defs
+python ./run-checks.py --type-check
 ```
 
 ### Linting
@@ -65,7 +61,7 @@ All PRs are also checked by the linter `pylint`, which checks the code automatic
 issues.  It can be run locally with:
 
 ```bash
-python -m pylint wheatley
+python ./run-checks.py --lint
 ```
 
 ### Unit Tests, Doctests and Fuzzing
@@ -86,7 +82,7 @@ These last checks are tests that are built into the source code, and fall into t
 All three of these can be run with:
 
 ```bash
-python -m pytest
-./doctests
-./fuzz
+python ./run-checks.py --unit-tests
+python ./run-checks.py --doc-tests
+python ./run-checks.py --fuzz
 ```

@@ -14,17 +14,17 @@ class PlaceNotationGenerator(RowGenerator):
 
     # Dict Lead Index: String PlaceNotation
     # 0 for end of the lead
-    DefaultBob: ClassVar[CallDef] = CallDef({0: '14'})
-    DefaultSingle: ClassVar[CallDef] = CallDef({0: '1234'})
+    DEFAULT_BOB: ClassVar[CallDef] = CallDef({0: '14'})
+    DEFAULT_SINGLE: ClassVar[CallDef] = CallDef({0: '1234'})
 
     def __init__(self, stage: int, method: str, bob: CallDef = None, single: CallDef = None,
                  start_index: int = 0, start_row: Optional[str] = None) -> None:
         super().__init__(stage, start_row)
 
         if bob is None:
-            bob = PlaceNotationGenerator.DefaultBob
+            bob = PlaceNotationGenerator.DEFAULT_BOB
         if single is None:
-            single = PlaceNotationGenerator.DefaultSingle
+            single = PlaceNotationGenerator.DEFAULT_SINGLE
 
         self.method_pn = convert_pn(method)
         self.lead_len = len(self.method_pn)

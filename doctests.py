@@ -108,7 +108,6 @@ class CommandError:
 
 def run_test(args):
     try:
-        print(args)
         check_output(args, stderr=STDOUT, timeout=5)
     except CalledProcessError as e:
         return CommandError(e.returncode, e.output.decode('utf-8'))

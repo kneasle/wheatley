@@ -61,8 +61,8 @@ def create_row_generator(args: argparse.Namespace) -> RowGenerator:
             )
         except PlaceNotationError as e:
             sys.exit(f"Bad value for '--place-notation': {e}")
-    else:
-        assert False, "This shouldn't be possible because one of --method, --comp or --place-notation should always be defined"
+
+    raise AssertionError("One of --method, --comp or --place-notation should always be defined")
 
 
 def create_rhythm(peal_speed: int, inertia: float, max_bells_in_dataset: int, handstroke_gap: float,

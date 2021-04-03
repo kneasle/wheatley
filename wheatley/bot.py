@@ -24,6 +24,8 @@ from wheatley.row_generation import RowGenerator
 INACTIVITY_EXIT_TIME = 300
 
 
+# Bot holds a lot of state, allow it to have more fields
+# pylint: disable=too-many-instance-attributes
 class Bot:
     """
     A class to hold all the information that Wheatley will use to glue together the rhythm,
@@ -233,8 +235,8 @@ class Bot:
             # Make sure to call all of the calls that we have missed in the right order (in case the
             # person calling `Go` called it stupidly late)
             early_calls = [
-                (ind, calls)
-                for (ind, calls) in self.row_generator.early_calls().items()
+                (ind, _calls)
+                for (ind, _calls) in self.row_generator.early_calls().items()
                 if ind > self._rounds_left_before_method
             ]
             # Sort early calls by the number of rows **before** the method start.  Note that we are
@@ -244,8 +246,8 @@ class Bot:
             # because the rows on which these calls should have been called have already passed.
             # Therefore, we simply get them out as quickly as possible so they have the best chance
             # of being heard.
-            for (_index, calls) in early_calls:
-                self._make_calls(calls)
+            for (_index, _calls) in early_calls:
+                self._make_calls(_calls)
 
     def _on_bob(self) -> None:
         """ Callback called when a user calls 'Bob'. """
@@ -304,6 +306,7 @@ class Bot:
         self.logger.info(f"ROW: {bells}")
 
     def start_next_row(self, is_first_row: bool) -> None:
+        """ Updates state of bot ready to ring the next row / stop ringing"""
         # Generate the next row and update row indices
         self._place = 0
         if is_first_row:
@@ -351,7 +354,6 @@ class Bot:
                 self._should_stand = False
                 self._is_ringing = False
             # ... and "That's All" has been called, then start ringing rounds.
-            # TODO: Replace this with more intuitive behaviour
             if self._should_start_ringing_rounds and not self._is_ringing_rounds:
                 self._should_start_ringing_rounds = False
                 self._is_ringing_rounds = True
@@ -430,9 +432,9 @@ class Bot:
         """ Returns `True` if this bell **is** assigned to Wheatley. """
         return self._tower.is_bell_assigned_to(bell, self._user_name)
 
-    def _make_calls(self, calls: List[str]) -> None:
+    def _make_calls(self, call_list: List[str]) -> None:
         """ Broadcast a sequence of calls """
-        for c in calls:
+        for c in call_list:
             self._make_call(c)
 
     def _make_call(self, call: str) -> None:

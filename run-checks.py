@@ -4,7 +4,7 @@ import os
 
 import mypy.api
 import pytest
-import pylint.lint
+from pylint import epylint as lint
 import sys
 
 import doctests
@@ -92,10 +92,16 @@ if run_all or parsed_args.fuzz:
 if run_all or parsed_args.lint:
     with Check("Linting"):
         print("python -m pylint wheatley")
-        pylint_args = ['wheatley']
+        pylint_args = 'wheatley'
         if os.name != 'nt':
-            pylint_args.append('--enable=unexpected-line-ending-format')
-        pylint.lint.Run(pylint_args)
+            pylint_args += ' --enable=unexpected-line-ending-format'
+        (pylint_stdout, pylint_stderr) = lint.py_run(pylint_args, return_std=True)
+        output = pylint_stdout.getvalue()
+        print(output)
+        print(pylint_stderr.getvalue(), file=sys.stderr)
+        success = output.find("Your code has been rated at 10")
+        if success == -1:
+            exit(1)
 
 if run_all or parsed_args.type_check:
     with Check("Type check"):

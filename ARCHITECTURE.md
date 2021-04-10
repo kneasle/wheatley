@@ -40,6 +40,7 @@ directory:
 These files contain little or no business logic, and instead provide datatypes (`bell.py`,
 `stroke.py`), type aliases (`aliases.py`) and/or constants that are used extensively throughout the
 code.  These serve two purposes: 
+
 1. They increase safety by providing an abstraction layer over the raw numbers and strings used to
    communicate with Ringing Room.
 2. `bell.py` prevents any ambiguity between the many different representations of bell names (i.e.
@@ -54,8 +55,8 @@ rhythm, interacting with Ringing Room, etc).  It also runs the `mainloop` - an i
 which the main thread gets stuck until Wheatley stops.
 
 **Architectural Invariant**: None of the code in `row_generation/*`, `rhythm/*` or `tower.py` can
-talk directly to each other; instead they all provide an interface that the `Bot` class to mediate
-interactions.
+talk directly to each other; instead they all provide an interface that the `Bot` class uses to
+mediate interactions.
 
 ### `wheatley/rhythm/*`
 

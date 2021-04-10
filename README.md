@@ -1,51 +1,82 @@
 # Wheatley
+
 [![PyPI version](https://badge.fury.io/py/wheatley.svg)](https://badge.fury.io/py/wheatley)
 ![Tests and Linting](https://github.com/Kneasle/wheatley/workflows/Tests%20and%20Linting/badge.svg)
 
-A bot for [Ringing Room](https://ringingroom.com/) that can fill in any set of bells to increase the scope of potential practices.
+A bot for [Ringing Room](https://ringingroom.com/) that can fill in any set of bells to increase the
+scope of potential practices, designed to be a **'ninja helper with no ego'**.
 
-Wheatley is designed to be a **'ninja helper with no ego'**.
+If you just want to use Wheatley for normal ringing without caring about how it works, then check
+out how to use Wheatley directly [inside Ringing Room](https://ringingroom.com/help#wheatley) - no
+installation required, just a flick of a switch.  If you want more control than the Ringing Room
+interface proveds or are interested in how Wheatley works, then this is the place to go.  This
+repository contains Wheatley's source code, and documentation of the 'classic' command line version.
 
-He'll ring all unassigned bells perfectly whilst fitting in with whatever you are doing, adjusting to
-your changes in rhythm.
-He'll also never try to take control of the ringing by giving instructions or powering on with a
-different rhythm to everyone else (unless you tell him to).
+## Contributing
 
-Only one ringer needs to run the command and Wheatley will ring with you after anyone calls
-`Look to` in Ringing Room.
-He understands all Ringing Room calls – `Go`, `Look to`, `That's all` and `Stand next` will
-take effect the handstroke after they are called, and `Bob` and `Single` will result in `14` and
-`1234` lead end calls (unless otherwise specified).
-
-### Notable features
-- Configurable rhythm detection that updates in real time
-- Holding up over people when they hesitate
-- Automatic correction for Ringing Room using multiple server URLs for load balancing
-- Very light resource footprint, as Wheatley doesn't interact with a browser to communicate with Ringing Room
-
-### Contributing
-Contributions are very welcome!  See [here](CONTRIBUTING.md) for guidance.
-
-If you have any issues/suggestions, either
-[make an issue](https://github.com/Kneasle/ringing-room-bot/issues/new), or drop me a message
-[on Facebook](https://www.facebook.com/kneasle.wh.71).
-
+Contributions are very welcome!  To keep this readme short, all contribution info is in
+[CONTRIBUTING.md](CONTRIBUTING.md).  If you have any issues/suggestions, either [make an
+issue](https://github.com/kneasle/wheatley/issues/new), or drop me a message [on
+Facebook](https://www.facebook.com/kneasle.wh.71).
 
 ## Quickstart
 
-Wheatley needs a working Python3 environment - see [the Windows simple setup guide](SIMPLE_WINDOWS.md) for help.
+_(This quickstart refers to the command-line Wheatley, not the integrated version)_.  Also, if
+anything here doesn't work or is confusing, please let us know.  For help with what parameters
+Wheatley has and what they do, run `wheatley --help`.
 
-### Installation (using Pip)
-Run the following command to install or update to the
-[latest version of Wheatley](https://pypi.org/project/wheatley/):
-   ```bash
-   pip install --upgrade wheatley
-   ```
+### Step 1: Install Python
+
+Installation is very platform specific, so I've split this by OS.
+
+#### Windows
+
+1. Download the latest version of Python from
+   [python.org](https://www.python.org/downloads/windows/) - the first link should be to the latest
+   build of Python 3. At the bottom of the linked page is a list of downloads - most likely you need
+   "Windows installer (64-bit)" (the recommended option).
+2. When the file has downloaded, run it.  Before starting the installation, **tick the "Add to
+   PATH" option** (this will make your life way easier later on).  Start the install, and then wait
+   for it to complete.
+3. In order to run Wheatley, you'll need to open a 'command prompt'.  To do this, press the START
+   button in Windows, type 'cmd' then click on the `Command Prompt` application.  This creates a
+   black window, into which you can type and then run commands (including Wheatley).
+4. Test Python by typing `py --version` and then pressing enter.  If all is well, this will print a
+   version string - otherwise something has gone wrong.
+
+#### MacOS
+
+Instructions should be [here](https://docs.python-guide.org/starting/install3/osx/).
+
+#### Linux
+
+Almost all Linux distros come with Python installed, so this step can probably be skipped.
+
+### Step 2: Install Wheatley
+
+Once Python is installed, installing Wheatley should be done through Python's package manager `pip`.
+The exact commands vary from system to system (and I can't keep track of them all), but one of the
+following should work:
+
+```bash
+# Should work on Windows
+py -m pip install --upgrade wheatley
+# Should work on MacOS and Linux
+python3 -m pip install --upgrade wheatley
+```
+
+### Step 3: Run Wheatley
+
+**NOTE:** The name of the Wheatley command will sometimes vary.  If you're getting errors like
+'wheatley not found', then try replacing the `wheatley` prefix with `py -m wheatley` (Windows) or
+`python3 -m wheatley` (MacOS/Linux).  So therefore, a complete command would look like:
+```
+py -m wheatley [ID NUMBER] --method "Plain Bob Major"
+# or 
+python3 -m wheatley [ID NUMBER] --method "Plain Bob Major"
+```
 
 ## Examples
-Pick an example below to run Wheatley!
-
-For help with what parameters Wheatley has and what they do, type `wheatley --help`.
 
 *   Join a `ringingroom.com` tower with (9 digit) ID `[ID NUMBER]` and ring Plain Bob Major (tower
     bell style – wait for `Go` and `That's all`):

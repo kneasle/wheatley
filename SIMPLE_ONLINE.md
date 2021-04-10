@@ -1,22 +1,18 @@
-# Simple setup for online use
-
-This is a short guide for running Wheatley online using google colab.
-
-## Google Colab
+## Running Wheatley with Google Colab
 
 To use this method you will need a google account.
 
 * Go to https://colab.research.google.com/ and log in
 * Go to File > New Notebook
 * In the first text box enter:
-```
-!pip install --upgrade wheatley
-```
+  ```
+  !pip install --upgrade wheatley
+  ```
 * Click "+ Code"
 * In the second text box enter the wheatley command in the form:
-```bash
-!wheatley [ID NUMBER] --peal-speed 3h15 --method "Plain Bob Major"
-```
+  ```bash
+  !wheatley [ID NUMBER] --peal-speed 3h15 --method "Plain Bob Major"
+  ```
 
 ## Starting Wheatley
 

@@ -6,7 +6,7 @@ you'll be politely asked to change something.  We appreciate any sort of contrib
 want a wall of rules to get in the way of that.
 
 If you're new to the code, a high-level description of Wheatley's internal architecture can be found
-in [ARCHITECTURE.md](https://github.com/kneasle/wheatley/blob/better-contributing/ARCHITECTURE.md).
+in [ARCHITECTURE.md](https://github.com/kneasle/wheatley/blob/master/ARCHITECTURE.md).
 
 ## Getting Started
 

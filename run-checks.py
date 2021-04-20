@@ -61,9 +61,13 @@ class Check:
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         if exc_type is None:
-            print(f"\u2705 {self.title} passed")
+            message = f"\u2705 {self.title} passed"
         else:
-            print(f"\u274c {self.title} failed")
+            message = f"\u274c {self.title} failed"
+        try:
+            print(message)
+        except UnicodeEncodeError:
+            print(message[2:])
 
 
 # Ignore first argument (this file name)
@@ -117,9 +121,3 @@ if run_all or parsed_args.type_check:
 print("""
 ====== Success ======
     """)
-
-
-
-
-
-

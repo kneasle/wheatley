@@ -1,4 +1,4 @@
-# 0.7.0
+# 0.7.0 (W.I.P.)
 
 ## User-facing changes
 
@@ -6,6 +6,7 @@
   compositions.
 - Ring arbitrary place notation on a given stage (using
   `--place-notation <stage>:<place-notation>`).  `--bob` and `--single` still apply.
+- `--stop-at-rounds` now leaves the bells set at hand even if the touch finishes on a handstroke.
 
 # 0.6.0
 

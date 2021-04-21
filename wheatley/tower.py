@@ -207,17 +207,6 @@ class RingingRoomTower:
     def _on_user_leave(self, data: JSON) -> None:
         # Unpack the data and assign it the expected types
         user_id_that_left: int = data["user_id"]
-        user_name_that_left: str = data["username"]
-
-        # Remove the user ID that left from our user list
-        if user_id_that_left not in self._user_name_map:
-            self.logger.warning(
-                f"User #{user_id_that_left}:'{user_name_that_left}' left, but wasn't in the user list."
-            )
-        elif self._user_name_map[user_id_that_left] != user_name_that_left:
-            self.logger.warning(f"User #{user_id_that_left}:'{user_name_that_left}' left, but that ID was \
-logged in as '{self._user_name_map[user_id_that_left]}'.")
-            del self._user_name_map[user_id_that_left]
 
         bells_unassigned: List[Bell] = []
 
@@ -228,6 +217,7 @@ logged in as '{self._user_name_map[user_id_that_left]}'.")
         for bell in bells_unassigned:
             del self._assigned_users[bell]
 
+        user_name_that_left = self._user_name_map.get(user_id_that_left)
         self.logger.info(
             f"RECEIVED: User #{user_id_that_left}:'{user_name_that_left}' left from bells {bells_unassigned}."
         )

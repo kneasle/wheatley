@@ -320,8 +320,7 @@ class Bot:
 
         # Implement handbell-style stopping at rounds
         if self._stop_at_rounds and has_just_rung_rounds and not self._is_ringing_rounds:
-            self._should_stand = False
-            self._is_ringing = False
+            self._should_stand = True
 
         # Set any early calls specified by the row generator to be called at the start of the next
         # row

@@ -2,6 +2,8 @@
 
 ## User-facing changes
 
+- Make the behaviour of `That's All` more intuitive (i.e. calling `That's All` during rounds will
+  no longer cause Wheatley to ring one erroneous row of method).
 - Start ringing at a custom row (using `--start-row <row>`).  This doesn't work for CompLib
   compositions.
 - Ring arbitrary place notation on a given stage (using

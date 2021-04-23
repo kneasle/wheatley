@@ -24,7 +24,7 @@ setuptools.setup(
     license="MIT",
     platforms="any",
 
-    packages=setuptools.find_packages(),
+    packages=setuptools.find_packages(include=['wheatley*']),
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",

@@ -64,11 +64,11 @@ def command_to_converted_args(location, command):
     insert_arg_index = 2
 
     # Check if running inside venv, if so we need to activate in each process
-    if sys.prefix != sys.base_prefix:
+    if sys.prefix != sys.base_prefix and sys.platform != 'linux':
         # Windows path `\` gets dropped, but Windows is happy to accept `/` instead
-        activate_script = sys.prefix.replace("\\", "/") + "/Scripts/activate"
         if os.name == 'nt':
-            activate_script += ".bat"
+          activate_script = sys.prefix.replace("\\", "/") + "/Scripts/activate"
+          activate_script += ".bat"
         edited_command = activate_script + " & " + edited_command
         insert_arg_index = 4
 

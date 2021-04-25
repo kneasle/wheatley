@@ -6,7 +6,7 @@ assert that Wheatley does not crash.  With decent test coverage, this prevents m
 and argument errors.
 """
 
-from subprocess import STDOUT, check_output, CalledProcessError, TimeoutExpired, Popen
+from subprocess import STDOUT, check_output, CalledProcessError, TimeoutExpired, Popen, PIPE
 import subprocess
 import time
 import os
@@ -138,7 +138,7 @@ def main():
     for i in range(converted_commands_count):
         print(converted_commands[i][0])
         (args, location, edited_command) = converted_commands[i]
-        procs.append(subprocess.Popen(args, stderr = subprocess.PIPE, stdout = subprocess.PIPE))
+        procs.append(Popen(args, stderr = STDOUT, stdout = subprocess.PIPE))
 
     print('Jobs started')
 

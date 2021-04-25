@@ -136,9 +136,9 @@ def main():
 
     converted_commands_count = len(converted_commands)
     for i in range(converted_commands_count):
-        print(converted_commands[i][0])
+        # print(converted_commands[i][0])
         (args, location, edited_command) = converted_commands[i]
-        procs.append(Popen(args, stderr = STDOUT, stdout = subprocess.PIPE))
+        procs.append(Popen(args, stderr = STDOUT, stdout = PIPE))
 
     print('Jobs started')
 

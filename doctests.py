@@ -6,9 +6,7 @@ assert that Wheatley does not crash.  With decent test coverage, this prevents m
 and argument errors.
 """
 
-from subprocess import STDOUT, check_output, CalledProcessError, TimeoutExpired, Popen, PIPE
-import subprocess
-import time
+from subprocess import STDOUT, TimeoutExpired, Popen, PIPE
 import os
 import shlex
 import sys
@@ -106,20 +104,11 @@ class CommandError:
     def result_text(self):
         return "ERROR"
 
-
-def run_test(args):
-    try:
-        check_output(args, stderr=STDOUT, timeout=5)
-    except CalledProcessError as e:
-        return CommandError(e.returncode, e.output.decode('utf-8'))
-    except TimeoutExpired:
-        return Timeout()
-
 def check_test(proc):
     try:
         out, err = proc.communicate(timeout=5)
-    except proc.returncode != 0:
-        return CommandError(proc.returncode, err)
+        if proc.returncode != 0:
+            return CommandError(proc.returncode, out)
     except TimeoutExpired:
         proc.kill()
         return Timeout()

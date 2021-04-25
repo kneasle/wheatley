@@ -69,7 +69,7 @@ class Bot:
             self._tower.invoke_on_stop_touch.append(self._on_stop_touch)
 
         self._is_ringing = False
-        self._is_ringing_rounds = True
+        self._is_ringing_rounds = False
         self._is_ringing_opening_row = True
         # This is used as a counter - once `Go` or `Look To` is received, the number of rounds left
         # is calculated and then decremented at the start of every subsequent row until it reaches
@@ -79,7 +79,7 @@ class Bot:
         # value `None` is used to represent the case where we don't know when we will be starting
         # the method (and therefore there it makes no sense to decrement this counter).
         self._rounds_left_before_method: Optional[int] = None
-        self._should_start_ringing_rounds = False
+        self._rows_left_before_rounds: Optional[int] = None
         self._should_stand = False
 
         self._row_number = 0
@@ -206,7 +206,7 @@ class Bot:
 
         # Clear all the flags and counters
         self._should_stand = False
-        self._should_start_ringing_rounds = False
+        self._rows_left_before_rounds = None
         # Set _rounds_left_before_method if we are ringing up-down-in (3 rounds for backstroke
         # start; 2 for handstroke)
         if not self._do_up_down_in:
@@ -259,7 +259,8 @@ class Bot:
 
     def _on_thats_all(self) -> None:
         """ Callback called when a user calls 'That`s All'. """
-        self._should_start_ringing_rounds = True
+        # We set this to one, because we expect one clear row between the call and rounds
+        self._rows_left_before_rounds = 1
 
     def _on_stand_next(self) -> None:
         """ Callback called when a user calls 'Stand Next'. """
@@ -352,10 +353,17 @@ class Bot:
             if self._should_stand:
                 self._should_stand = False
                 self._is_ringing = False
-            # ... and "That's All" has been called, then start ringing rounds.
-            if self._should_start_ringing_rounds and not self._is_ringing_rounds:
-                self._should_start_ringing_rounds = False
-                self._is_ringing_rounds = True
+
+        # There are two cases for coming round:
+        # 1. Someone calls 'That's All' and rounds appears
+        #       (or)
+        # 2. Someone calls 'That's All', one clear row has elapsed
+        if self._rows_left_before_rounds == 0 \
+                or (has_just_rung_rounds and self._rows_left_before_rounds is not None):
+            self._rows_left_before_rounds = None
+            self._is_ringing_rounds = True
+        if self._rows_left_before_rounds is not None:
+            self._rows_left_before_rounds -= 1
 
         # If we've set `_is_ringing` to False, then no more rounds can happen so early return to
         # avoid erroneous calls

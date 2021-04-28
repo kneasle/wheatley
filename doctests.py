@@ -88,22 +88,18 @@ def command_to_converted_args(location, command):
 #     Timeout,
 #     Error(usize, String),
 # }
-class CheckTest:
-    def __init__(self, return_code, output):
-        self.return_code = return_code
-        self.output = output
-
-class Timeout(CheckTest):
-    def __init__(self, return_code, output):
-        CheckTest.__init__(self,return_code, output)
+class Timeout:
+    def __init__(self):
+        pass
 
     def result_text(self):
         return "TIMEOUT"
 
 
-class CommandError(CheckTest):
+class CommandError:
     def __init__(self, return_code, output):
-        CheckTest.__init__(self,return_code, output)
+        self.return_code = return_code
+        self.output = output
 
     def result_text(self):
         return "ERROR"
@@ -115,7 +111,7 @@ def check_test(proc):
             return CommandError(proc.returncode, out.decode('utf-8'))
     except TimeoutExpired:
         proc.kill()
-        return Timeout(proc.returncode, out.decode('utf-8'))
+        return Timeout()
 
 def main():
     """ Generate and run all the tests, asserting that Wheatley does not crash. """

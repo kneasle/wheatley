@@ -108,7 +108,7 @@ def check_test(proc):
     try:
         out, err = proc.communicate(timeout=5)
         if proc.returncode != 0:
-            return CommandError(proc.returncode, out)
+            return CommandError(proc.returncode, out.decode('utf-8'))
     except TimeoutExpired:
         proc.kill()
         return Timeout()

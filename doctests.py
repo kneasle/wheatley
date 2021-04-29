@@ -6,7 +6,7 @@ assert that Wheatley does not crash.  With decent test coverage, this prevents m
 and argument errors.
 """
 
-from subprocess import STDOUT, check_output, CalledProcessError, TimeoutExpired
+from subprocess import STDOUT, TimeoutExpired, Popen, PIPE
 import os
 import shlex
 import sys
@@ -104,27 +104,36 @@ class CommandError:
     def result_text(self):
         return "ERROR"
 
-
-def run_test(args):
+def check_test(proc):
     try:
-        check_output(args, stderr=STDOUT, timeout=5)
-    except CalledProcessError as e:
-        return CommandError(e.returncode, e.output.decode('utf-8'))
+        out, err = proc.communicate(timeout=10)
+        if proc.returncode != 0:
+            return CommandError(proc.returncode, out.decode('utf-8'))
     except TimeoutExpired:
+        proc.kill()
         return Timeout()
-
 
 def main():
     """ Generate and run all the tests, asserting that Wheatley does not crash. """
     errors = []
+    procs = []
 
     # Generate all the edited commands upfront, so that we can line up all the errors
     converted_commands = [command_to_converted_args(location, cmd) for (location, cmd) in get_all_tests()]
 
     max_command_length = max([len(cmd) for (_, _, cmd) in converted_commands])
 
-    for (args, location, edited_command) in converted_commands:
-        error = run_test(args)
+    converted_commands_count = len(converted_commands)
+    for i in range(converted_commands_count):
+        # print(converted_commands[i][0])
+        (args, location, edited_command) = converted_commands[i]
+        procs.append(Popen(args, stderr = STDOUT, stdout = PIPE))
+
+    print('Jobs started')
+
+    for i in range(converted_commands_count):
+        (args, location, edited_command) = converted_commands[i]
+        error = check_test(procs[i])
 
         result_text = "ok"
 

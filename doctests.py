@@ -106,7 +106,7 @@ class CommandError:
 
 def check_test(proc):
     try:
-        out, err = proc.communicate(timeout=5)
+        out, err = proc.communicate(timeout=10)
         if proc.returncode != 0:
             return CommandError(proc.returncode, out.decode('utf-8'))
     except TimeoutExpired:

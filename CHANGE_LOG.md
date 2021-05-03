@@ -2,13 +2,26 @@
 
 ## User-facing changes
 
-- Make the behaviour of `That's All` more intuitive (i.e. calling `That's All` during rounds will
-  no longer cause Wheatley to ring one erroneous row of method).
-- Start ringing at a custom row (using `--start-row <row>`).  This doesn't work for CompLib
-  compositions.
-- Ring arbitrary place notation on a given stage (using
+- (#181) Make the behaviour of `That's All` more intuitive (i.e. calling `That's All` during rounds
+  will no longer cause Wheatley to ring one erroneous row of method).
+- (#159, first contribution) Start ringing at a custom row (using `--start-row <row>`).  This
+  doesn't work for CompLib compositions.
+- (#169, first contribution) Ring arbitrary place notation on a given stage (using
   `--place-notation <stage>:<place-notation>`).  `--bob` and `--single` still apply.
-- `--stop-at-rounds` now leaves the bells set at hand even if the touch finishes on a handstroke.
+- (#184) `--stop-at-rounds` now leaves the bells set at hand even if the touch finishes on a
+  handstroke.
+- (#179) Overhaul the `README.md`
+- (#182) Ignore the `username` param when users leave (this is deprecated and will be removed in
+  later versions of RR)
+
+## Internal Improvements
+
+- (#190, first contribution) Speed up doctests
+- (#165, #172, #186) Improve developer experience on Windows
+- (#170, first contribution) Fix typo in comment
+- (#174, #195) Add then remove autorebase workflow
+
+
 
 ## Technical Changes
 - (#197) Use the black autoformatter to keep a consistent code style.

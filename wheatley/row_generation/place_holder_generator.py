@@ -10,7 +10,7 @@ from .row_generator import RowGenerator
 
 
 class NullRowGenError(Exception):
-    """ An exception thrown when a row is requested from a 'NullGenerator'. """
+    """An exception thrown when a row is requested from a 'NullGenerator'."""
 
     def __str__(self) -> str:
         return "_gen_row() called on a PlaceHolderGenerator"
@@ -26,7 +26,7 @@ class PlaceHolderGenerator(RowGenerator):
         super().__init__(0)
 
     def summary_string(self) -> str:
-        """ Returns a short string summarising the RowGenerator. """
+        """Returns a short string summarising the RowGenerator."""
         return "nothing"
 
     def _gen_row(self, previous_row: Row, stroke: Stroke, index: int) -> Row:

@@ -14,9 +14,10 @@ from .place_notation_generator import PlaceNotationGenerator
 from .row_generator import RowGenerator
 
 
-def generator_from_special_title(method_title: str, start_row: Optional[str] = None) \
-    -> Optional[RowGenerator]:
-    """ Creates a row generator from special method titles. """
+def generator_from_special_title(
+    method_title: str, start_row: Optional[str] = None
+) -> Optional[RowGenerator]:
+    """Creates a row generator from special method titles."""
     lowered_title = method_title.lower().strip()
     if " " not in lowered_title:
         raise MethodNotFoundError(method_title)
@@ -58,10 +59,11 @@ class MethodNotFoundError(ValueError):
 
 
 class MethodPlaceNotationGenerator(PlaceNotationGenerator):
-    """ A class to generate rows given a method title. """
+    """A class to generate rows given a method title."""
 
-    def __init__(self, method_title: str, bob: CallDef, single: CallDef,
-                 start_row: str, start_index: int = 0) -> None:
+    def __init__(
+        self, method_title: str, bob: CallDef, single: CallDef, start_row: str, start_index: int = 0
+    ) -> None:
         method_xml = self._fetch_method(method_title)
 
         try:
@@ -70,36 +72,29 @@ class MethodPlaceNotationGenerator(PlaceNotationGenerator):
         except AttributeError as e:
             raise MethodNotFoundError(method_title) from e
 
-        super().__init__(
-            stage,
-            method_pn,
-            bob,
-            single,
-            start_index,
-            start_row
-        )
+        super().__init__(stage, method_pn, bob, single, start_index, start_row)
 
     def summary_string(self) -> str:
-        """ Returns a short string summarising the RowGenerator. """
+        """Returns a short string summarising the RowGenerator."""
         return f"{self._title}"
 
     @staticmethod
     def _parse_xml(method_xml: str) -> Tuple[str, int, str]:
         method_parsed_xml = ET.fromstring(method_xml)
-        xmlns = '{http://methods.ringing.org/NS/method}'
+        xmlns = "{http://methods.ringing.org/NS/method}"
 
         # Unpack the title
-        title_elems = method_parsed_xml.findall(xmlns + 'method/' + xmlns + 'title')
+        title_elems = method_parsed_xml.findall(xmlns + "method/" + xmlns + "title")
         if len(title_elems) == 0:
             raise AttributeError("No method title found in XML")
         title: Optional[str] = title_elems[0].text
         assert title is not None
 
         # Schema at http://methods.ringing.org/xml.html
-        symblock = method_parsed_xml.findall(xmlns + 'method/' + xmlns + 'pn/' + xmlns + 'symblock')
-        block = method_parsed_xml.findall(xmlns + 'method/' + xmlns + 'pn/' + xmlns + 'block')
+        symblock = method_parsed_xml.findall(xmlns + "method/" + xmlns + "pn/" + xmlns + "symblock")
+        block = method_parsed_xml.findall(xmlns + "method/" + xmlns + "pn/" + xmlns + "block")
         # Unpack the stage piece-by-piece to appease the type checker and assert expected types at runtime
-        maybe_stage_str = method_parsed_xml.find(xmlns + 'method/' + xmlns + 'stage')
+        maybe_stage_str = method_parsed_xml.find(xmlns + "method/" + xmlns + "stage")
         assert maybe_stage_str is not None
         stage_str = maybe_stage_str.text
         assert isinstance(stage_str, str)
@@ -119,8 +114,8 @@ class MethodPlaceNotationGenerator(PlaceNotationGenerator):
 
     @staticmethod
     def _fetch_method(method_title: str) -> str:
-        params = {'title': method_title, 'fields': 'title|pn|stage'}
-        source = requests.get('http://methods.ringing.org/cgi-bin/simple.pl', params=params)
+        params = {"title": method_title, "fields": "title|pn|stage"}
+        source = requests.get("http://methods.ringing.org/cgi-bin/simple.pl", params=params)
         source.raise_for_status()
 
         return source.text

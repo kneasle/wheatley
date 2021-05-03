@@ -6,22 +6,25 @@ from . import gen_rows
 
 
 class PlaceNotationGeneratorTests(TestCase):
-
     def test_plain_bob_minimus(self):
         stage = 4
 
         generator = PlaceNotationGenerator(stage, "&x1x1,2")
 
         rows = gen_rows(generator, 8)
-        self.assertEqual([[2, 1, 4, 3],
-                          [2, 4, 1, 3],
-                          [4, 2, 3, 1],
-                          [4, 3, 2, 1],
-                          [3, 4, 1, 2],
-                          [3, 1, 4, 2],
-                          [1, 3, 2, 4],
-                          [1, 3, 4, 2]],
-                         rows)
+        self.assertEqual(
+            [
+                [2, 1, 4, 3],
+                [2, 4, 1, 3],
+                [4, 2, 3, 1],
+                [4, 3, 2, 1],
+                [3, 4, 1, 2],
+                [3, 1, 4, 2],
+                [1, 3, 2, 4],
+                [1, 3, 4, 2],
+            ],
+            rows,
+        )
 
     def test_plain_bob_minimus_bob(self):
         stage = 4
@@ -33,15 +36,19 @@ class PlaceNotationGeneratorTests(TestCase):
         for row in gen_rows(generator, 2):
             rows.append(row)
 
-        self.assertEqual([[2, 1, 4, 3],
-                          [2, 4, 1, 3],
-                          [4, 2, 3, 1],
-                          [4, 3, 2, 1],
-                          [3, 4, 1, 2],
-                          [3, 1, 4, 2],
-                          [1, 3, 2, 4],
-                          [1, 2, 3, 4]],
-                         rows)
+        self.assertEqual(
+            [
+                [2, 1, 4, 3],
+                [2, 4, 1, 3],
+                [4, 2, 3, 1],
+                [4, 3, 2, 1],
+                [3, 4, 1, 2],
+                [3, 1, 4, 2],
+                [1, 3, 2, 4],
+                [1, 2, 3, 4],
+            ],
+            rows,
+        )
 
     def test_plain_bob_minimus_single(self):
         stage = 4
@@ -53,15 +60,19 @@ class PlaceNotationGeneratorTests(TestCase):
         for row in gen_rows(generator, 2):
             rows.append(row)
 
-        self.assertEqual([[2, 1, 4, 3],
-                          [2, 4, 1, 3],
-                          [4, 2, 3, 1],
-                          [4, 3, 2, 1],
-                          [3, 4, 1, 2],
-                          [3, 1, 4, 2],
-                          [1, 3, 2, 4],
-                          [1, 3, 2, 4]],
-                         rows)
+        self.assertEqual(
+            [
+                [2, 1, 4, 3],
+                [2, 4, 1, 3],
+                [4, 2, 3, 1],
+                [4, 3, 2, 1],
+                [3, 4, 1, 2],
+                [3, 1, 4, 2],
+                [1, 3, 2, 4],
+                [1, 3, 2, 4],
+            ],
+            rows,
+        )
 
     def test_plain_bob_doubles_plain(self):
         stage = 5
@@ -70,17 +81,21 @@ class PlaceNotationGeneratorTests(TestCase):
 
         rows = gen_rows(generator, 10)
 
-        self.assertEqual([[2, 1, 4, 3, 5],
-                          [2, 4, 1, 5, 3],
-                          [4, 2, 5, 1, 3],
-                          [4, 5, 2, 3, 1],
-                          [5, 4, 3, 2, 1],
-                          [5, 3, 4, 1, 2],
-                          [3, 5, 1, 4, 2],
-                          [3, 1, 5, 2, 4],
-                          [1, 3, 2, 5, 4],
-                          [1, 3, 5, 2, 4]],
-                         rows)
+        self.assertEqual(
+            [
+                [2, 1, 4, 3, 5],
+                [2, 4, 1, 5, 3],
+                [4, 2, 5, 1, 3],
+                [4, 5, 2, 3, 1],
+                [5, 4, 3, 2, 1],
+                [5, 3, 4, 1, 2],
+                [3, 5, 1, 4, 2],
+                [3, 1, 5, 2, 4],
+                [1, 3, 2, 5, 4],
+                [1, 3, 5, 2, 4],
+            ],
+            rows,
+        )
 
     def test_plain_bob_doubles_two_bobs(self):
         stage = 5
@@ -120,19 +135,23 @@ class PlaceNotationGeneratorTests(TestCase):
 
         rows = gen_rows(generator, 12)
 
-        self.assertEqual([[2, 1, 3, 5, 4],
-                          [2, 3, 1, 4, 5],
-                          [3, 2, 4, 1, 5],
-                          [2, 3, 4, 5, 1],
-                          [2, 4, 3, 1, 5],
-                          [4, 2, 3, 5, 1],
-                          [4, 3, 2, 1, 5],
-                          [3, 4, 2, 5, 1],
-                          [4, 3, 5, 2, 1],
-                          [4, 5, 3, 1, 2],
-                          [5, 4, 3, 2, 1],
-                          [5, 3, 4, 1, 2]],
-                         rows)
+        self.assertEqual(
+            [
+                [2, 1, 3, 5, 4],
+                [2, 3, 1, 4, 5],
+                [3, 2, 4, 1, 5],
+                [2, 3, 4, 5, 1],
+                [2, 4, 3, 1, 5],
+                [4, 2, 3, 5, 1],
+                [4, 3, 2, 1, 5],
+                [3, 4, 2, 5, 1],
+                [4, 3, 5, 2, 1],
+                [4, 5, 3, 1, 2],
+                [5, 4, 3, 2, 1],
+                [5, 3, 4, 1, 2],
+            ],
+            rows,
+        )
 
     def test_stedman_doubles_first_single(self):
         generator = PlaceNotationGenerator.stedman_doubles()
@@ -142,21 +161,19 @@ class PlaceNotationGeneratorTests(TestCase):
         single_rows = gen_rows(generator, 2)
         after_rows = gen_rows(generator, 6)
 
-        self.assertEqual([[2, 1, 3, 5, 4],
-                          [2, 3, 1, 4, 5],
-                          [3, 2, 4, 1, 5],
-                          [2, 3, 4, 5, 1]],
-                         initial_rows)
-        self.assertEqual([[2, 4, 3, 1, 5],
-                          [4, 2, 3, 1, 5]],
-                         single_rows)
-        self.assertEqual([[4, 3, 2, 5, 1],
-                          [3, 4, 2, 1, 5],
-                          [4, 3, 1, 2, 5],
-                          [4, 1, 3, 5, 2],
-                          [1, 4, 3, 2, 5],
-                          [1, 3, 4, 5, 2]],
-                         after_rows)
+        self.assertEqual([[2, 1, 3, 5, 4], [2, 3, 1, 4, 5], [3, 2, 4, 1, 5], [2, 3, 4, 5, 1]], initial_rows)
+        self.assertEqual([[2, 4, 3, 1, 5], [4, 2, 3, 1, 5]], single_rows)
+        self.assertEqual(
+            [
+                [4, 3, 2, 5, 1],
+                [3, 4, 2, 1, 5],
+                [4, 3, 1, 2, 5],
+                [4, 1, 3, 5, 2],
+                [1, 4, 3, 2, 5],
+                [1, 3, 4, 5, 2],
+            ],
+            after_rows,
+        )
 
     def test_stedman_doubles_second_single(self):
         generator = PlaceNotationGenerator.stedman_doubles()
@@ -165,10 +182,7 @@ class PlaceNotationGeneratorTests(TestCase):
         generator.set_single()
         single_rows = gen_rows(generator, 2)
 
-        self.assertEqual([[5, 4, 3, 2, 1],
-                          [5, 3, 4, 2, 1]],
-                         single_rows)
-
+        self.assertEqual([[5, 4, 3, 2, 1], [5, 3, 4, 2, 1]], single_rows)
 
     def test_grandsire_triples_bob(self):
         generator = PlaceNotationGenerator.grandsire(7)
@@ -177,12 +191,16 @@ class PlaceNotationGeneratorTests(TestCase):
         generator.set_bob()
         bob_rows = gen_rows(generator, 5)
 
-        self.assertEqual([[5, 7, 1, 6, 2, 4, 3],
-                          [5, 1, 7, 2, 6, 3, 4],
-                          [1, 5, 7, 6, 2, 4, 3],
-                          [1, 7, 5, 2, 6, 3, 4],
-                          [7, 1, 5, 6, 2, 4, 3]],
-                         bob_rows)
+        self.assertEqual(
+            [
+                [5, 7, 1, 6, 2, 4, 3],
+                [5, 1, 7, 2, 6, 3, 4],
+                [1, 5, 7, 6, 2, 4, 3],
+                [1, 7, 5, 2, 6, 3, 4],
+                [7, 1, 5, 6, 2, 4, 3],
+            ],
+            bob_rows,
+        )
 
     def test_grandsire_triples_single(self):
         generator = PlaceNotationGenerator.grandsire(7)
@@ -191,13 +209,17 @@ class PlaceNotationGeneratorTests(TestCase):
         generator.set_single()
         single_rows = gen_rows(generator, 5)
 
-        self.assertEqual([[5, 7, 1, 6, 2, 4, 3],
-                          [5, 1, 7, 2, 6, 3, 4],
-                          [1, 5, 7, 6, 2, 4, 3],
-                          [1, 5, 7, 2, 6, 3, 4],
-                          [5, 1, 7, 6, 2, 4, 3]],
-                         single_rows)
+        self.assertEqual(
+            [
+                [5, 7, 1, 6, 2, 4, 3],
+                [5, 1, 7, 2, 6, 3, 4],
+                [1, 5, 7, 6, 2, 4, 3],
+                [1, 5, 7, 2, 6, 3, 4],
+                [5, 1, 7, 6, 2, 4, 3],
+            ],
+            single_rows,
+        )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

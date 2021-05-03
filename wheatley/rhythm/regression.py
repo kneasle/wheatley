@@ -7,7 +7,7 @@ from typing import Any, Dict, List, Tuple
 
 # We can disable the type checking on numpy because it is only used within this file and the interface from
 # this file to the rest of the code is type-checked.
-import numpy # type: ignore
+import numpy  # type: ignore
 
 from wheatley.stroke import Stroke
 from wheatley.bell import Bell
@@ -18,6 +18,7 @@ WEIGHT_REJECTION_THRESHOLD = 0.001
 
 
 # ===== REGRESSION FUNCTIONS =====
+
 
 def fill(index: int, item: float, length: int) -> List[float]:
     """
@@ -49,11 +50,11 @@ def calculate_regression(data_set: List[Tuple[float, float, float]]) -> Tuple[fl
     return beta[0][0], beta[1][0]
 
 
-
 # ===== UTILITY FUNCTIONS =====
 
+
 def peal_speed_to_blow_interval(peal_minutes: float, num_bells: int) -> float:
-    """ Calculate the blow interval from the peal speed, assuming a peal of 5040 changes """
+    """Calculate the blow interval from the peal speed, assuming a peal of 5040 changes"""
     peal_speed_seconds = peal_minutes * 60
     seconds_per_whole_pull = peal_speed_seconds / 2520  # 2520 whole pulls = 5040 rows
     return seconds_per_whole_pull / (num_bells * 2 + 1)
@@ -77,6 +78,7 @@ def lerp(a: float, b: float, t: float) -> float:
 
 # ===== RHYTHM CLASS =====
 
+
 class RegressionRhythm(Rhythm):
     """
     A class that will use regression to figure out the current ringing speed and ring accordingly.
@@ -84,9 +86,15 @@ class RegressionRhythm(Rhythm):
 
     logger_name = "RHYTHM:Regression"
 
-    def __init__(self, inertia: float, peal_speed: float = 178, handstroke_gap: float = 1,
-                 min_bells_in_dataset: int = 4, max_bells_in_dataset: int = 15,
-                 initial_inertia: float = 0) -> None:
+    def __init__(
+        self,
+        inertia: float,
+        peal_speed: float = 178,
+        handstroke_gap: float = 1,
+        min_bells_in_dataset: int = 4,
+        max_bells_in_dataset: int = 15,
+        initial_inertia: float = 0,
+    ) -> None:
         """
         Initialises a new RegressionRhythm with a given default peal speed and handstroke gap.
         `peal_speed` is the number of minutes in a peal of 5040 changes, and `handstroke_gap`
@@ -161,13 +169,20 @@ class RegressionRhythm(Rhythm):
         """
         self._should_return_to_mainloop = True
 
-    def wait_for_bell_time(self, current_time: float, bell: Bell, row_number: int, place: int,
-                           user_controlled: bool, stroke: Stroke) -> None:
-        """ Sleeps the thread until a given Bell should have rung. """
-        if user_controlled and self._start_time == float('inf'):
+    def wait_for_bell_time(
+        self,
+        current_time: float,
+        bell: Bell,
+        row_number: int,
+        place: int,
+        user_controlled: bool,
+        stroke: Stroke,
+    ) -> None:
+        """Sleeps the thread until a given Bell should have rung."""
+        if user_controlled and self._start_time == float("inf"):
             self.logger.debug("Waiting for pull off")
 
-            while self._start_time == float('inf'):
+            while self._start_time == float("inf"):
                 self.sleep(0.01)
 
             self.logger.debug("Pulled off")
@@ -175,7 +190,7 @@ class RegressionRhythm(Rhythm):
             return
 
         bell_time = self.index_to_real_time(row_number, place)
-        if bell_time == float('inf') or self._start_time == 0:
+        if bell_time == float("inf") or self._start_time == 0:
             self.logger.error(f"Bell Time {bell_time}; Start Time {self._start_time}")
             self.sleep(self._blow_interval or 0.2)
         elif bell_time > current_time:
@@ -258,26 +273,22 @@ class RegressionRhythm(Rhythm):
 
             # Calculate the weight (which will be 1 if it is either of the first two bells to be
             # rung to not skew the data from the start)
-            weight = math.exp(- diff ** 2)
+            weight = math.exp(-(diff ** 2))
             if len(self.data_set) <= 1:
                 weight = 1
 
             # Add the bell as a datapoint with the calculated weight
-            self._add_data_point(
-                row_number,
-                place,
-                real_time,
-                weight
-            )
+            self._add_data_point(row_number, place, real_time, weight)
 
             del self._expected_bells[(bell, stroke)]
         else:
             # If this bell wasn't expected, then log that
             self.logger.warning(f"Bell {bell} unexpectedly rang at {stroke}")
 
-    def initialise_line(self, stage: int, user_controls_treble: bool, start_time: float,
-                        number_of_user_controlled_bells: int) -> None:
-        """ Allow the Rhythm object to initialise itself when 'Look to' is called. """
+    def initialise_line(
+        self, stage: int, user_controls_treble: bool, start_time: float, number_of_user_controlled_bells: int
+    ) -> None:
+        """Allow the Rhythm object to initialise itself when 'Look to' is called."""
         self._number_of_user_controlled_bells = number_of_user_controlled_bells
         self.stage = stage
 
@@ -299,15 +310,15 @@ class RegressionRhythm(Rhythm):
             # If Wheatley isn't ringing the first bell, then set the expected time of the first bell
             # to infinity so that Wheatley will wait indefinitely for the first bell to ring, and
             # then it will extrapolate from that time
-            self._start_time = float('inf')
+            self._start_time = float("inf")
 
     # Linear conversions between different time measurements
     def index_to_blow_time(self, row_number: int, place: int) -> float:
-        """ Convert a row number and place into a blow_time, taking hanstroke gaps into account. """
+        """Convert a row number and place into a blow_time, taking hanstroke gaps into account."""
         return row_number * self.stage + place + (row_number // 2) * self._handstroke_gap
 
     def blow_time_to_real_time(self, blow_time: float) -> float:
-        """ Convert from blow_time into real_time using the regression line. """
+        """Convert from blow_time into real_time using the regression line."""
         return self._start_time + self._blow_interval * blow_time
 
     def index_to_real_time(self, row_number: int, place: int) -> float:
@@ -318,5 +329,5 @@ class RegressionRhythm(Rhythm):
         return self.blow_time_to_real_time(self.index_to_blow_time(row_number, place))
 
     def real_time_to_blow_time(self, real_time: float) -> float:
-        """ Convert backwards from a real time to the corresponding blow time. """
+        """Convert backwards from a real time to the corresponding blow time."""
         return (real_time - self._start_time) / self._blow_interval

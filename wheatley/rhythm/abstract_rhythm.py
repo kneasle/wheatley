@@ -23,9 +23,16 @@ class Rhythm(metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def wait_for_bell_time(self, current_time: float, bell: Bell, row_number: int, place: int,
-                           user_controlled: bool, stroke: Stroke) -> None:
-        """ Sleeps the thread until a given Bell should have rung. """
+    def wait_for_bell_time(
+        self,
+        current_time: float,
+        bell: Bell,
+        row_number: int,
+        place: int,
+        user_controlled: bool,
+        stroke: Stroke,
+    ) -> None:
+        """Sleeps the thread until a given Bell should have rung."""
 
     @abstractmethod
     def expect_bell(self, expected_bell: Bell, row_number: int, place: int, expected_stroke: Stroke) -> None:
@@ -38,7 +45,7 @@ class Rhythm(metaclass=ABCMeta):
 
     @abstractmethod
     def change_setting(self, key: str, value: Any, real_time: float) -> None:
-        """ Called when the Ringing Room server asks Wheatley to change a setting. """
+        """Called when the Ringing Room server asks Wheatley to change a setting."""
         # We need the `real_time` param because `WaitForUserRhythm` lies to its inner rhythm about
         # the real time (in order to hold up over people without killing the regression), and
         # `RegressionRhythm` needs the current 'time' so that it can update its line accurately when
@@ -51,10 +58,11 @@ class Rhythm(metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def initialise_line(self, stage: int, user_controls_treble: bool, start_time: float,
-                        number_of_user_controlled_bells: int) -> None:
-        """ Allow the Rhythm object to initialise itself when 'Look to' is called. """
+    def initialise_line(
+        self, stage: int, user_controls_treble: bool, start_time: float, number_of_user_controlled_bells: int
+    ) -> None:
+        """Allow the Rhythm object to initialise itself when 'Look to' is called."""
 
-    def sleep(self, seconds: float) -> None: #  pylint: disable=no-self-use
-        """ Sleeps for given number of seconds. Allows mocking in tests"""
+    def sleep(self, seconds: float) -> None:  #  pylint: disable=no-self-use
+        """Sleeps for given number of seconds. Allows mocking in tests"""
         time.sleep(seconds)

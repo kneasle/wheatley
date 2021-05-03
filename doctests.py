@@ -22,7 +22,7 @@ EXTRA_TESTS = []
 
 
 def get_all_tests():
-    """ Get all commands that should be tested (these should start with 'wheatley [ID NUMBER]'). """
+    """Get all commands that should be tested (these should start with 'wheatley [ID NUMBER]')."""
 
     tests = []
 
@@ -59,24 +59,23 @@ def command_to_converted_args(location, command):
     # Bit of a hack, but this will convert commands starting with 'wheatley' to start with './run-wheatley'
     # and make sure that [ID NUMBER] is replaced with a valid room ID.  This way, the tests will run on the
     # version contained in the current commit, rather than a release version.
-    edited_command = "python ./run-" + command.replace("[ID NUMBER]", ROOM_ID) \
-                                       .replace("[METHOD TITLE]", '"' + EXAMPLE_METHOD + '"')
+    edited_command = "python ./run-" + command.replace("[ID NUMBER]", ROOM_ID).replace(
+        "[METHOD TITLE]", '"' + EXAMPLE_METHOD + '"'
+    )
     insert_arg_index = 2
 
     # Check if running inside venv, if so we need to activate in each process
-    if sys.prefix != sys.base_prefix and os.name == 'nt':
+    if sys.prefix != sys.base_prefix and os.name == "nt":
         # Windows path `\` gets dropped, but Windows is happy to accept `/` instead
         activate_script = sys.prefix.replace("\\", "/") + "/Scripts/activate"
         activate_script += ".bat"
         edited_command = activate_script + " & " + edited_command
         insert_arg_index = 4
 
-
     args = shlex.split(edited_command)
     args.insert(insert_arg_index, "integration-test")
 
     return (args, location, edited_command)
-
 
 
 # I'm not sure how to do this in python.  I want `run_test` to return one of 3 types: an 'OK', a 'TIMEOUT'
@@ -104,17 +103,19 @@ class CommandError:
     def result_text(self):
         return "ERROR"
 
+
 def check_test(proc):
     try:
         out, err = proc.communicate(timeout=10)
         if proc.returncode != 0:
-            return CommandError(proc.returncode, out.decode('utf-8'))
+            return CommandError(proc.returncode, out.decode("utf-8"))
     except TimeoutExpired:
         proc.kill()
         return Timeout()
 
+
 def main():
-    """ Generate and run all the tests, asserting that Wheatley does not crash. """
+    """Generate and run all the tests, asserting that Wheatley does not crash."""
     errors = []
     procs = []
 
@@ -127,9 +128,9 @@ def main():
     for i in range(converted_commands_count):
         # print(converted_commands[i][0])
         (args, location, edited_command) = converted_commands[i]
-        procs.append(Popen(args, stderr = STDOUT, stdout = PIPE))
+        procs.append(Popen(args, stderr=STDOUT, stdout=PIPE))
 
-    print('Jobs started')
+    print("Jobs started")
 
     for i in range(converted_commands_count):
         (args, location, edited_command) = converted_commands[i]
@@ -163,5 +164,5 @@ def main():
     exit(1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

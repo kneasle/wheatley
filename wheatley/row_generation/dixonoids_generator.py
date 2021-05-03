@@ -10,20 +10,20 @@ from .row_generator import RowGenerator
 
 
 class DixonoidsGenerator(RowGenerator):
-    """ A class to generate rows of dixonoids. """
+    """A class to generate rows of dixonoids."""
 
-    DixonsRules = {
-        0: ["x", "1"],
-        1: ["x", "2"],
-        2: ["x", "4"],
-        4: ["x", "4"]
-    }
+    DixonsRules = {0: ["x", "1"], 1: ["x", "2"], 2: ["x", "4"], 4: ["x", "4"]}
     DefaultBob = {1: ["x", "4"]}
     DefaultSingle = {1: ["x", "1234"]}
 
-    def __init__(self, stage: int, plain_rules: Dict[int, List[str]] = None,
-                 bob_rules: Dict[int, List[str]] = None, single_rules: Dict[int, List[str]] = None,
-                 start_row: Optional[str] = None) -> None:
+    def __init__(
+        self,
+        stage: int,
+        plain_rules: Dict[int, List[str]] = None,
+        bob_rules: Dict[int, List[str]] = None,
+        single_rules: Dict[int, List[str]] = None,
+        start_row: Optional[str] = None,
+    ) -> None:
         """
         Initialises a dixonoid generator.
 
@@ -72,7 +72,7 @@ class DixonoidsGenerator(RowGenerator):
         return row
 
     def summary_string(self) -> str:
-        """ Returns a short string summarising the RowGenerator. """
+        """Returns a short string summarising the RowGenerator."""
         return f"dixonoid: {self.plain_rules}"
 
     @staticmethod

@@ -1,8 +1,12 @@
 import unittest
 from unittest import TestCase
 
-from wheatley.row_generation import MethodPlaceNotationGenerator, generator_from_special_title, PlaceNotationGenerator, \
-    PlainHuntGenerator
+from wheatley.row_generation import (
+    MethodPlaceNotationGenerator,
+    generator_from_special_title,
+    PlaceNotationGenerator,
+    PlainHuntGenerator,
+)
 from wheatley.row_generation.method_place_notation_generator import MethodNotFoundError
 
 plain_bob_minimus = """<?xml version="1.0"?>
@@ -92,10 +96,10 @@ class SpecialMethodNameTests(TestCase):
         test_cases = [
             ("Reverse Grandsire Doubles"),
             ("Double Grandsire Triples"),
-            ("Grandsire Five Little Bob Triples")
+            ("Grandsire Five Little Bob Triples"),
         ]
 
-        for (method_title) in test_cases:
+        for method_title in test_cases:
             with self.subTest(method_title=method_title):
                 generator = generator_from_special_title(method_title)
                 self.assertIsNone(generator)
@@ -124,7 +128,7 @@ class SpecialMethodNameTests(TestCase):
             ("Stedman Maximus"),
         ]
 
-        for (method_title) in test_cases:
+        for method_title in test_cases:
             with self.subTest(method_title=method_title):
                 generator = generator_from_special_title(method_title)
                 self.assertIsNone(generator)
@@ -158,11 +162,11 @@ class SpecialMethodNameTests(TestCase):
             ("Stedman 0"),
         ]
 
-        for (method_title) in test_cases:
+        for method_title in test_cases:
             with self.subTest(method_title=method_title):
                 with self.assertRaises(MethodNotFoundError):
                     generator = generator_from_special_title(method_title)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

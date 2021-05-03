@@ -1,10 +1,15 @@
 import unittest
 
-from wheatley.row_generation.helpers import convert_bell_string, convert_to_bell_string, \
-    convert_pn, generate_starting_row
+from wheatley.row_generation.helpers import (
+    convert_bell_string,
+    convert_to_bell_string,
+    convert_pn,
+    generate_starting_row,
+)
 from wheatley.row_generation.helpers import _CROSS_PN
 from wheatley.bell import MAX_BELL, Bell
 from wheatley.aliases import Row
+
 
 class HelpersBellStringTests(unittest.TestCase):
     def test_convert_bell_string(self):
@@ -65,12 +70,13 @@ class HelpersPlaceNotationTests(unittest.TestCase):
             ("-1,2.3", [_CROSS_PN, [1], _CROSS_PN, [2], [3], [2]]),
             ("-1,2.3,4", [_CROSS_PN, [1], _CROSS_PN, [2], [3], [2], [4]]),
             ("---4", [_CROSS_PN, _CROSS_PN, _CROSS_PN, [4]]),
-            (".-.-.1.-.2", [_CROSS_PN, _CROSS_PN, [1], _CROSS_PN, [2]])
+            (".-.-.1.-.2", [_CROSS_PN, _CROSS_PN, [1], _CROSS_PN, [2]]),
         ]
 
         for (input_pn, expected_output_pn) in test_cases:
             with self.subTest(input_pn=input_pn, expected_output_pn=expected_output_pn):
                 self.assertEqual(convert_pn(input_pn), expected_output_pn)
+
 
 class HelpersGenerateStartingRowTests(unittest.TestCase):
     def test_generate_without_custom_row(self):
@@ -86,5 +92,6 @@ class HelpersGenerateStartingRowTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "starting row '4324' contains the same bell multiple times"):
             generate_starting_row(4, "4324")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

@@ -13,13 +13,46 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: [3.6, 3.9]
 
     steps:
       - uses: actions/checkout@v1
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      # Cache python site-packages on Windows (e.g. C:\hostedtoolcache\windows\Python\3.7.9\x64)
+      # This saves installed pip packages, so hash on requirements.txt as well  
+      - name: Cache python site-packages
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.pythonLocation }}\lib\site-packages
+          key: ${{ env.pythonLocation }}\lib\site-packages-${{ matrix.os }}-${{ hashFiles('requirements.txt') }}
+        if: ${{ matrix.os == 'windows-latest' }}
+      
+      # Just cache pip wheels on Linux / Mac
+      - name: Get pip cache dir
+        id: pip-cache
+        run: echo "::set-output name=dir::$(pip cache dir)"
+        if: ${{ matrix.os != 'windows-latest' }}
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.pip-cache.outputs.dir }}
+          key: ${{ matrix.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('requirements.txt') }}
+        if: ${{ matrix.os != 'windows-latest' }}
+    
       - name: Install dependencies
         run: |
           pip3 install setuptools
+          pip3 install wheel
           pip3 install -r requirements.txt
       - name: Run linter
         run: python3 run-checks.py --lint

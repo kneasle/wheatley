@@ -193,7 +193,9 @@ class ComplibCompositionGenerator(RowGenerator):
         raise NotImplementedError()
 
     def start_stroke(self) -> Stroke:
-        """Gets the stroke of the first row.  We allow backstroke starts, and derive this in the constructor"""
+        """
+        Gets the stroke of the first row.  We allow backstroke starts, and derive this in the constructor
+        """
         return self._start_stroke
 
     def early_calls(self) -> Dict[int, List[str]]:

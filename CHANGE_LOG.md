@@ -10,6 +10,9 @@
   `--place-notation <stage>:<place-notation>`).  `--bob` and `--single` still apply.
 - `--stop-at-rounds` now leaves the bells set at hand even if the touch finishes on a handstroke.
 
+## Technical Changes
+- (#197) Use the black autoformatter to keep a consistent code style.
+
 # 0.6.0
 
 ## User-facing changes

@@ -33,6 +33,16 @@ Or, on Unix you can run `./run-wheatley [ARGS]`.  Basically, replacing `wheatley
 `python run-wheatley` or `./run-wheatley` will have exactly the same effect but will use your
 updated source code rather than the version installed by `pip`.
 
+## Formatting
+
+In order to enforce styling consistency, all code is formatted with the
+[Black](https://black.readthedocs.io/en/stable/) autoformatter (and this is checked for incoming
+PRs).  Black is listed as a dependency in `requirements.txt`, so will be installed along with the
+other dependencies.  I would strongly recommend enabling format-on-save in your editor of choice
+because that way you'll never have to worry about formatting again - Black has some help
+[here](https://github.com/psf/black/blob/master/docs/editor_integration.md).  Alternatively, running
+`black .` in the project root before a PR will reformat everything and satisfy the PR checks.
+
 ## PR checks
 
 In order to make the code more reliable, all incoming PRs are passed through several checks which

@@ -11,10 +11,10 @@ MAX_BELL = len(BELL_NAMES)
 
 
 class Bell:
-    """ A class to encapsulate the idea of a bell. """
+    """A class to encapsulate the idea of a bell."""
 
     @classmethod
-    def from_str(cls, bell_str: str) -> 'Bell':
+    def from_str(cls, bell_str: str) -> "Bell":
         """
         Generates a Bell object from a string representing that bell's name.
         This works according to the standard convention, so Bell.from_str('1') will represent
@@ -28,7 +28,7 @@ class Bell:
         return cls(index)
 
     @classmethod
-    def from_number(cls, bell_num: int) -> 'Bell':
+    def from_number(cls, bell_num: int) -> "Bell":
         """
         Generates a Bell from a 1-indexed number, so Bell.from_number(1) will return a Bell
         representing the treble.
@@ -36,7 +36,7 @@ class Bell:
         return cls(bell_num - 1)
 
     @classmethod
-    def from_index(cls, bell_index: int) -> 'Bell':
+    def from_index(cls, bell_index: int) -> "Bell":
         """
         Generates a Bell from a 0-indexed number, so Bell.from_number(0) will return a Bell
         representing the treble.
@@ -55,20 +55,20 @@ class Bell:
 
     @property
     def number(self) -> int:
-        """ Gets the 1-indexed number representing this bell. """
+        """Gets the 1-indexed number representing this bell."""
         return self.index + 1
 
     def __str__(self) -> str:
-        """ Converts this bell to a single-character string representing this bell. """
+        """Converts this bell to a single-character string representing this bell."""
         return BELL_NAMES[self.index]
 
     def __repr__(self) -> str:
         return str(self)
 
     def __eq__(self, other: Any) -> bool:
-        """ Determines if two Bells are equal. """
+        """Determines if two Bells are equal."""
         return isinstance(other, Bell) and other.index == self.index
 
     def __hash__(self) -> int:
-        """ Generates a has of a Bell. """
+        """Generates a has of a Bell."""
         return self.index

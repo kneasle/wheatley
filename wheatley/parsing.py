@@ -9,9 +9,13 @@ from wheatley.aliases import CallDef, JSON
 from wheatley.bell import Bell
 from wheatley.row_generation import RowGenerator
 from wheatley.row_generation.place_notation_generator import PlaceNotationGenerator
-from wheatley.row_generation.complib_composition_generator import ComplibCompositionGenerator, \
-                                                                  PrivateCompError, InvalidCompError
+from wheatley.row_generation.complib_composition_generator import (
+    ComplibCompositionGenerator,
+    PrivateCompError,
+    InvalidCompError,
+)
 from wheatley.row_generation.helpers import valid_pn
+
 
 class StartRowParseError(ValueError):
     """
@@ -28,13 +32,15 @@ class StartRowParseError(ValueError):
     def __str__(self) -> str:
         return f"Error parsing start row '{self.start_row_string}': {self.message}"
 
+
 def parse_start_row(start_row: str) -> int:
     """
     Parses a start row written in the format "12345" to ensure all characters are valid bells
     and there are no missing bells.
     """
+
     def exit_with_message(error_text: str) -> NoReturn:
-        """ Raise an exception with a useful error message. """
+        """Raise an exception with a useful error message."""
         raise StartRowParseError(start_row, error_text)
 
     if start_row is None:
@@ -69,6 +75,7 @@ def parse_start_row(start_row: str) -> int:
 
     return len(start_row)
 
+
 class PealSpeedParseError(ValueError):
     """
     An error thrown with a helpful error message when the user inputs a peal speed string that
@@ -89,8 +96,9 @@ def parse_peal_speed(peal_speed: str) -> int:
     """
     Parses a peal speed written in the format /2h58(m?)/ or /XXX(m?)/ into a number of minutes.
     """
+
     def exit_with_message(error_text: str) -> NoReturn:
-        """ Raise an exception with a useful error message. """
+        """Raise an exception with a useful error message."""
         raise PealSpeedParseError(peal_speed, error_text)
 
     # Strip whitespace from the argument, so that if the user is in fact insane enough to pad their
@@ -166,9 +174,10 @@ class CallParseError(ValueError):
 
 
 def parse_call(input_string: str) -> CallDef:
-    """ Parse a call string into a dict of lead locations to place notation strings. """
+    """Parse a call string into a dict of lead locations to place notation strings."""
+
     def exit_with_message(message: str) -> NoReturn:
-        """ Raises a parse error with the given error message. """
+        """Raises a parse error with the given error message."""
         raise CallParseError(input_string, message)
 
     # A dictionary that will be filled with the parsed calls
@@ -184,9 +193,7 @@ def parse_call(input_string: str) -> CallDef:
             try:
                 location_str, place_notation_str = segment.split(":")
             except ValueError:
-                exit_with_message(
-                    f"Call specification '{segment.strip()}' should contain at most one ':'."
-                )
+                exit_with_message(f"Call specification '{segment.strip()}' should contain at most one ':'.")
 
             # Strip whitespace from the string segments so that they can be parsed more easily
             assert place_notation_str is not None
@@ -209,8 +216,10 @@ def parse_call(input_string: str) -> CallDef:
 
         # Insert the new call definition into the dictionary
         if location in parsed_calls:
-            exit_with_message(f"Location {location} has two conflicting calls: \
-'{parsed_calls[location]}' and '{place_notation_str}'.")
+            exit_with_message(
+                f"Location {location} has two conflicting calls: \
+'{parsed_calls[location]}' and '{place_notation_str}'."
+            )
 
         parsed_calls[location] = place_notation_str
 
@@ -218,7 +227,8 @@ def parse_call(input_string: str) -> CallDef:
 
 
 class RowGenParseError(ValueError):
-    """ A class to encapsulate an error generated when parsing an RowGenerator from JSON. """
+    """A class to encapsulate an error generated when parsing an RowGenerator from JSON."""
+
     def __init__(self, json: JSON, field: str, message: str) -> None:
         super().__init__()
 
@@ -234,15 +244,16 @@ class RowGenParseError(ValueError):
 
 
 def json_to_row_generator(json: JSON, logger: logging.Logger) -> RowGenerator:
-    """ Takes a JSON message from SocketIO and convert it to a RowGenerator or throw an exception. """
+    """Takes a JSON message from SocketIO and convert it to a RowGenerator or throw an exception."""
+
     def raise_error(field: str, message: str, parent_error: Optional[Exception] = None) -> NoReturn:
-        """ A helper function to raise a `RowGenParseError` with a helpful error message. """
+        """A helper function to raise a `RowGenParseError` with a helpful error message."""
         if parent_error is None:
             raise RowGenParseError(json, field, message)
         raise RowGenParseError(json, field, message) from parent_error
 
     def json_to_call(name: str) -> Optional[CallDef]:
-        """ Helper function to generate a call with a given name from the json. """
+        """Helper function to generate a call with a given name from the json."""
         if name not in json:
             logger.warning(f"No field '{name}' in the row generator JSON")
             return None
@@ -256,34 +267,33 @@ def json_to_row_generator(json: JSON, logger: logging.Logger) -> RowGenerator:
             call[index] = value
         return CallDef(call)
 
-    if 'type' not in json:
-        raise_error('type', "'type' is not defined")
+    if "type" not in json:
+        raise_error("type", "'type' is not defined")
 
-    if json['type'] == 'method':
+    if json["type"] == "method":
         try:
-            stage = int(json['stage'])
+            stage = int(json["stage"])
         except KeyError as e:
-            raise_error('stage', "'stage' is not defined", e)
+            raise_error("stage", "'stage' is not defined", e)
         except ValueError as e:
-            raise_error('stage', f"'{json['stage']}' is not a valid integer", e)
-        return PlaceNotationGenerator(stage, json['notation'], json_to_call('bob'),
-                                      json_to_call('single'))
+            raise_error("stage", f"'{json['stage']}' is not a valid integer", e)
+        return PlaceNotationGenerator(stage, json["notation"], json_to_call("bob"), json_to_call("single"))
 
-    if json['type'] == "composition":
+    if json["type"] == "composition":
         try:
-            comp_url = json['url']
+            comp_url = json["url"]
         except KeyError as e:
-            raise_error('url', "'url' is not defined", e)
+            raise_error("url", "'url' is not defined", e)
 
         try:
             row_gen = ComplibCompositionGenerator.from_arg(comp_url)
         except PrivateCompError as e:
-            raise_error('complib request', "Comp id '{comp_url}' is private", e)
+            raise_error("complib request", "Comp id '{comp_url}' is private", e)
         except InvalidCompError as e:
-            raise_error('complib request', "No composition with id '{comp_url}' found", e)
+            raise_error("complib request", "No composition with id '{comp_url}' found", e)
         return row_gen
 
-    raise_error('type', f"{json['type']} is not one of 'method' or 'composition'")
+    raise_error("type", f"{json['type']} is not one of 'method' or 'composition'")
 
 
 def to_bool(value: str) -> bool:
@@ -322,16 +332,16 @@ def parse_place_notation(input_string: str) -> Tuple[int, str]:
 
     # Looking for a string that matches <stage>:<place notation> where the
     # place notation is a series of bell numbers and 'x' characters
-    parts = input_string.split(':')
+    parts = input_string.split(":")
     if len(parts) == 2:
         stage_part = parts[0]
         if len(stage_part) == 0 or not stage_part.isnumeric():
-            raise PlaceNotationError(input_string, 'Stage must be a number')
+            raise PlaceNotationError(input_string, "Stage must be a number")
         stage = int(stage_part)
         place_notation = parts[1]
         if not valid_pn(place_notation):
-            raise PlaceNotationError(input_string, 'Place notation is invalid')
+            raise PlaceNotationError(input_string, "Place notation is invalid")
     else:
-        raise PlaceNotationError(input_string, '<stage>:<place notation> required')
+        raise PlaceNotationError(input_string, "<stage>:<place notation> required")
 
     return stage, place_notation

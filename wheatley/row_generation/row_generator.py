@@ -9,8 +9,9 @@ from wheatley.aliases import Row, Places
 from wheatley.stroke import Stroke, HANDSTROKE
 from wheatley.row_generation.helpers import generate_starting_row
 
+
 class RowGenerator(metaclass=ABCMeta):
-    """ Abstract base class for behaviours common to all row generators. """
+    """Abstract base class for behaviours common to all row generators."""
 
     logger_name = "ROWGEN"
 
@@ -26,7 +27,7 @@ class RowGenerator(metaclass=ABCMeta):
         self._row = self.start_row
 
     def reset(self) -> None:
-        """ Reset the row generator. """
+        """Reset the row generator."""
         self.logger.debug("Reset")
 
         self._has_bob = False
@@ -35,7 +36,7 @@ class RowGenerator(metaclass=ABCMeta):
         self._row = self.start_row
 
     def reset_calls(self) -> None:
-        """ Clear the pending call flags. """
+        """Clear the pending call flags."""
         self.logger.debug("Reset calls")
         self._has_bob = False
         self._has_single = False
@@ -48,7 +49,7 @@ class RowGenerator(metaclass=ABCMeta):
         return self.next_row_and_calls(stroke)[0]
 
     def next_row_and_calls(self, stroke: Stroke) -> Tuple[Row, List[str]]:
-        """ Generate the next row, and mutate state accordingly. """
+        """Generate the next row, and mutate state accordingly."""
         self._row, calls = self._gen_row_and_calls(self._row, stroke, self._index)
 
         self._index += 1
@@ -58,15 +59,15 @@ class RowGenerator(metaclass=ABCMeta):
         return (self._row, calls)
 
     def set_bob(self) -> None:
-        """ Set the flag that a bob has been made. """
+        """Set the flag that a bob has been made."""
         self._has_bob = True
 
     def set_single(self) -> None:
-        """ Set the flag that a single has been made. """
+        """Set the flag that a single has been made."""
         self._has_single = True
 
     def rounds(self) -> Row:
-        """ Generate rounds of the stage given by this RowGenerator. """
+        """Generate rounds of the stage given by this RowGenerator."""
         return rounds(self.stage)
 
     @abstractmethod
@@ -78,12 +79,12 @@ class RowGenerator(metaclass=ABCMeta):
     def _gen_row_and_calls(self, previous_row: Row, stroke: Stroke, index: int) -> Tuple[Row, List[str]]:
         return (self._gen_row(previous_row, stroke, index), [])
 
-    def start_stroke(self) -> Stroke: # pylint: disable=no-self-use
-        """ Gets the stroke of the first row.  This defaults to HANDSTROKE, but should be overridden by
-        other RowGenerators if different start strokes are possible. """
+    def start_stroke(self) -> Stroke:  # pylint: disable=no-self-use
+        """Gets the stroke of the first row.  This defaults to HANDSTROKE, but should be overridden by
+        other RowGenerators if different start strokes are possible."""
         return HANDSTROKE
 
-    def early_calls(self) -> Dict[int, List[str]]: # pylint: disable=no-self-use
+    def early_calls(self) -> Dict[int, List[str]]:  # pylint: disable=no-self-use
         """
         Returns the calls that should be called **before** going into the changes.  This map
         goes from <number of rows before the first row of method> to <list of calls that should be
@@ -98,13 +99,13 @@ class RowGenerator(metaclass=ABCMeta):
 
     @abstractmethod
     def summary_string(self) -> str:
-        """ Returns a short string summarising the RowGenerator.
+        """Returns a short string summarising the RowGenerator.
         This should make grammatical sense when formatted with
         'Wheatley (will ring|is ringing) {summary_string}'.
         """
 
     def permute(self, row: Row, places: Places) -> Row:
-        """ Permute a row by a place notation given by `places`. """
+        """Permute a row by a place notation given by `places`."""
         new_row = list(row)
 
         i = 1

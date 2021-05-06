@@ -13,7 +13,7 @@ from .row_generator import RowGenerator
 
 
 class PrivateCompError(ValueError):
-    """ An error class thrown when a user tries to access a private CompLib composition. """
+    """An error class thrown when a user tries to access a private CompLib composition."""
 
     def __init__(self, comp_id: int) -> None:
         super().__init__()
@@ -25,7 +25,7 @@ class PrivateCompError(ValueError):
 
 
 class InvalidCompError(ValueError):
-    """ An error class thrown when a user tries to access an invalid CompLib composition. """
+    """An error class thrown when a user tries to access an invalid CompLib composition."""
 
     def __init__(self, comp_id: int) -> None:
         super().__init__()
@@ -37,7 +37,7 @@ class InvalidCompError(ValueError):
 
 
 class InvalidComplibURLError(Exception):
-    """ An error class thrown when a user inputs an invalid complib comp URL. """
+    """An error class thrown when a user inputs an invalid complib comp URL."""
 
     def __init__(self, url: str, error: str) -> None:
         super().__init__()
@@ -51,14 +51,14 @@ class InvalidComplibURLError(Exception):
 
 # The 'removeprefix' function from Python 3.9
 def removeprefix(string: str, prefix: str) -> str:
-    """ Removes a prefix from a given string if it exists. """
+    """Removes a prefix from a given string if it exists."""
     if string.startswith(prefix):
-        return string[len(prefix):]
+        return string[len(prefix) :]
     return string[:]
 
 
 def parse_arg(arg: str) -> Tuple[int, Optional[str], Optional[int]]:
-    """ Parses a URL or a plain ID into a tuple of (ID, access key, substituted method ID). """
+    """Parses a URL or a plain ID into a tuple of (ID, access key, substituted method ID)."""
     # === CONVERT ID NUMBER INTO A NORMALISED URL ===
     # If the arg doesn't contain 'complib.org', we assume it's simply an ID (perhaps with an access
     # key) and so turn it into a URL
@@ -67,8 +67,8 @@ def parse_arg(arg: str) -> Tuple[int, Optional[str], Optional[int]]:
     else:
         url = "https://complib.org/composition/" + arg
     # Make sure that the URL starts with `https://`
-    if not url.startswith('http'):
-        url = 'https://' + url
+    if not url.startswith("http"):
+        url = "https://" + url
 
     # === PARSE URL, AND SPLIT PATH SEGMENTS ===
     # `url` looks like a URL, so try to parse it
@@ -81,7 +81,7 @@ def parse_arg(arg: str) -> Tuple[int, Optional[str], Optional[int]]:
     # === PARSE COMP ID FROM PATH SEGMENTS ===
     # Check that we have an absolute path, and remove the '' at the front of the list of path
     # segments
-    assert path_segs[0] == ''
+    assert path_segs[0] == ""
     path_segs = path_segs[1:]
     # Raise helpful error messages if obvious things are wrong (these errors can't happen if the
     # user used a straight ID)
@@ -109,24 +109,24 @@ def parse_arg(arg: str) -> Tuple[int, Optional[str], Optional[int]]:
                 substituted_method_id = int(parts[1])
             except ValueError as e:
                 raise InvalidComplibURLError(
-                    url,
-                    f"Substituted method ID '{parts[1]}' is not a number."
+                    url, f"Substituted method ID '{parts[1]}' is not a number."
                 ) from e
 
     return (comp_id, access_key, substituted_method_id)
 
 
 class ComplibCompositionGenerator(RowGenerator):
-    """ The RowGenerator subclass for generating rows from a CompLib composition. """
+    """The RowGenerator subclass for generating rows from a CompLib composition."""
 
     complib_url = "https://api.complib.org/composition/"
 
-    def __init__(self, comp_id: int, access_key: Optional[str] = None,
-                 substituted_method_id: Optional[int] = None) -> None:
+    def __init__(
+        self, comp_id: int, access_key: Optional[str] = None, substituted_method_id: Optional[int] = None
+    ) -> None:
         def process_call_string(calls: str) -> List[str]:
-            """ Parse a sequence of calls, and remove 'Stand'. """
+            """Parse a sequence of calls, and remove 'Stand'."""
             stripped_calls = [x.strip() for x in calls.split(";")]
-            return [c for c in stripped_calls if c != 'Stand']
+            return [c for c in stripped_calls if c != "Stand"]
 
         # Generate URL from the params
         query_sections: List[str] = []
@@ -146,7 +146,7 @@ class ComplibCompositionGenerator(RowGenerator):
         request_rows.raise_for_status()
         # Parse the request responses as JSON
         response_rows = json.loads(request_rows.text)
-        unparsed_rows = response_rows['rows']
+        unparsed_rows = response_rows["rows"]
         # Determine the start row of the composition
         num_starting_rounds = 0
         while unparsed_rows[num_starting_rounds][0] == unparsed_rows[0][0]:
@@ -154,10 +154,7 @@ class ComplibCompositionGenerator(RowGenerator):
         self._start_stroke = Stroke.from_index(num_starting_rounds)
         # Derive the rows, calls and stage from the JSON response
         loaded_rows: List[Tuple[Row, List[str]]] = [
-            (
-                Row([Bell.from_str(bell) for bell in row]),
-                [] if calls == '' else process_call_string(calls)
-            )
+            (Row([Bell.from_str(bell) for bell in row]), [] if calls == "" else process_call_string(calls))
             for row, calls, _property_bitmap in unparsed_rows
         ]
         # Convert these parsed rows into a format that we can read more easily when ringing.  I.e.
@@ -170,19 +167,19 @@ class ComplibCompositionGenerator(RowGenerator):
         }
         # Set the variables from which the summary string is generated
         self.comp_id = comp_id
-        self.comp_title = response_rows['title']
+        self.comp_title = response_rows["title"]
         self.is_comp_private = access_key is not None
         # Propogate the initialisation up to the parent class
-        super().__init__(response_rows['stage'])
+        super().__init__(response_rows["stage"])
 
     @classmethod
-    def from_arg(cls, arg: str) -> 'ComplibCompositionGenerator':
-        """ Generates a ComplibCompositionGenerator from either a URL or the ID of a comp. """
+    def from_arg(cls, arg: str) -> "ComplibCompositionGenerator":
+        """Generates a ComplibCompositionGenerator from either a URL or the ID of a comp."""
         comp_id, access_key, substituted_method_id = parse_arg(arg)
         return cls(comp_id, access_key, substituted_method_id)
 
     def summary_string(self) -> str:
-        """ Returns a short string summarising the RowGenerator. """
+        """Returns a short string summarising the RowGenerator."""
         return f"{'private ' if self.is_comp_private else ''}comp #{self.comp_id}: {self.comp_title}"
 
     def _gen_row_and_calls(self, _previous_row: Row, _stroke: Stroke, index: int) -> Tuple[Row, List[str]]:
@@ -196,10 +193,11 @@ class ComplibCompositionGenerator(RowGenerator):
         raise NotImplementedError()
 
     def start_stroke(self) -> Stroke:
-        """ Gets the stroke of the first row.  We allow backstroke starts, and derive this in the constructor
+        """
+        Gets the stroke of the first row.  We allow backstroke starts, and derive this in the constructor
         """
         return self._start_stroke
 
     def early_calls(self) -> Dict[int, List[str]]:
-        """ See row_generator/row_generator.py for documentation. """
+        """See row_generator/row_generator.py for documentation."""
         return self._early_calls

@@ -30,7 +30,7 @@ class WaitForUserRhythmTests(unittest.TestCase):
         self._finished_test = True
 
     def _patched_sleep(self, seconds):
-        """ Replacement sleep function that loops until advance_patched_sleep() is called
+        """Replacement sleep function that loops until advance_patched_sleep() is called
         Allows controlling how many times sleep() returns.
         """
         self._sleeping = True
@@ -42,7 +42,7 @@ class WaitForUserRhythmTests(unittest.TestCase):
         self._sleeping = False
 
     def advance_patched_sleep(self, seconds: float = 0.01):
-        """ Makes _patched_sleep() return
+        """Makes _patched_sleep() return
         Allows controlling how many times sleep() returns.
         """
         expected_sleeps = seconds / WaitForUserRhythm.sleep_time
@@ -52,13 +52,13 @@ class WaitForUserRhythmTests(unittest.TestCase):
             self._return_from_sleep = True
 
     def start_wait_for_bell_time_thread(self, current_time, bell, row_number, place, user_controlled, stroke):
-        """ Runs wait_for_bell_time() on a different thread, as it should loop until on_bell_ring() is called
-        """
+        """Runs wait_for_bell_time() on a different thread, as it should loop until on_bell_ring() is called"""
 
         def _wait_for_bell_time():
             self.waiting_for_bell_time = True
-            self.wait_rhythm.wait_for_bell_time(current_time, bell, row_number, place, user_controlled,
-                                                stroke)
+            self.wait_rhythm.wait_for_bell_time(
+                current_time, bell, row_number, place, user_controlled, stroke
+            )
             self.waiting_for_bell_time = False
 
         wait_thread = Thread(name=f"wait_for_bell_time_{bell}", target=_wait_for_bell_time)
@@ -101,8 +101,14 @@ class WaitForUserRhythmTests(unittest.TestCase):
         self.wait_rhythm.delay = initial_delay
 
         # Start waiting for treble
-        self.start_wait_for_bell_time_thread(current_time=expected_time, bell=treble, row_number=1, place=1,
-                                             user_controlled=True, stroke=HANDSTROKE)
+        self.start_wait_for_bell_time_thread(
+            current_time=expected_time,
+            bell=treble,
+            row_number=1,
+            place=1,
+            user_controlled=True,
+            stroke=HANDSTROKE,
+        )
 
         self.advance_patched_sleep(seconds=actual_time - expected_time)
 
@@ -111,8 +117,9 @@ class WaitForUserRhythmTests(unittest.TestCase):
         self.assert_not_waiting_for_bell_time()
 
         # 11.1 - 10 = 1.1
-        self.mock_inner_rhythm.on_bell_ring.assert_called_once_with(treble, HANDSTROKE,
-                                                                    actual_time - initial_delay)
+        self.mock_inner_rhythm.on_bell_ring.assert_called_once_with(
+            treble, HANDSTROKE, actual_time - initial_delay
+        )
         # 10 + (11.1 - 11) = 10.1
         self.assertEqual(10.1, round(self.wait_rhythm.delay, 2))
 
@@ -129,14 +136,21 @@ class WaitForUserRhythmTests(unittest.TestCase):
         self.wait_rhythm.on_bell_ring(treble, HANDSTROKE, actual_time)
 
         # Start waiting for treble
-        self.start_wait_for_bell_time_thread(current_time=expected_time, bell=treble, row_number=1, place=1,
-                                             user_controlled=True, stroke=HANDSTROKE)
+        self.start_wait_for_bell_time_thread(
+            current_time=expected_time,
+            bell=treble,
+            row_number=1,
+            place=1,
+            user_controlled=True,
+            stroke=HANDSTROKE,
+        )
 
         # Returns immediately without waiting
         self.assert_not_waiting_for_bell_time()
 
-        self.mock_inner_rhythm.on_bell_ring.assert_called_once_with(treble, HANDSTROKE,
-                                                                    actual_time - initial_delay)
+        self.mock_inner_rhythm.on_bell_ring.assert_called_once_with(
+            treble, HANDSTROKE, actual_time - initial_delay
+        )
         self.assertEqual(initial_delay, self.wait_rhythm.delay)
 
     def test_wait_for_bell_time__bell_rung_early_in_row_doesnt_wait(self):
@@ -150,8 +164,14 @@ class WaitForUserRhythmTests(unittest.TestCase):
         self.wait_rhythm.delay = initial_delay
 
         # Start waiting for treble
-        self.start_wait_for_bell_time_thread(current_time=expected_first_bell_time, bell=treble, row_number=1,
-                                             place=1, user_controlled=True, stroke=HANDSTROKE)
+        self.start_wait_for_bell_time_thread(
+            current_time=expected_first_bell_time,
+            bell=treble,
+            row_number=1,
+            place=1,
+            user_controlled=True,
+            stroke=HANDSTROKE,
+        )
 
         self.advance_patched_sleep(seconds=0.05)
 
@@ -166,8 +186,14 @@ class WaitForUserRhythmTests(unittest.TestCase):
         self.assert_not_waiting_for_bell_time()
 
         # Start waiting for second
-        self.start_wait_for_bell_time_thread(current_time=expected_second_bell_time, bell=second,
-                                             row_number=1, place=1, user_controlled=True, stroke=HANDSTROKE)
+        self.start_wait_for_bell_time_thread(
+            current_time=expected_second_bell_time,
+            bell=second,
+            row_number=1,
+            place=1,
+            user_controlled=True,
+            stroke=HANDSTROKE,
+        )
         # Returns immediately without waiting
         self.assert_not_waiting_for_bell_time()
 
@@ -189,15 +215,27 @@ class WaitForUserRhythmTests(unittest.TestCase):
         self.wait_rhythm.on_bell_ring(treble, HANDSTROKE, 1)
         self.wait_rhythm.on_bell_ring(treble, BACKSTROKE, 1.1)
 
-        self.start_wait_for_bell_time_thread(current_time=expected_first_time, bell=treble, row_number=1,
-                                             place=1, user_controlled=True, stroke=HANDSTROKE)
+        self.start_wait_for_bell_time_thread(
+            current_time=expected_first_time,
+            bell=treble,
+            row_number=1,
+            place=1,
+            user_controlled=True,
+            stroke=HANDSTROKE,
+        )
         self.assert_not_waiting_for_bell_time()
 
         # Next row, treble is already rung BACKSTROKE
         self.wait_rhythm.expect_bell(treble, 2, 1, BACKSTROKE)
 
-        self.start_wait_for_bell_time_thread(current_time=expected_second_time, bell=treble, row_number=2,
-                                             place=1, user_controlled=True, stroke=BACKSTROKE)
+        self.start_wait_for_bell_time_thread(
+            current_time=expected_second_time,
+            bell=treble,
+            row_number=2,
+            place=1,
+            user_controlled=True,
+            stroke=BACKSTROKE,
+        )
 
         self.assert_not_waiting_for_bell_time()
 
@@ -216,8 +254,14 @@ class WaitForUserRhythmTests(unittest.TestCase):
         # Treble rung by user
         self.wait_rhythm.on_bell_ring(treble, HANDSTROKE, 1)
 
-        self.start_wait_for_bell_time_thread(current_time=expected_first_time, bell=treble, row_number=1,
-                                             place=1, user_controlled=True, stroke=HANDSTROKE)
+        self.start_wait_for_bell_time_thread(
+            current_time=expected_first_time,
+            bell=treble,
+            row_number=1,
+            place=1,
+            user_controlled=True,
+            stroke=HANDSTROKE,
+        )
 
         # Treble accidentally rung by user and corrected back to the right stroke
         self.wait_rhythm.on_bell_ring(treble, BACKSTROKE, 1.1)
@@ -227,8 +271,14 @@ class WaitForUserRhythmTests(unittest.TestCase):
 
         self.wait_rhythm.expect_bell(treble, 2, 1, BACKSTROKE)
 
-        self.start_wait_for_bell_time_thread(current_time=expected_second_time, bell=treble, row_number=2,
-                                             place=1, user_controlled=True, stroke=BACKSTROKE)
+        self.start_wait_for_bell_time_thread(
+            current_time=expected_second_time,
+            bell=treble,
+            row_number=2,
+            place=1,
+            user_controlled=True,
+            stroke=BACKSTROKE,
+        )
 
         self.assertTrue(self.waiting_for_bell_time)
 
@@ -242,5 +292,5 @@ class WaitForUserRhythmTests(unittest.TestCase):
         self.mock_inner_rhythm.on_bell_ring.assert_any_call(treble, BACKSTROKE, expected_second_time)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

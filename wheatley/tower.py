@@ -7,7 +7,7 @@ import logging
 from time import sleep
 from typing import Optional, Callable, Dict, List, Any
 
-import socketio # type: ignore
+import socketio  # type: ignore
 
 from wheatley.aliases import JSON
 from wheatley.bell import Bell
@@ -15,12 +15,12 @@ from wheatley.stroke import Stroke, HANDSTROKE
 
 
 class RingingRoomTower:
-    """ A class representing a tower, which will handle a single ringing-room session. """
+    """A class representing a tower, which will handle a single ringing-room session."""
 
     logger_name = "TOWER"
 
     def __init__(self, tower_id: int, url: str) -> None:
-        """ Initialise a tower with a given room id and url. """
+        """Initialise a tower with a given room id and url."""
         self.tower_id = tower_id
 
         self._bell_state: List[Stroke] = []
@@ -41,7 +41,7 @@ class RingingRoomTower:
         self.logger = logging.getLogger(self.logger_name)
 
     def __enter__(self) -> Any:
-        """ Called when entering a 'with' block.  Opens the socket-io connection. """
+        """Called when entering a 'with' block.  Opens the socket-io connection."""
         self.logger.debug("ENTER")
 
         if self._socket_io_client is not None:
@@ -63,11 +63,11 @@ class RingingRoomTower:
 
     @property
     def number_of_bells(self) -> int:
-        """ Returns the number of bells currently in the tower. """
+        """Returns the number of bells currently in the tower."""
         return len(self._bell_state)
 
     def ring_bell(self, bell: Bell, expected_stroke: Stroke) -> bool:
-        """ Send a request to the the server if the bell can be rung on the given stroke. """
+        """Send a request to the the server if the bell can be rung on the given stroke."""
         try:
             stroke = self.get_stroke(bell)
             if stroke != expected_stroke:
@@ -84,7 +84,7 @@ class RingingRoomTower:
             return False
 
     def is_bell_assigned_to(self, bell: Bell, user_name: Optional[str]) -> bool:
-        """ Returns true if a given bell is assigned to the given user name. """
+        """Returns true if a given bell is assigned to the given user name."""
         try:
             assigned_user_id = self._assigned_users.get(bell, None)
             if assigned_user_id is None:
@@ -101,39 +101,39 @@ class RingingRoomTower:
         return self._user_name_map.get(user_id)
 
     def get_stroke(self, bell: Bell) -> Optional[Stroke]:
-        """ Returns the stroke of a given bell. """
+        """Returns the stroke of a given bell."""
         if bell.index >= len(self._bell_state) or bell.index < 0:
             self.logger.error(f"Bell {bell} not in tower")
             return None
         return self._bell_state[bell.index]
 
     def make_call(self, call: str) -> None:
-        """ Broadcasts a given call to the other users of the tower. """
+        """Broadcasts a given call to the other users of the tower."""
         self.logger.info(f"EMIT: Calling '{call}'")
         self._emit("c_call", {"call": call, "tower_id": self.tower_id})
 
     def set_at_hand(self) -> None:
-        """ Sets all the bells at hand. """
+        """Sets all the bells at hand."""
         self.logger.info("EMIT: Setting bells at handstroke")
         self._emit("c_set_bells", {"tower_id": self.tower_id})
 
     def set_number_of_bells(self, number: int) -> None:
-        """ Set the number of bells in the tower. """
+        """Set the number of bells in the tower."""
         self.logger.info(f"EMIT: Setting size to {number}")
         self._emit("c_size_change", {"new_size": number, "tower_id": self.tower_id})
 
     def set_is_ringing(self, value: bool) -> None:
-        """ Broadcast to all the users that Wheatley has started or stopped ringing. """
+        """Broadcast to all the users that Wheatley has started or stopped ringing."""
         self.logger.info(f"EMIT: Telling RR clients to set is_ringing to {value}")
         self._emit("c_wheatley_is_ringing", {"is_ringing": value, "tower_id": self.tower_id})
 
     def emit_roll_call(self, instance_id: int) -> None:
-        """ Broadcasts a 'roll call' reply to the Ringing Room server. """
+        """Broadcasts a 'roll call' reply to the Ringing Room server."""
         self.logger.info("EMIT: Replying to roll call")
         self._emit("c_roll_call", {"tower_id": self.tower_id, "instance_id": instance_id})
 
     def wait_loaded(self) -> None:
-        """ Pause the thread until the socket-io connection is open and stable. """
+        """Pause the thread until the socket-io connection is open and stable."""
         if self._socket_io_client is None or not self._socket_io_client.connected:
             raise SocketIOClientError("Not Connected")
 
@@ -149,7 +149,7 @@ class RingingRoomTower:
             raise SocketIOClientError("Not received bell state from RingingRoom")
 
     def _create_client(self) -> None:
-        """ Generates the socket-io client and attaches callbacks. """
+        """Generates the socket-io client and attaches callbacks."""
         self._socket_io_client = socketio.Client()
         self._socket_io_client.connect(self._url)
         self.logger.debug(f"Connected to {self._url}")
@@ -173,8 +173,7 @@ class RingingRoomTower:
     def _on_setting_change(self, data: JSON) -> None:
         # Log a message (to info if the setting change is used, debug otherwise)
         is_ignored = len(self.invoke_on_setting_change) == 0
-        log_message = f"RECEIVED: Settings changed: {data}" \
-            + "{' (ignoring)' if is_ignored else ''}"
+        log_message = f"RECEIVED: Settings changed: {data}" + "{' (ignoring)' if is_ignored else ''}"
         if is_ignored:
             self.logger.debug(log_message)
         else:
@@ -187,8 +186,7 @@ class RingingRoomTower:
     def _on_row_gen_change(self, data: JSON) -> None:
         # Log a message (to info if the setting change is used, debug otherwise)
         is_ignored = len(self.invoke_on_row_gen_change) == 0
-        log_message = f"RECEIVED: Row gen changed: {data}" \
-            + "{' (ignoring)' if is_ignored else ''}"
+        log_message = f"RECEIVED: Row gen changed: {data}" + "{' (ignoring)' if is_ignored else ''}"
         if is_ignored:
             self.logger.debug(log_message)
         else:
@@ -223,23 +221,23 @@ class RingingRoomTower:
         )
 
     def _on_user_entered(self, data: JSON) -> None:
-        """ Called when the server receives a uew user so we can update our user list. """
+        """Called when the server receives a uew user so we can update our user list."""
         # Unpack the data and assign it expected types
-        user_id: int = data['user_id']
-        username: str = data['username']
+        user_id: int = data["user_id"]
+        username: str = data["username"]
         # Add the new user to the user list, so we can match up their ID with their username
         self._user_name_map[user_id] = username
 
     def _on_user_list(self, user_list: JSON) -> None:
-        """ Called when the server broadcasts a user list when Wheatley joins a tower. """
-        for user in user_list['user_list']:
+        """Called when the server broadcasts a user list when Wheatley joins a tower."""
+        for user in user_list["user_list"]:
             # Unpack the data and assign it expected types
-            user_id: int = user['user_id']
-            username: str = user['username']
+            user_id: int = user["user_id"]
+            username: str = user["username"]
             self._user_name_map[user_id] = username
 
     def _join_tower(self) -> None:
-        """ Joins the tower as an anonymous user. """
+        """Joins the tower as an anonymous user."""
         self.logger.info(f"EMIT: Joining tower {self.tower_id}")
         self._emit(
             "c_join",
@@ -247,14 +245,14 @@ class RingingRoomTower:
         )
 
     def _request_global_state(self) -> None:
-        """ Send a request to the server to get the current state of the tower. """
+        """Send a request to the server to get the current state of the tower."""
         self.logger.debug("EMIT: Requesting global state.")
-        self._emit('c_request_global_state', {"tower_id": self.tower_id})
+        self._emit("c_request_global_state", {"tower_id": self.tower_id})
 
     def _on_bell_rung(self, data: JSON) -> None:
-        """ Callback called when the client receives a signal that a bell has been rung. """
+        """Callback called when the client receives a signal that a bell has been rung."""
         # Unpack the data and assign it expected types
-        global_bell_state: List[bool] = data['global_bell_state']
+        global_bell_state: List[bool] = data["global_bell_state"]
         who_rang_raw: int = data["who_rang"]
         # Run callbacks for updating the bell state
         self._update_bell_state([Stroke(b) for b in global_bell_state])
@@ -285,13 +283,14 @@ class RingingRoomTower:
             invoke_callback()
 
     def _on_size_change(self, data: JSON) -> None:
-        """ Callback called when the number of bells in the room changes. """
+        """Callback called when the number of bells in the room changes."""
         new_size: int = data["size"]
         if new_size != self.number_of_bells:
             # Remove the user who's bells have been removed (so that returning to a stage doesn't make
             # Wheatley think the bells are still assigned)
-            self._assigned_users = {bell: user for (bell, user) in self._assigned_users.items()
-                                    if bell.number <= new_size}
+            self._assigned_users = {
+                bell: user for (bell, user) in self._assigned_users.items() if bell.number <= new_size
+            }
             # Set the bells at handstroke
             self._bell_state = self._bells_set_at_hand(new_size)
             # Handle all the callbacks
@@ -300,13 +299,14 @@ class RingingRoomTower:
                 invoke_callback()
 
     def _on_assign_user(self, data: JSON) -> None:
-        """ Callback called when a bell assignment is changed. """
+        """Callback called when a bell assignment is changed."""
         raw_bell: int = data["bell"]
         bell: Bell = Bell.from_number(raw_bell)
         user: Optional[int] = data["user"] or None
 
-        assert isinstance(user, int) or user is None, \
-               f"User ID {user} is not an integer (it has type {type(user)})."
+        assert (
+            isinstance(user, int) or user is None
+        ), f"User ID {user} is not an integer (it has type {type(user)})."
 
         if user is None:
             self.logger.info(f"RECEIVED: Unassigned bell '{bell}'")
@@ -317,7 +317,7 @@ class RingingRoomTower:
             self.logger.info(f"RECEIVED: Assigned bell '{bell}' to '{self.user_name_from_id(user)}'")
 
     def _on_call(self, data: Dict[str, str]) -> None:
-        """ Callback called when a call is made. """
+        """Callback called when a call is made."""
         call = data["call"]
         self.logger.info(f"RECEIVED: Call '{call}'")
 
@@ -329,7 +329,7 @@ class RingingRoomTower:
             self.logger.debug(f"No callback found for '{call}'")
 
     def _emit(self, event: str, data: Any) -> None:
-        """ Emit a socket-io signal. """
+        """Emit a socket-io signal."""
         if self._socket_io_client is None or not self._socket_io_client.connected:
             raise SocketIOClientError("Not Connected")
 
@@ -337,7 +337,7 @@ class RingingRoomTower:
 
     @staticmethod
     def _bells_set_at_hand(number: int) -> List[Stroke]:
-        """ Returns the representation of `number` bells, all set at handstroke. """
+        """Returns the representation of `number` bells, all set at handstroke."""
         return [HANDSTROKE for _ in range(number)]
 
 

@@ -6,7 +6,6 @@ from wheatley.stroke import HANDSTROKE, BACKSTROKE
 
 
 class DixonoidsGeneratorTests(TestCase):
-
     def test_dixons_treble_leading_handstroke(self):
         generator = DixonoidsGenerator(6, DixonoidsGenerator.DixonsRules)
         # Backstroke previous

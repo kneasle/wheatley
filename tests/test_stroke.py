@@ -34,13 +34,13 @@ class StrokeTests(unittest.TestCase):
         self.assertEqual(BACKSTROKE.opposite(), HANDSTROKE)
 
     def test_to_string(self):
-        self.assertEqual(str(HANDSTROKE), 'HANDSTROKE')
-        self.assertEqual(str(BACKSTROKE), 'BACKSTROKE')
+        self.assertEqual(str(HANDSTROKE), "HANDSTROKE")
+        self.assertEqual(str(BACKSTROKE), "BACKSTROKE")
 
     def test_to_char(self):
-        self.assertEqual(HANDSTROKE.char(), 'H')
-        self.assertEqual(BACKSTROKE.char(), 'B')
+        self.assertEqual(HANDSTROKE.char(), "H")
+        self.assertEqual(BACKSTROKE.char(), "B")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

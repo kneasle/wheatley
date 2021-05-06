@@ -11,35 +11,29 @@ with open("wheatley/version.txt", "r") as fh:
 setuptools.setup(
     name="wheatley",
     version=version,
-
     author="Ben White-Horne",
     author_email="kneasle@gmail.com",
-
     description="A program that will ring any set of bells in Ringing Room.",
     long_description=long_description,
     long_description_content_type="text/markdown",
-
     url="https://github.com/Kneasle/wheatley/",
-
     license="MIT",
     platforms="any",
-
-    packages=setuptools.find_packages(include=['wheatley*']),
+    packages=setuptools.find_packages(include=["wheatley*"]),
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
-        "Operating System :: OS Independent"
+        "Operating System :: OS Independent",
     ],
-    python_requires='>=3.6',
+    python_requires=">=3.6",
     install_requires=[
         'numpy<=1.19.3; platform_system == "Windows"',
         'numpy; platform_system != "Windows"',
         "requests",
         "python-socketio<5",
         "python-engineio<4",
-        "websocket-client"
+        "websocket-client",
     ],
     package_data={"wheatley": ["version.txt"]},
-
-    entry_points={'console_scripts': ['wheatley = wheatley.main:main']}
+    entry_points={"console_scripts": ["wheatley = wheatley.main:main"]},
 )

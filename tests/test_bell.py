@@ -9,7 +9,7 @@ class BellTests(unittest.TestCase):
                 self.assertEqual(str(Bell.from_str(name)), name)
 
     def test_from_string_error(self):
-        for name in ['p', 'a', 'x', 'O', '?', '14', 'q1', '00']:
+        for name in ["p", "a", "x", "O", "?", "14", "q1", "00"]:
             with self.subTest(name=name):
                 with self.assertRaises(ValueError):
                     Bell.from_str(name)
@@ -47,5 +47,5 @@ class BellTests(unittest.TestCase):
                 self.assertEqual(Bell.from_index(i) != Bell.from_index(j), i != j)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

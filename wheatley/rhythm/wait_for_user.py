@@ -9,9 +9,8 @@ from wheatley.bell import Bell
 from .abstract_rhythm import Rhythm
 
 
-
 class WaitForUserRhythm(Rhythm):
-    """ A decorator class that adds the ability to wait for user-controlled bells to ring. """
+    """A decorator class that adds the ability to wait for user-controlled bells to ring."""
 
     logger_name = "RHYTHM:WaitForUser"
     sleep_time = 0.01
@@ -43,15 +42,23 @@ class WaitForUserRhythm(Rhythm):
         self._should_return_to_mainloop = True
         self._inner_rhythm.return_to_mainloop()
 
-    def wait_for_bell_time(self, current_time: float, bell: Bell, row_number: int, place: int,
-                           user_controlled: bool, stroke: Stroke) -> None:
-        """ Sleeps the thread until a given Bell should have rung. """
+    def wait_for_bell_time(
+        self,
+        current_time: float,
+        bell: Bell,
+        row_number: int,
+        place: int,
+        user_controlled: bool,
+        stroke: Stroke,
+    ) -> None:
+        """Sleeps the thread until a given Bell should have rung."""
         if stroke != self._current_stroke:
             self.logger.debug(f"Switching to unexpected stroke {stroke}")
             self._current_stroke = stroke
 
-        self._inner_rhythm.wait_for_bell_time(current_time - self.delay, bell, row_number, place,
-                                              user_controlled, stroke)
+        self._inner_rhythm.wait_for_bell_time(
+            current_time - self.delay, bell, row_number, place, user_controlled, stroke
+        )
         if user_controlled:
             delay_for_user = 0.0
             self.logger.debug(f"Waiting for {bell}...")
@@ -115,9 +122,10 @@ class WaitForUserRhythm(Rhythm):
             self.logger.debug(f"{bell} rung early to {stroke}")
             self._early_bells[self._current_stroke.opposite()].add(bell)
 
-    def initialise_line(self, stage: int, user_controls_treble: bool, start_time: float,
-                        number_of_user_controlled_bells: int) -> None:
-        """ Allow the Rhythm object to initialise itself when 'Look to' is called. """
+    def initialise_line(
+        self, stage: int, user_controls_treble: bool, start_time: float, number_of_user_controlled_bells: int
+    ) -> None:
+        """Allow the Rhythm object to initialise itself when 'Look to' is called."""
         self._expected_bells[HANDSTROKE].clear()
         self._expected_bells[BACKSTROKE].clear()
 
@@ -129,5 +137,6 @@ class WaitForUserRhythm(Rhythm):
         # Clear any current waiting loops
         self.sleep(2 * self.sleep_time)
 
-        self._inner_rhythm.initialise_line(stage, user_controls_treble, start_time - self.delay,
-                                           number_of_user_controlled_bells)
+        self._inner_rhythm.initialise_line(
+            stage, user_controls_treble, start_time - self.delay, number_of_user_controlled_bells
+        )

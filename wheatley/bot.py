@@ -34,10 +34,18 @@ class Bot:
 
     logger_name = "BOT"
 
-    def __init__(self, tower: RingingRoomTower, row_generator: RowGenerator, do_up_down_in: bool,
-                 stop_at_rounds: bool, call_comps: bool, rhythm: Rhythm, user_name: Optional[str] = None,
-                 server_instance_id: Optional[int] = None) -> None:
-        """ Initialise a Bot with all the parts it needs to run. """
+    def __init__(
+        self,
+        tower: RingingRoomTower,
+        row_generator: RowGenerator,
+        do_up_down_in: bool,
+        stop_at_rounds: bool,
+        call_comps: bool,
+        rhythm: Rhythm,
+        user_name: Optional[str] = None,
+        server_instance_id: Optional[int] = None,
+    ) -> None:
+        """Initialise a Bot with all the parts it needs to run."""
         # If this is None then Wheatley is in client mode, otherwise Wheatley is in server mode
         self._server_instance_id = server_instance_id
         self._last_activity_time = time.time()
@@ -101,12 +109,12 @@ class Bot:
     # Convenient properties that are frequently used
     @property
     def stroke(self) -> Stroke:
-        """ Returns true if the current row (determined by self._row_number) represents a handstroke. """
+        """Returns true if the current row (determined by self._row_number) represents a handstroke."""
         return Stroke.from_index(self._row_number)
 
     @property
     def number_of_bells(self) -> int:
-        """ Convenient property to find the number of bells in the current tower. """
+        """Convenient property to find the number of bells in the current tower."""
         return self._tower.number_of_bells
 
     @property
@@ -118,13 +126,13 @@ class Bot:
         def log_invalid_key(message: str) -> None:
             self.logger.warning(f"Invalid value for {key}: {message}")
 
-        if key == 'use_up_down_in':
+        if key == "use_up_down_in":
             try:
                 self._do_up_down_in = to_bool(value)
                 self.logger.info(f"Setting 'use_up_down_in' to {self._do_up_down_in}")
             except ValueError:
                 log_invalid_key(f"{value} cannot be converted into a bool")
-        elif key == 'stop_at_rounds':
+        elif key == "stop_at_rounds":
             try:
                 self._stop_at_rounds = to_bool(value)
                 self.logger.info(f"Setting 'stop_at_rounds' to {value}")
@@ -142,42 +150,53 @@ class Bot:
 
     def _on_size_change(self) -> None:
         self._check_number_of_bells()
-        self._opening_row = generate_starting_row(
-            self.number_of_bells, self.row_generator.custom_start_row)
+        self._opening_row = generate_starting_row(self.number_of_bells, self.row_generator.custom_start_row)
         self._rounds = rounds(self.number_of_bells)
         self._check_starting_row()
 
     def _check_starting_row(self) -> bool:
-        if (self.row_generator.custom_start_row is not None and
-                len(self.row_generator.custom_start_row) < self.number_of_bells):
-            self.logger.info(f"The starting row '{self.row_generator.custom_start_row}' "
-                             + f"contains fewer bells than the tower ({self._tower.number_of_bells}). "
-                             + "Wheatley will add the extra bells to the end of the change.")
+        if (
+            self.row_generator.custom_start_row is not None
+            and len(self.row_generator.custom_start_row) < self.number_of_bells
+        ):
+            self.logger.info(
+                f"The starting row '{self.row_generator.custom_start_row}' "
+                + f"contains fewer bells than the tower ({self._tower.number_of_bells}). "
+                + "Wheatley will add the extra bells to the end of the change."
+            )
 
         if len(self._opening_row) != self.number_of_bells:
-            self.logger.warning(f"The current tower has fewer bells ({self._tower.number_of_bells}) "
-                                + f"than the starting row {self._opening_row}. Wheatley will not ring!")
+            self.logger.warning(
+                f"The current tower has fewer bells ({self._tower.number_of_bells}) "
+                + f"than the starting row {self._opening_row}. Wheatley will not ring!"
+            )
             return False
         return True
 
     def _check_number_of_bells(self) -> bool:
-        """ Returns whether Wheatley can ring with the current number of bells with reasons why not """
+        """Returns whether Wheatley can ring with the current number of bells with reasons why not"""
         if self.row_generator.stage == 0:
             self.logger.debug("Place holder row generator. Wheatley will not ring!")
             return False
         if self._tower.number_of_bells < self.row_generator.stage:
-            self.logger.warning(f"Row generation requires at least {self.row_generator.stage} bells, "
-                                + f"but the current tower has {self._tower.number_of_bells}. "
-                                + "Wheatley will not ring!")
+            self.logger.warning(
+                f"Row generation requires at least {self.row_generator.stage} bells, "
+                + f"but the current tower has {self._tower.number_of_bells}. "
+                + "Wheatley will not ring!"
+            )
             return False
-        if self._tower.number_of_bells > self.row_generator.stage + 1 \
-                and self.row_generator.custom_start_row is None:
+        if (
+            self._tower.number_of_bells > self.row_generator.stage + 1
+            and self.row_generator.custom_start_row is None
+        ):
             if self.row_generator.stage % 2:
                 expected = self.row_generator.stage + 1
             else:
                 expected = self.row_generator.stage
-            self.logger.info(f"Current tower has more bells ({self._tower.number_of_bells}) than expected "
-                             + f"({expected}). Wheatley will add extra cover bells.")
+            self.logger.info(
+                f"Current tower has more bells ({self._tower.number_of_bells}) than expected "
+                + f"({expected}). Wheatley will add extra cover bells."
+            )
         return True
 
     def _on_look_to(self) -> None:
@@ -189,7 +208,7 @@ class Bot:
 
     # This has to be made public, because the server's main function might have to call it
     def look_to_has_been_called(self, call_time: float) -> None:
-        """ Callback called when a user calls 'Look To'. """
+        """Callback called when a user calls 'Look To'."""
         self._rhythm.return_to_mainloop()
 
         treble = self._rounds[0]
@@ -197,8 +216,12 @@ class Bot:
         # Count number of user controlled bells
         number_of_user_controlled_bells = sum(1 for bell in self._rounds if self._user_assigned_bell(bell))
 
-        self._rhythm.initialise_line(self.number_of_bells, self._user_assigned_bell(treble),
-                                     call_time + 3, number_of_user_controlled_bells)
+        self._rhythm.initialise_line(
+            self.number_of_bells,
+            self._user_assigned_bell(treble),
+            call_time + 3,
+            number_of_user_controlled_bells,
+        )
 
         # Move to the next row generator if it's defined
         self.row_generator = self.next_row_generator or self.row_generator
@@ -225,7 +248,7 @@ class Bot:
         self.start_next_row(is_first_row=True)
 
     def _on_go(self) -> None:
-        """ Callback called when a user calls 'Go'. """
+        """Callback called when a user calls 'Go'."""
         if self._is_ringing_rounds:
             # Calculate how many more rows of rounds we should ring before going into changes (1 if
             # the person called 'Go' on the same stroke as the RowGenerator starts, otherwise 0).
@@ -250,24 +273,24 @@ class Bot:
                 self._make_calls(_calls)
 
     def _on_bob(self) -> None:
-        """ Callback called when a user calls 'Bob'. """
+        """Callback called when a user calls 'Bob'."""
         self.row_generator.set_bob()
 
     def _on_single(self) -> None:
-        """ Callback called when a user calls 'Single'. """
+        """Callback called when a user calls 'Single'."""
         self.row_generator.set_single()
 
     def _on_thats_all(self) -> None:
-        """ Callback called when a user calls 'That`s All'. """
+        """Callback called when a user calls 'That`s All'."""
         # We set this to one, because we expect one clear row between the call and rounds
         self._rows_left_before_rounds = 1
 
     def _on_stand_next(self) -> None:
-        """ Callback called when a user calls 'Stand Next'. """
+        """Callback called when a user calls 'Stand Next'."""
         self._should_stand = True
 
     def _on_bell_ring(self, bell: Bell, stroke: Stroke) -> None:
-        """ Callback called when the Tower receives a signal that a bell has been rung. """
+        """Callback called when the Tower receives a signal that a bell has been rung."""
         if self._user_assigned_bell(bell):
             # This will give us the stroke _after_ the bell rings, we have to invert it, because
             # otherwise this will always expect the bells on the wrong stroke and no ringing will
@@ -282,17 +305,12 @@ class Bot:
 
     # Mainloop and helper methods
     def expect_bell(self, index: int, bell: Bell) -> None:
-        """ Called to let the rhythm expect a user-controlled bell at a certain time and stroke. """
+        """Called to let the rhythm expect a user-controlled bell at a certain time and stroke."""
         if self._user_assigned_bell(bell):
-            self._rhythm.expect_bell(
-                bell,
-                self._row_number,
-                index,
-                self.stroke
-            )
+            self._rhythm.expect_bell(bell, self._row_number, index, self.stroke)
 
     def generate_next_row(self) -> None:
-        """ Creates a new row from the row generator and tells the rhythm to expect the new bells. """
+        """Creates a new row from the row generator and tells the rhythm to expect the new bells."""
         if self._is_ringing_opening_row:
             self._row = self._opening_row
         elif self._is_ringing_rounds:
@@ -301,13 +319,13 @@ class Bot:
             self._row, self._calls = self.row_generator.next_row_and_calls(self.stroke)
             # Add cover bells if needed
             if len(self._row) < len(self._opening_row):
-                self._row = Row(self._row + self._opening_row[len(self._row):])
+                self._row = Row(self._row + self._opening_row[len(self._row) :])
 
         bells = " ".join([str(bell) for bell in self._row])
         self.logger.info(f"ROW: {bells}")
 
     def start_next_row(self, is_first_row: bool) -> None:
-        """ Updates state of bot ready to ring the next row / stop ringing"""
+        """Updates state of bot ready to ring the next row / stop ringing"""
         # Generate the next row and update row indices
         self._place = 0
         if is_first_row:
@@ -358,8 +376,9 @@ class Bot:
         # 1. Someone calls 'That's All' and rounds appears
         #       (or)
         # 2. Someone calls 'That's All', one clear row has elapsed
-        if self._rows_left_before_rounds == 0 \
-                or (has_just_rung_rounds and self._rows_left_before_rounds is not None):
+        if self._rows_left_before_rounds == 0 or (
+            has_just_rung_rounds and self._rows_left_before_rounds is not None
+        ):
             self._rows_left_before_rounds = None
             self._is_ringing_rounds = True
         if self._rows_left_before_rounds is not None:
@@ -377,12 +396,13 @@ class Bot:
             self.expect_bell(index, bell)
 
     def tick(self) -> None:
-        """ Move the ringing on by one place """
+        """Move the ringing on by one place"""
         bell = self._row[self._place]
         user_controlled = self._user_assigned_bell(bell)
 
-        self._rhythm.wait_for_bell_time(time.time(), bell, self._row_number, self._place,
-                                        user_controlled, self.stroke)
+        self._rhythm.wait_for_bell_time(
+            time.time(), bell, self._row_number, self._place, user_controlled, self.stroke
+        )
 
         if not user_controlled:
             self._tower.ring_bell(bell, self.stroke)
@@ -432,19 +452,19 @@ class Bot:
                 self._tower.set_is_ringing(False)
 
     def _user_assigned_bell(self, bell: Bell) -> bool:
-        """ Returns `True` if this bell is not assigned to Wheatley. """
+        """Returns `True` if this bell is not assigned to Wheatley."""
         return not self._bot_assigned_bell(bell)
 
     def _bot_assigned_bell(self, bell: Bell) -> bool:
-        """ Returns `True` if this bell **is** assigned to Wheatley. """
+        """Returns `True` if this bell **is** assigned to Wheatley."""
         return self._tower.is_bell_assigned_to(bell, self._user_name)
 
     def _make_calls(self, call_list: List[str]) -> None:
-        """ Broadcast a sequence of calls """
+        """Broadcast a sequence of calls"""
         for c in call_list:
             self._make_call(c)
 
     def _make_call(self, call: str) -> None:
-        """ Broadcast a call, unless we've been told not to call anything. """
+        """Broadcast a call, unless we've been told not to call anything."""
         if self._call_comps:
             self._tower.make_call(call)

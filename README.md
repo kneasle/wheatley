@@ -9,7 +9,7 @@ scope of potential practices, designed to be a **'ninja helper with no ego'**.
 If you just want to use Wheatley for normal ringing without caring about how it works, then check
 out how to use Wheatley directly [inside Ringing Room](https://ringingroom.com/help#wheatley) - no
 installation required, just a flick of a switch.  If you want more control than the Ringing Room
-interface proveds or are interested in how Wheatley works, then this is the place to go.  This
+interface provides or are interested in how Wheatley works, then this is the place to go.  This
 repository contains Wheatley's source code, and documentation of the 'classic' command line version.
 
 ## Contributing

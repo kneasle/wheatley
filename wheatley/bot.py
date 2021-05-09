@@ -68,6 +68,7 @@ class Bot:
         self._tower.invoke_on_call[calls.BOB].append(self._on_bob)
         self._tower.invoke_on_call[calls.SINGLE].append(self._on_single)
         self._tower.invoke_on_call[calls.THATS_ALL].append(self._on_thats_all)
+        self._tower.invoke_on_call[calls.ROUNDS].append(self._on_rounds)
         self._tower.invoke_on_call[calls.STAND].append(self._on_stand_next)
         self._tower.invoke_on_bell_rung.append(self._on_bell_ring)
         self._tower.invoke_on_reset.append(self._on_size_change)
@@ -282,6 +283,11 @@ class Bot:
 
     def _on_thats_all(self) -> None:
         """Callback called when a user calls 'That`s All'."""
+        # We set this to one, because we expect one clear row between the call and rounds
+        self._rows_left_before_rounds = 1
+
+    def _on_rounds(self) -> None:
+        """Callback called when a user calls 'Rounds'."""
         # We set this to one, because we expect one clear row between the call and rounds
         self._rows_left_before_rounds = 1
 

@@ -289,7 +289,7 @@ class Bot:
     def _on_rounds(self) -> None:
         """Callback called when a user calls 'Rounds'."""
         # We set this to one, because we expect one clear row between the call and rounds
-        self._rows_left_before_rounds = 1
+        self._is_ringing_opening_row = true
 
     def _on_stand_next(self) -> None:
         """Callback called when a user calls 'Stand Next'."""

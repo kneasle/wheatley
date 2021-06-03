@@ -10,7 +10,7 @@ pytest==5.4.3
 black==21.4b1
 python-engineio==3.14.2
 python-socketio==4.6.1
-requests==2.24.0
+requests==2.25.0
 six==1.15.0
 urllib3==1.26.5
 websocket-client==0.57.0

@@ -290,6 +290,8 @@ class Bot:
         """Callback called when a user calls 'Rounds'."""
         # We set this to one, because we expect one clear row between the call and rounds
         self._is_ringing_opening_row = True
+        # except for 'stop at rounds' in which case wheatley just stops, this appears to work best
+        self._rows_left_before_rounds = 1
 
     def _on_stand_next(self) -> None:
         """Callback called when a user calls 'Stand Next'."""

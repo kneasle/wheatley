@@ -118,6 +118,7 @@ def main():
     """Generate and run all the tests, asserting that Wheatley does not crash."""
     errors = []
     procs = []
+    max_processes = 16
 
     # Generate all the edited commands upfront, so that we can line up all the errors
     converted_commands = [command_to_converted_args(location, cmd) for (location, cmd) in get_all_tests()]
@@ -125,8 +126,10 @@ def main():
     max_command_length = max([len(cmd) for (_, _, cmd) in converted_commands])
 
     converted_commands_count = len(converted_commands)
-    for i in range(converted_commands_count):
-        # print(converted_commands[i][0])
+    process_index = min(converted_commands_count, max_processes)
+
+    # Start the original set of processes
+    for i in range(process_index):
         (args, location, edited_command) = converted_commands[i]
         procs.append(Popen(args, stderr=STDOUT, stdout=PIPE))
 
@@ -135,6 +138,12 @@ def main():
     for i in range(converted_commands_count):
         (args, location, edited_command) = converted_commands[i]
         error = check_test(procs[i])
+
+        # Start next process if needed
+        if process_index < converted_commands_count:
+            (args, location, edited_command) = converted_commands[process_index]
+            procs.append(Popen(args, stderr=STDOUT, stdout=PIPE))
+            process_index += 1
 
         result_text = "ok"
 

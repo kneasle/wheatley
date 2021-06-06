@@ -108,10 +108,33 @@ python3 -m wheatley [ID NUMBER] --method "Plain Bob Major"
     wheatley [ID NUMBER] --url otherwebsite.com --method [METHOD TITLE]
     ```
 
-*   Ring rows taken from a (public) composition from [complib.org](http://complib.org/), in this
+*   Ring rows and make calls taken from a composition from [complib.org](http://complib.org/), in this
     case https://complib.org/composition/65034:
     ```bash
     wheatley [ID NUMBER] --comp 65034
+    ```
+*   Ring rows but don't send the calls to Ringing Room taken from a composition from [complib.org](http://complib.org/), in this
+    case https://complib.org/composition/65034:
+    ```bash
+    wheatley [ID NUMBER] --comp 65034 --no-calls
+    ```
+
+*   Ring compositions with **substituted methods** by copying the id and query string or full url from [complib.org](http://complib.org/)):
+    ```bash
+     wheatley [ID NUMBER] --comp 68549?substitutedmethodid=28000
+     # or 
+     wheatley [ID NUMBER] --comp https://complib.org/composition/68549?substitutedmethodid=28000
+    ```
+*   Ring **private** compositions by copying the share link from [complib.org](http://complib.org/):
+    ```bash
+     wheatley [ID NUMBER] --comp 51155?accessKey=9e1fcd2b11435552cf236be93c7ff73058870995
+     # or
+     wheatley [ID NUMBER] --comp https://complib.org/composition/51155?accessKey=9e1fcd2b11435552cf236be93c7ff73058870995
+    ```
+* Combine method substitution and private composition
+    <!--- doctest-ignore -->
+    ```bash
+     wheatley [ID NUMBER] --comp 51155?substitutedmethodid=27600&accessKey=9e1fcd2b11435552cf236be93c7ff73058870995
     ```
 
 *   Ring rows specified by place notation, in this case Plain Bob Minor:
@@ -139,4 +162,8 @@ python3 -m wheatley [ID NUMBER] --method "Plain Bob Major"
     wheatley [ID NUMBER] --method [METHOD TITLE] --inertia 1.0
     # or
     wheatley [ID NUMBER] --method [METHOD TITLE] -I 1.0
+    ```
+*   Start from a different row
+    ``` bash
+    wheatley [ID NUMBER] --method [METHOD TITLE] --start-row 13572468
     ```

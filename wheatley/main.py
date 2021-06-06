@@ -292,7 +292,11 @@ def console_main(override_args: Optional[List[str]], stop_on_join_tower: bool) -
     # a CompLib comp or a place notation
     comp_method_place_group = row_gen_group.add_mutually_exclusive_group(required=True)
     comp_method_place_group.add_argument(
-        "-c", "--comp", type=str, help="The ID or URL of the complib composition you want to ring"
+        "-c",
+        "--comp",
+        type=str,
+        help="The ID or URL of the complib composition you want to ring. \
+        This can include a substituted method or access key query string",
     )
     comp_method_place_group.add_argument(
         "-m", "--method", type=str, help="The title of the method you want to ring"

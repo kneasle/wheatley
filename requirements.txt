@@ -5,7 +5,7 @@ numpy==1.19.3; platform_system == "Windows"
 numpy==1.18.5; platform_system != "Windows"
 mypy==0.790
 mypy-extensions==0.4.3
-pylint==2.7.4
+pylint==2.8.3
 pytest==5.4.3
 black==21.4b1
 python-engineio==3.14.2

@@ -250,7 +250,7 @@ class Bot:
 
     def _on_go(self) -> None:
         """Callback called when a user calls 'Go'."""
-        if self._is_ringing_rounds:
+        if self._is_ringing_rounds or self._is_ringing_opening_row:
             # Calculate how many more rows of rounds we should ring before going into changes (1 if
             # the person called 'Go' on the same stroke as the RowGenerator starts, otherwise 0).
             # These values are one less than expected because we are setting
@@ -290,8 +290,6 @@ class Bot:
         """Callback called when a user calls 'Rounds'."""
         # We set this to one, because we expect one clear row between the call and rounds
         self._is_ringing_opening_row = True
-        # except for 'stop at rounds' in which case wheatley just stops, this appears to work best
-        self._rows_left_before_rounds = 1
 
     def _on_stand_next(self) -> None:
         """Callback called when a user calls 'Stand Next'."""
@@ -346,7 +344,7 @@ class Bot:
         next_stroke = Stroke.from_index(self._row_number)
 
         # Implement handbell-style stopping at rounds
-        if self._stop_at_rounds and has_just_rung_rounds and not self._is_ringing_rounds:
+        if self._stop_at_rounds and has_just_rung_rounds and not self._is_ringing_opening_row:
             self._should_stand = True
 
         # Set any early calls specified by the row generator to be called at the start of the next

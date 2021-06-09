@@ -68,6 +68,7 @@ class Bot:
         self._tower.invoke_on_call[calls.BOB].append(self._on_bob)
         self._tower.invoke_on_call[calls.SINGLE].append(self._on_single)
         self._tower.invoke_on_call[calls.THATS_ALL].append(self._on_thats_all)
+        self._tower.invoke_on_call[calls.ROUNDS].append(self._on_rounds)
         self._tower.invoke_on_call[calls.STAND].append(self._on_stand_next)
         self._tower.invoke_on_bell_rung.append(self._on_bell_ring)
         self._tower.invoke_on_reset.append(self._on_size_change)
@@ -249,7 +250,7 @@ class Bot:
 
     def _on_go(self) -> None:
         """Callback called when a user calls 'Go'."""
-        if self._is_ringing_rounds:
+        if self._is_ringing_rounds or self._is_ringing_opening_row:
             # Calculate how many more rows of rounds we should ring before going into changes (1 if
             # the person called 'Go' on the same stroke as the RowGenerator starts, otherwise 0).
             # These values are one less than expected because we are setting
@@ -284,6 +285,11 @@ class Bot:
         """Callback called when a user calls 'That`s All'."""
         # We set this to one, because we expect one clear row between the call and rounds
         self._rows_left_before_rounds = 1
+
+    def _on_rounds(self) -> None:
+        """Callback called when a user calls 'Rounds'."""
+        # We set this to one, because we expect one clear row between the call and rounds
+        self._is_ringing_opening_row = True
 
     def _on_stand_next(self) -> None:
         """Callback called when a user calls 'Stand Next'."""
@@ -338,7 +344,7 @@ class Bot:
         next_stroke = Stroke.from_index(self._row_number)
 
         # Implement handbell-style stopping at rounds
-        if self._stop_at_rounds and has_just_rung_rounds and not self._is_ringing_rounds:
+        if self._stop_at_rounds and has_just_rung_rounds and not self._is_ringing_opening_row:
             self._should_stand = True
 
         # Set any early calls specified by the row generator to be called at the start of the next

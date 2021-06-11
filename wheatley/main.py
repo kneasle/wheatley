@@ -66,6 +66,7 @@ def create_row_generator(args: argparse.Namespace) -> RowGenerator:
                 parse_call(args.bob),
                 parse_call(args.single),
                 args.start_index,
+                args.start_row,
             )
         except PlaceNotationError as e:
             sys.exit(f"Bad value for '--place-notation': {e}")

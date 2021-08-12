@@ -207,9 +207,6 @@ class Bot:
     def _on_look_to(self) -> None:
         if self._check_starting_row() and self._check_number_of_bells():
             self.look_to_has_been_called(time.time())
-        # All Wheatley instances should return a 'Roll Call' message after `Look To` is called.
-        if self._server_instance_id is not None:
-            self._tower.emit_roll_call(self._server_instance_id)
 
     # This is public because it's used by `wheatley.main.server_main`.  `server_main` calls it
     # because, when running Wheatley on the RR servers, it is entirely possible that a new Wheatley
@@ -473,6 +470,15 @@ class Bot:
                 self.logger.info(f"Waiting for 'Go' to ring {self.row_generator.summary_string()}...")
             if self._server_mode:
                 self._tower.set_is_ringing(True)  # Set text in Wheatley box to 'Wheatley is ringing...'
+
+                # All Wheatley instances should return a 'Roll Call' message after `Look To`, but
+                # **only** if they are actually able to start ringing.  This prevents a problem
+                # where Wheatleys could get stuck in a state where they respond to the roll-call but
+                # are unable to ring.  The RR server gets a roll-call reply, assumes everything is
+                # fine, and ends up creating a 'zombie' Wheatley instance.  To the user, this just
+                # looks like Wheatley has gone off in a huff
+                assert self._server_instance_id is not None
+                self._tower.emit_roll_call(self._server_instance_id)
 
             # Repeatedly ring until the ringing stops
             while self._is_ringing:

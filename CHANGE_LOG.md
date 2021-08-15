@@ -22,6 +22,11 @@
 - (#170, thanks @jamesscottbrown) Fix typo in comment
 - (#174, #195) Add then remove autorebase workflow
 
+## Improvements to Ringing Room Integration
+
+- (#207) Only return 'Roll call' when Wheatley is actually able to ring.  This will hopefully
+  prevent Wheatley from 'going off in a huff'.
+
 
 
 # 0.6.0
@@ -128,4 +133,4 @@
 
 - Added CLI arg for peal speed (`S` or `--peal-speed`)
 - Added `--version` string, which is set automatically by the GitHub Action for releasing to PyPI
-- Renamed the bot to Wheatley
+- Named the bot 'Wheatley'

@@ -1,7 +1,6 @@
 """
 Module to contain the Bot class, which acts as 'glue' to combine the rhythm, row generation and
-socket-io communication provided by the Rhythm, RowGenerator and Tower objects into a useful
-program.
+SocketIO communication provided by the Rhythm, RowGenerator and Tower objects into a useful program.
 """
 
 import time
@@ -22,6 +21,11 @@ from wheatley.row_generation import RowGenerator
 # Number of seconds that Wheatley is not ringing before Wheatley will return from the mainloop
 # Only applies when Wheatley is running in server mode
 INACTIVITY_EXIT_TIME = 300
+
+
+# How long it takes Bryn to say 'Look To'.  This is the length of time that Wheatley will wait
+# between receiving the 'Look To' message and when the first stroke is expected
+LOOK_TO_DURATION = 3.0  # seconds
 
 
 # Bot holds a lot of state, allow it to have more fields
@@ -203,11 +207,22 @@ class Bot:
     def _on_look_to(self) -> None:
         if self._check_starting_row() and self._check_number_of_bells():
             self.look_to_has_been_called(time.time())
-        # All Wheatley instances should return a 'Roll Call' message after `Look To` is called.
-        if self._server_instance_id is not None:
-            self._tower.emit_roll_call(self._server_instance_id)
 
-    # This has to be made public, because the server's main function might have to call it
+    # This is public because it's used by `wheatley.main.server_main`.  `server_main` calls it
+    # because, when running Wheatley on the RR servers, it is entirely possible that a new Wheatley
+    # process is invoked a few seconds **after** 'Look To' has been called.  This does not
+    # necessarily make Wheatley start late (because Bryn takes ~3 seconds to say 'Look To'), but the
+    # new Wheatley instance needs to know _when_ 'Look To' was called (otherwise the new instance
+    # doesn't know when to start ringing).  To achieve this, the RR server remembers the timestamp
+    # of `Look To` and passes it to the new instance through the `--look-to-time` argument (defined
+    # in `server_main`).  The main function then creates the `Bot` singleton and immediately calls
+    # `look_to_has_been_called`, forwarding the `--look-to-time` as the argument.
+    #
+    # **side note**: system clocks on different computers are really rarely in sync, so it's
+    # generally a very bad idea to pass timestamps between two processes, in case they end up
+    # running on different machines.  However, in our case, the only time `--look-to-time` is used
+    # is when Wheatley is running on the same machine as the RR server itself.  So (in this case) we
+    # are fine.
     def look_to_has_been_called(self, call_time: float) -> None:
         """Callback called when a user calls 'Look To'."""
         self._rhythm.return_to_mainloop()
@@ -220,7 +235,7 @@ class Bot:
         self._rhythm.initialise_line(
             self.number_of_bells,
             self._user_assigned_bell(treble),
-            call_time + 3,
+            call_time + LOOK_TO_DURATION,
             number_of_user_controlled_bells,
         )
 
@@ -259,8 +274,8 @@ class Bot:
             # Make sure to call all of the calls that we have missed in the right order (in case the
             # person calling `Go` called it stupidly late)
             early_calls = [
-                (ind, _calls)
-                for (ind, _calls) in self.row_generator.early_calls().items()
+                (ind, calls)
+                for (ind, calls) in self.row_generator.early_calls().items()
                 if ind > self._rounds_left_before_method
             ]
             # Sort early calls by the number of rows **before** the method start.  Note that we are
@@ -270,8 +285,8 @@ class Bot:
             # because the rows on which these calls should have been called have already passed.
             # Therefore, we simply get them out as quickly as possible so they have the best chance
             # of being heard.
-            for (_index, _calls) in early_calls:
-                self._make_calls(_calls)
+            for (_, c) in early_calls:
+                self._make_calls(c)
 
     def _on_bob(self) -> None:
         """Callback called when a user calls 'Bob'."""
@@ -402,7 +417,10 @@ class Bot:
             self.expect_bell(index, bell)
 
     def tick(self) -> None:
-        """Move the ringing on by one place"""
+        """
+        Move the ringing on by one place.  This 'tick' function is called once every time a bell is
+        rung.
+        """
         bell = self._row[self._place]
         user_controlled = self._user_assigned_bell(bell)
 
@@ -427,13 +445,16 @@ class Bot:
     def main_loop(self) -> None:
         """
         Wheatley's main loop.  The main thread will get stuck forever in this function whilst
-        Wheatley rings.
+        Wheatley rings.  The outer main-loop contains two sub-loops: the first one for Wheatley
+        waiting to ring (triggered by `Look To`), where the second one makes Wheatley ring
+        by repeatedly calling `self.tick()`.
         """
         while True:
             # Log a message to say that Wheatley is waiting for 'Look To!'
             self.logger.info("Waiting for 'Look To'...")
-            # Sit in an infinite loop whilst we're not ringing, and exit Wheatley if enough time
-            # has passed
+
+            # Waiting to ring: Sit in an infinite loop whilst we're not ringing, and exit Wheatley
+            # if the tower is inactive for long enough.
             self._last_activity_time = time.time()
             while not self._is_ringing:
                 time.sleep(0.01)
@@ -441,21 +462,35 @@ class Bot:
                     self.logger.info(f"Timed out - no activity for {INACTIVITY_EXIT_TIME}s. Exiting.")
                     return
 
+            # Start ringing: note that this code runs **IMMEDIATELY** after `Look To` is called, but
+            # `self._rhythm` is told to wait until after Bryn has finished saying `Look To`.
             if self._do_up_down_in:
                 self.logger.info(f"Starting to ring {self.row_generator.summary_string()}")
             else:
                 self.logger.info(f"Waiting for 'Go' to ring {self.row_generator.summary_string()}...")
-
             if self._server_mode:
-                self._tower.set_is_ringing(True)
+                self._tower.set_is_ringing(True)  # Set text in Wheatley box to 'Wheatley is ringing...'
 
+                # All Wheatley instances should return a 'Roll Call' message after `Look To`, but
+                # **only** if they are actually able to start ringing.  This prevents a problem
+                # where Wheatleys could get stuck in a state where they respond to the roll-call but
+                # are unable to ring.  The RR server gets a roll-call reply, assumes everything is
+                # fine, and ends up creating a 'zombie' Wheatley instance.  To the user, this just
+                # looks like Wheatley has gone off in a huff
+                assert self._server_instance_id is not None
+                self._tower.emit_roll_call(self._server_instance_id)
+
+            # Repeatedly ring until the ringing stops
             while self._is_ringing:
                 self.tick()
+                # Add a tiny bit of extra delay between each stroke so that Wheatley doesn't DDoS
+                # Ringing Room if `self._rhythm.wait_for_bell_time()` returns immediately
                 time.sleep(0.01)
 
+            # Finish ringing
             self.logger.info("Stopping ringing!")
             if self._server_mode:
-                self._tower.set_is_ringing(False)
+                self._tower.set_is_ringing(False)  # Set text in Wheatley box to 'Wheatley will ring...'
 
     def _user_assigned_bell(self, bell: Bell) -> bool:
         """Returns `True` if this bell is not assigned to Wheatley."""

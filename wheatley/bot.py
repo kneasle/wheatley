@@ -285,8 +285,8 @@ class Bot:
             # because the rows on which these calls should have been called have already passed.
             # Therefore, we simply get them out as quickly as possible so they have the best chance
             # of being heard.
-            for (_index, calls_) in early_calls:  # `calls_` won't conflict with `wheatley.calls`
-                self._make_calls(calls_)
+            for (_, c) in early_calls:
+                self._make_calls(c)
 
     def _on_bob(self) -> None:
         """Callback called when a user calls 'Bob'."""

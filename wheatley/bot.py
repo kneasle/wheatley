@@ -24,7 +24,7 @@ INACTIVITY_EXIT_TIME = 300
 
 
 # How long it takes Bryn to say 'Look To'.  This is the length of time that Wheatley will wait
-# between receiving the 'Look To' message and when the first stroke is expected
+# between receiving the 'Look To' signal and when the first stroke is expected
 LOOK_TO_DURATION = 3.0  # seconds
 
 
@@ -157,7 +157,14 @@ class Bot:
         self._check_number_of_bells()
         self._opening_row = generate_starting_row(self.number_of_bells, self.row_generator.custom_start_row)
         self._rounds = rounds(self.number_of_bells)
-        self._check_starting_row()
+
+        self._check_starting_row()  # Check that the current row gen is OK (otherwise warn the user)
+        if self.next_row_generator is not None and not self._check_number_of_bells(
+            self.next_row_generator, silent=True
+        ):
+            self.logger.warning("Next row gen needed too many bells, so is being removed.")
+            # If the `next_row_generator` can't be rung on the new stage, then remove it.
+            self.next_row_generator = None
 
     def _check_starting_row(self) -> bool:
         if (
@@ -166,42 +173,46 @@ class Bot:
         ):
             self.logger.info(
                 f"The starting row '{self.row_generator.custom_start_row}' "
-                + f"contains fewer bells than the tower ({self._tower.number_of_bells}). "
+                + f"contains fewer bells than the tower ({self.number_of_bells}). "
                 + "Wheatley will add the extra bells to the end of the change."
             )
 
         if len(self._opening_row) != self.number_of_bells:
             self.logger.warning(
-                f"The current tower has fewer bells ({self._tower.number_of_bells}) "
+                f"The current tower has fewer bells ({self.number_of_bells}) "
                 + f"than the starting row {self._opening_row}. Wheatley will not ring!"
             )
             return False
         return True
 
-    def _check_number_of_bells(self) -> bool:
+    def _check_number_of_bells(self, row_gen: Optional[RowGenerator] = None, silent: bool = False) -> bool:
         """Returns whether Wheatley can ring with the current number of bells with reasons why not"""
-        if self.row_generator.stage == 0:
+
+        # If the user doesn't pass the `row_gen` argument, then default to `self.row_generator`
+        row_gen = row_gen or self.row_generator
+
+        if row_gen.stage == 0:
             self.logger.debug("Place holder row generator. Wheatley will not ring!")
             return False
-        if self._tower.number_of_bells < self.row_generator.stage:
-            self.logger.warning(
-                f"Row generation requires at least {self.row_generator.stage} bells, "
-                + f"but the current tower has {self._tower.number_of_bells}. "
-                + "Wheatley will not ring!"
-            )
+        if self._tower.number_of_bells < row_gen.stage:
+            if not silent:  # only log if `silent` isn't set
+                self.logger.warning(
+                    f"Row generation requires at least {row_gen.stage} bells, "
+                    + f"but the current tower has {self.number_of_bells}. "
+                    + "Wheatley will not ring!"
+                )
             return False
-        if (
-            self._tower.number_of_bells > self.row_generator.stage + 1
-            and self.row_generator.custom_start_row is None
-        ):
-            if self.row_generator.stage % 2:
-                expected = self.row_generator.stage + 1
+        if self._tower.number_of_bells > row_gen.stage + 1 and row_gen.custom_start_row is None:
+            if row_gen.stage % 2:
+                expected = row_gen.stage + 1
             else:
-                expected = self.row_generator.stage
-            self.logger.info(
-                f"Current tower has more bells ({self._tower.number_of_bells}) than expected "
-                + f"({expected}). Wheatley will add extra cover bells."
-            )
+                expected = row_gen.stage
+
+            if not silent:  # only log if `silent` isn't set
+                self.logger.info(
+                    f"Current tower has more bells ({self.number_of_bells}) than expected "
+                    + f"({expected}). Wheatley will add extra cover bells."
+                )
         return True
 
     def _on_look_to(self) -> None:

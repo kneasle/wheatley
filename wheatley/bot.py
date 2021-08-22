@@ -5,6 +5,7 @@ SocketIO communication provided by the Rhythm, RowGenerator and Tower objects in
 
 import time
 import logging
+import threading
 from typing import Optional, Any, List
 
 from wheatley import calls
@@ -62,7 +63,18 @@ class Bot:
 
         self.row_generator = row_generator
         # This is the row generator that will be used after 'Look to' is called for the next time,
-        # allowing for changing the method or composition whilst Wheatley is running.
+        # allowing for changing the method or composition whilst Wheatley is running.  A mutex lock
+        # is required to prevent the following race condition:
+        # - The tower size is reduced, and a `s_size_change` signal is sent.  This causes
+        #   `self._check_number_of_bells` to be called on `self.next_row_generator`.  This checks
+        #   whether or not the stage is too large to fit in the current tower.  Suppose that this
+        #   check passes.
+        # - Between the check and the body of the `if` statement, a new row generator arrives in the
+        #   `s_wheatley_row_gen` signal.  This has the new stage, and gets assigned to
+        #   `self.next_row_generator`
+        # - The `s_size_change` thread continues executing, and sets `self.next_row_generator` to
+        #   `None`, thus overwriting the **new** row generator (which was perfectly fine).
+        self.next_row_generator_lock = threading.Lock()
         self.next_row_generator: Optional[RowGenerator] = None
 
         self._tower = tower
@@ -148,7 +160,12 @@ class Bot:
 
     def _on_row_gen_change(self, row_gen_json: JSON) -> None:
         try:
-            self.next_row_generator = json_to_row_generator(row_gen_json, self.logger)
+            # We need a mutex lock on `self.next_row_generator` to prevent a possible race
+            # conditions when reducing the tower size (see the definition of
+            # `self.next_row_generator` in `__init__` for more details)
+            with self.next_row_generator_lock:
+                self.next_row_generator = json_to_row_generator(row_gen_json, self.logger)
+
             self.logger.info(f"Next touch, Wheatley will ring {self.next_row_generator.summary_string()}")
         except RowGenParseError as e:
             self.logger.warning(e)
@@ -159,12 +176,15 @@ class Bot:
         self._rounds = rounds(self.number_of_bells)
 
         self._check_starting_row()  # Check that the current row gen is OK (otherwise warn the user)
-        if self.next_row_generator is not None and not self._check_number_of_bells(
-            self.next_row_generator, silent=True
-        ):
-            self.logger.warning("Next row gen needed too many bells, so is being removed.")
-            # If the `next_row_generator` can't be rung on the new stage, then remove it.
-            self.next_row_generator = None
+
+        # Check that `self.next_row_generator` has the right stage
+        with self.next_row_generator_lock:
+            if self.next_row_generator is not None and not self._check_number_of_bells(
+                self.next_row_generator, silent=True
+            ):
+                self.logger.warning("Next row gen needed too many bells, so is being removed.")
+                # If the `next_row_generator` can't be rung on the new stage, then remove it.
+                self.next_row_generator = None
 
     def _check_starting_row(self) -> bool:
         if (

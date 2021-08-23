@@ -11,7 +11,7 @@
 - (#184) `--stop-at-rounds` now leaves the bells set at hand even if the touch finishes on a
   handstroke.
 - (#179) Overhaul the `README.md`
-- (#182) Ignore the `username` param when users leave (this is deprecated and will be removed in
+- (#182) Ignore the `username` parameter when users leave (this is deprecated and will be removed in
   later versions of RR)
 
 ## Internal Improvements
@@ -26,6 +26,8 @@
 
 - (#207) Only return 'Roll call' when Wheatley is actually able to ring.  This will hopefully
   prevent Wheatley from 'going off in a huff'.
+- (#209) When the tower size changes, check the **next** `RowGenerator`'s stage since it will used
+  the next time `Look To` is called.
 
 
 

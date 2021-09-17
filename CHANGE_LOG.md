@@ -1,18 +1,21 @@
-# 0.7.0 (W.I.P.)
+# 0.7.0
 
 ## User-facing changes
 
-- (#181) Make the behaviour of `That's All` more intuitive (i.e. calling `That's All` during rounds
-  will no longer cause Wheatley to ring one erroneous row of method).
+#### New features
+
 - (#159, thanks @chrisjfield) Start ringing at a custom row (using `--start-row <row>`).  This
   doesn't work for CompLib compositions.
 - (#169, thanks @aajshaw) Ring arbitrary place notation on a given stage (using
   `--place-notation <stage>:<place-notation>`).  `--bob` and `--single` still apply.
+
+#### Tweaks/bug fixes
+
+- (#181) Make the behaviour of `That's All` more intuitive (i.e. calling `That's All` during rounds
+  will no longer cause Wheatley to ring one erroneous row of method).
 - (#184) `--stop-at-rounds` now leaves the bells set at hand even if the touch finishes on a
   handstroke.
 - (#179) Overhaul the `README.md`
-- (#182) Ignore the `username` parameter when users leave (this is deprecated and will be removed in
-  later versions of RR)
 
 ## Internal Improvements
 
@@ -21,6 +24,8 @@
 - (#165, #172, #186) Improve developer experience on Windows
 - (#170, thanks @jamesscottbrown) Fix typo in comment
 - (#174, #195) Add then remove autorebase workflow
+- (#182) Ignore the `username` parameter when users leave (this is deprecated and will be removed in
+  later versions of RR)
 
 ## Improvements to Ringing Room Integration
 

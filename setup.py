@@ -27,7 +27,7 @@ setuptools.setup(
     ],
     python_requires=">=3.6",
     install_requires=[
-        'numpy<=1.19.3; platform_system == "Windows"',
+        'numpy<1.22.1; platform_system == "Windows"',
         'numpy; platform_system != "Windows"',
         "requests",
         "python-socketio<5",

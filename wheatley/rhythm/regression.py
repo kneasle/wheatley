@@ -273,7 +273,7 @@ class RegressionRhythm(Rhythm):
 
             # Calculate the weight (which will be 1 if it is either of the first two bells to be
             # rung to not skew the data from the start)
-            weight = math.exp(-(diff ** 2))
+            weight = math.exp(-(diff**2))
             if len(self.data_set) <= 1:
                 weight = 1
 

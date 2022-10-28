@@ -40,9 +40,9 @@ def calculate_regression(data_set: List[Tuple[float, float, float]]) -> Tuple[fl
 
     num_datapoints = len(weights)
 
-    x = numpy.array([[1, b] for b in blow_times])
-    w = numpy.array([fill(i, w, num_datapoints) for (i, w) in enumerate(weights)])
-    y = numpy.array([[x] for x in real_times])
+    x: numpy.ndarray = numpy.array([[1, b] for b in blow_times])
+    w: numpy.ndarray = numpy.array([fill(i, w, num_datapoints) for (i, w) in enumerate(weights)])
+    y: numpy.ndarray = numpy.array([[x] for x in real_times])
 
     # Calculate (X^T * W * X)^-1 * (X^T * W * y)
     beta = numpy.linalg.inv(x.transpose().dot(w).dot(x)).dot(x.transpose()).dot(w).dot(y)
@@ -273,7 +273,7 @@ class RegressionRhythm(Rhythm):
 
             # Calculate the weight (which will be 1 if it is either of the first two bells to be
             # rung to not skew the data from the start)
-            weight = math.exp(-(diff ** 2))
+            weight = math.exp(-(diff**2))
             if len(self.data_set) <= 1:
                 weight = 1
 

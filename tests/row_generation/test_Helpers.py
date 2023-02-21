@@ -73,7 +73,7 @@ class HelpersPlaceNotationTests(unittest.TestCase):
             (".-.-.1.-.2", [_CROSS_PN, _CROSS_PN, [1], _CROSS_PN, [2]]),
         ]
 
-        for (input_pn, expected_output_pn) in test_cases:
+        for input_pn, expected_output_pn in test_cases:
             with self.subTest(input_pn=input_pn, expected_output_pn=expected_output_pn):
                 self.assertEqual(convert_pn(input_pn), expected_output_pn)
 

@@ -138,7 +138,7 @@ class ComplibCompositionGenerator(RowGenerator):
         if query_sections:
             url += "?" + "&".join(query_sections)
         # Create an HTTP request for the rows, and deal with potential error codes
-        request_rows = requests.get(url)
+        request_rows = requests.get(url, timeout=30)
         if request_rows.status_code == 404:
             raise InvalidCompError(comp_id)
         if request_rows.status_code == 403:

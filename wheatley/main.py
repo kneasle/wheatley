@@ -115,7 +115,7 @@ def get_version_number() -> str:
     try:
         version_file_path = os.path.join(os.path.split(__file__)[0], "version.txt")
 
-        with open(version_file_path) as f:
+        with open(version_file_path) as f:  # pylint: disable=unspecified-encoding
             return f.read()
     except IOError:
         return "<NO VERSION FILE FOUND>"

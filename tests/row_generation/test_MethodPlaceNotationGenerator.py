@@ -86,7 +86,7 @@ class SpecialMethodNameTests(TestCase):
             ("Grandsire Maximus", 12),
         ]
 
-        for (method_title, expected_stage) in test_cases:
+        for method_title, expected_stage in test_cases:
             with self.subTest(method_title=method_title, expected_stage=expected_stage):
                 generator = generator_from_special_title(method_title)
                 self.assertIsInstance(generator, PlaceNotationGenerator)
@@ -112,7 +112,7 @@ class SpecialMethodNameTests(TestCase):
             ("Stedman Cinques", 11),
         ]
 
-        for (method_title, expected_stage) in test_cases:
+        for method_title, expected_stage in test_cases:
             with self.subTest(method_title=method_title, expected_stage=expected_stage):
                 generator = generator_from_special_title(method_title)
                 self.assertIsInstance(generator, PlaceNotationGenerator)
@@ -149,7 +149,7 @@ class SpecialMethodNameTests(TestCase):
             ("Plain Hunt Maximus", 12),
         ]
 
-        for (method_title, expected_stage) in test_cases:
+        for method_title, expected_stage in test_cases:
             with self.subTest(method_title=method_title, expected_stage=expected_stage):
                 generator = generator_from_special_title(method_title)
                 self.assertIsInstance(generator, PlainHuntGenerator)

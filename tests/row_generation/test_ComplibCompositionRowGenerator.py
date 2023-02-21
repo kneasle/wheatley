@@ -7,7 +7,7 @@ from wheatley.row_generation import ComplibCompositionGenerator
 
 class CompLibGeneratorTests(TestCase):
     def test_comp_fetching(self):
-        for (url, expected_title) in [
+        for url, expected_title in [
             ("complib.org/composition/62355", "5040 Plain Bob Major by Ben White-Horne"),
             ("www.complib.org/composition/62355", "5040 Plain Bob Major by Ben White-Horne"),
             ("https://www.complib.org/composition/71994", "110 2-Spliced Major"),

@@ -258,10 +258,13 @@ class Bot:
         """Callback called when a user calls 'Look To'."""
         self._rhythm.return_to_mainloop()
 
-        treble = self._rounds[0]
+        # Pylint doesn't seem to understand "Row" is a list here
+        treble = self._rounds[0]  # pylint: disable=unsubscriptable-object
 
         # Count number of user controlled bells
-        number_of_user_controlled_bells = sum(1 for bell in self._rounds if self._user_assigned_bell(bell))
+        number_of_user_controlled_bells = sum(
+            1 for bell in self._rounds if self._user_assigned_bell(bell)  # pylint: disable=not-an-iterable
+        )
 
         self._rhythm.initialise_line(
             self.number_of_bells,
@@ -316,7 +319,7 @@ class Bot:
             # because the rows on which these calls should have been called have already passed.
             # Therefore, we simply get them out as quickly as possible so they have the best chance
             # of being heard.
-            for (_, c) in early_calls:
+            for _, c in early_calls:
                 self._make_calls(c)
 
     def _on_bob(self) -> None:
@@ -444,7 +447,7 @@ class Bot:
         # Generate the next row, and tell the rhythm detection where the next row's bells are
         # expected to ring
         self.generate_next_row()
-        for (index, bell) in enumerate(self._row):
+        for index, bell in enumerate(self._row):
             self.expect_bell(index, bell)
 
     def tick(self) -> None:

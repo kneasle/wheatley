@@ -27,7 +27,7 @@ class ParseTests(unittest.TestCase):
             (" 2 h 30 m ", 150),
         ]
 
-        for (input_arg, expected_minutes) in test_cases:
+        for input_arg, expected_minutes in test_cases:
             with self.subTest(input=input_arg, expected_minutes=expected_minutes):
                 self.assertEqual(expected_minutes, parse_peal_speed(input_arg))
 
@@ -47,7 +47,7 @@ class ParseTests(unittest.TestCase):
             ("\nXX   X ", "The minute value 'XX   X' is not an integer."),
         ]
 
-        for (input_arg, expected_message) in test_cases:
+        for input_arg, expected_message in test_cases:
             with self.subTest(input=input_arg, expected_message=expected_message):
                 with self.assertRaises(PealSpeedParseError) as e:
                     parse_peal_speed(input_arg)
@@ -62,7 +62,7 @@ class ParseTests(unittest.TestCase):
             ("20: 70/ 14", {20: "70", 0: "14"}),
         ]
 
-        for (input_arg, expected_call_dict) in test_cases:
+        for input_arg, expected_call_dict in test_cases:
             with self.subTest(input=input_arg, expected_call_dict=expected_call_dict):
                 self.assertEqual(CallDef(expected_call_dict), parse_call(input_arg))
 
@@ -75,7 +75,7 @@ class ParseTests(unittest.TestCase):
             (":::  /", "Call specification ':::' should contain at most one ':'."),
         ]
 
-        for (input_arg, expected_message) in test_cases:
+        for input_arg, expected_message in test_cases:
             with self.subTest(input=input_arg, expected_message=expected_message):
                 with self.assertRaises(CallParseError) as e:
                     parse_call(input_arg)
@@ -84,7 +84,7 @@ class ParseTests(unittest.TestCase):
     def test_place_notation_parsing(self):
         test_cases = [("5:5.1.5.1.5", (5, "5.1.5.1.5")), ("6:x16,12", (6, "x16,12"))]
 
-        for (input_arg, expected_tuple) in test_cases:
+        for input_arg, expected_tuple in test_cases:
             with self.subTest(input=input_arg, expected_tuple=expected_tuple):
                 self.assertEqual(expected_tuple, parse_place_notation(input_arg))
 
@@ -95,7 +95,7 @@ class ParseTests(unittest.TestCase):
             ("6:z16x16x16,12", "Place notation is invalid"),
         ]
 
-        for (input_arg, expected_message) in test_cases:
+        for input_arg, expected_message in test_cases:
             with self.subTest(input=input_arg, expected_message=expected_message):
                 with self.assertRaises(PlaceNotationError) as e:
                     parse_place_notation(input_arg)
@@ -196,7 +196,7 @@ class ParseTests(unittest.TestCase):
     def test_parse_start_row(self):
         test_cases = [("654321", 6), ("1", 1)]
 
-        for (input_arg, expected_output) in test_cases:
+        for input_arg, expected_output in test_cases:
             with self.subTest(input=input_arg, expected_output=expected_output):
                 output = parse_start_row(input_arg)
                 self.assertEqual(output, expected_output)
@@ -209,7 +209,7 @@ class ParseTests(unittest.TestCase):
             ("654326", "Start row contains bell 6 mutiple times"),
         ]
 
-        for (input_arg, expected_message) in test_cases:
+        for input_arg, expected_message in test_cases:
             with self.subTest(input=input_arg, expected_message=expected_message):
                 with self.assertRaises(StartRowParseError) as e:
                     parse_start_row(input_arg)

@@ -49,7 +49,7 @@ def get_load_balancing_url(tower_id: int, unfixed_http_server_url: str) -> str:
     url = urllib.parse.urljoin(http_server_url, str(tower_id))  # type: ignore
 
     try:
-        html = requests.get(url).text
+        html = requests.get(url, timeout=30).text
     except requests.exceptions.ConnectionError as e:
         raise InvalidURLError(http_server_url) from e
 

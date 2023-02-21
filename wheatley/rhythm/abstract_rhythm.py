@@ -63,6 +63,6 @@ class Rhythm(metaclass=ABCMeta):
     ) -> None:
         """Allow the Rhythm object to initialise itself when 'Look to' is called."""
 
-    def sleep(self, seconds: float) -> None:  #  pylint: disable=no-self-use
+    def sleep(self, seconds: float) -> None:  # pylint: disable=no-self-use
         """Sleeps for given number of seconds. Allows mocking in tests"""
         time.sleep(seconds)

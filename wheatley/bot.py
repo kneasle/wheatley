@@ -258,10 +258,13 @@ class Bot:
         """Callback called when a user calls 'Look To'."""
         self._rhythm.return_to_mainloop()
 
-        treble = self._rounds[0]
+        # Pylint doesn't seem to understand "Row" is a list here
+        treble = self._rounds[0]  # pylint: disable=unsubscriptable-object
 
         # Count number of user controlled bells
-        number_of_user_controlled_bells = sum(1 for bell in self._rounds if self._user_assigned_bell(bell))
+        number_of_user_controlled_bells = sum(
+            1 for bell in self._rounds if self._user_assigned_bell(bell)  # pylint: disable=not-an-iterable
+        )
 
         self._rhythm.initialise_line(
             self.number_of_bells,

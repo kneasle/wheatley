@@ -14,6 +14,10 @@ from wheatley.bell import Bell
 from wheatley.stroke import Stroke, HANDSTROKE
 
 
+class RingingRoomTowerConnectError(Exception):
+    """A class for error in logic connecting."""
+
+
 class RingingRoomTower:
     """A class representing a tower, which will handle a single ringing-room session."""
 
@@ -45,7 +49,7 @@ class RingingRoomTower:
         self.logger.debug("ENTER")
 
         if self._socket_io_client is not None:
-            raise Exception("Trying to connect twice")
+            raise RingingRoomTowerConnectError("Trying to connect twice")
 
         self._create_client()
 

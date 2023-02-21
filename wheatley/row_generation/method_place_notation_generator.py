@@ -58,6 +58,20 @@ class MethodNotFoundError(ValueError):
         return f"No method with title '{self._name}' found."
 
 
+class PlaceNotationNotFoundError(ValueError):
+    """
+    An error class to store the error thrown when a no place notation is found for a method
+    """
+
+    def __init__(self, name: str) -> None:
+        super().__init__()
+
+        self._name = name
+
+    def __str__(self) -> str:
+        return f"No place notation for method with title '{self._name}' found."
+
+
 class MethodPlaceNotationGenerator(PlaceNotationGenerator):
     """A class to generate rows given a method title."""
 
@@ -110,12 +124,12 @@ class MethodPlaceNotationGenerator(PlaceNotationGenerator):
             assert notation is not None
             return notation, stage, title
 
-        raise Exception("Place notation not found")
+        raise PlaceNotationNotFoundError(title)
 
     @staticmethod
     def _fetch_method(method_title: str) -> str:
         params = {"title": method_title, "fields": "title|pn|stage"}
-        source = requests.get("http://methods.ringing.org/cgi-bin/simple.pl", params=params)
+        source = requests.get("http://methods.ringing.org/cgi-bin/simple.pl", params=params, timeout=30)
         source.raise_for_status()
 
         return source.text

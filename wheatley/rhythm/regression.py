@@ -137,7 +137,7 @@ class RegressionRhythm(Rhythm):
         # Wheatley is ringing)
         blow_time = self.index_to_blow_time(row_number, place)
         self.data_set.append((blow_time, real_time, weight))
-        for (b, r, w) in self.data_set:
+        for b, r, w in self.data_set:
             self.logger.debug(f"Datapoint: {b:4.1f} {r - self._real_start_time:8.3f}s {w:.3f}")
         # Filter out datapoints with extremely low weights
         self.data_set = list(filter(lambda d: d[2] > WEIGHT_REJECTION_THRESHOLD, self.data_set))

@@ -316,7 +316,7 @@ class Bot:
             # because the rows on which these calls should have been called have already passed.
             # Therefore, we simply get them out as quickly as possible so they have the best chance
             # of being heard.
-            for (_, c) in early_calls:
+            for _, c in early_calls:
                 self._make_calls(c)
 
     def _on_bob(self) -> None:
@@ -444,7 +444,7 @@ class Bot:
         # Generate the next row, and tell the rhythm detection where the next row's bells are
         # expected to ring
         self.generate_next_row()
-        for (index, bell) in enumerate(self._row):
+        for index, bell in enumerate(self._row):
             self.expect_bell(index, bell)
 
     def tick(self) -> None:

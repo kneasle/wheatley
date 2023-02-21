@@ -160,7 +160,7 @@ def main():
         return
 
     print("ERRORS FOUND:")
-    for (location, command, e) in errors:
+    for location, command, e in errors:
         print("\n")
         print(f" >>> {location}: {command}")
 

@@ -19,9 +19,9 @@ class DixonoidsGenerator(RowGenerator):
     def __init__(
         self,
         stage: int,
-        plain_rules: Dict[int, List[str]] = None,
-        bob_rules: Dict[int, List[str]] = None,
-        single_rules: Dict[int, List[str]] = None,
+        plain_rules: Optional[Dict[int, List[str]]] = None,
+        bob_rules: Optional[Dict[int, List[str]]] = None,
+        single_rules: Optional[Dict[int, List[str]]] = None,
         start_row: Optional[str] = None,
     ) -> None:
         """

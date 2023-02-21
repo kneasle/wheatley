@@ -21,8 +21,8 @@ class PlaceNotationGenerator(RowGenerator):
         self,
         stage: int,
         method: str,
-        bob: CallDef = None,
-        single: CallDef = None,
+        bob: Optional[CallDef] = None,
+        single: Optional[CallDef] = None,
         start_index: int = 0,
         start_row: Optional[str] = None,
     ) -> None:

@@ -1,6 +1,7 @@
 [MESSAGES CONTROL]
 
 disable=broad-except,len-as-condition,logging-fstring-interpolation,logging-not-lazy,unexpected-line-ending-format,duplicate-code
+load-plugins=pylint.extensions.no_self_use
 
 [FORMAT]
 

@@ -79,12 +79,12 @@ class RowGenerator(metaclass=ABCMeta):
     def _gen_row_and_calls(self, previous_row: Row, stroke: Stroke, index: int) -> Tuple[Row, List[str]]:
         return (self._gen_row(previous_row, stroke, index), [])
 
-    def start_stroke(self) -> Stroke:
+    def start_stroke(self) -> Stroke:  # pylint: disable=no-self-use
         """Gets the stroke of the first row.  This defaults to HANDSTROKE, but should be overridden by
         other RowGenerators if different start strokes are possible."""
         return HANDSTROKE
 
-    def early_calls(self) -> Dict[int, List[str]]:
+    def early_calls(self) -> Dict[int, List[str]]:  # pylint: disable=no-self-use
         """
         Returns the calls that should be called **before** going into the changes.  This map
         goes from <number of rows before the first row of method> to <list of calls that should be

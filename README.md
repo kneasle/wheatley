@@ -1,7 +1,7 @@
 # Wheatley
 
 [![PyPI version](https://badge.fury.io/py/wheatley.svg)](https://badge.fury.io/py/wheatley)
-![Tests and Linting](https://github.com/Kneasle/wheatley/workflows/Tests%20and%20Linting/badge.svg)
+![Tests and Linting](https://github.com/Kneasle/wheatley/workflows/Testing%2FLinting%2FFuzzing/badge.svg)
 
 A bot for [Ringing Room](https://ringingroom.com/) that can fill in any set of bells to increase the
 scope of potential practices, designed to be a **'ninja helper with no ego'**.

@@ -155,6 +155,12 @@ class Bot:
                 self.logger.info(f"Setting 'stop_at_rounds' to {value}")
             except ValueError:
                 log_invalid_key(f"{value} cannot be converted into a bool")
+        elif key == "call_composition":
+            try:
+                self._call_comps = to_bool(value)
+                self.logger.info(f"Setting 'call_composition' to {value}")
+            except ValueError:
+                log_invalid_key(f"{value} cannot be converted into a bool")
         else:
             self._rhythm.change_setting(key, value, time.time())
 

@@ -271,8 +271,9 @@ class Bot:
         )
 
         # Move to the next row generator if it's defined
-        self.row_generator = self.next_row_generator or self.row_generator
-        self.next_row_generator = None
+        with self.next_row_generator_lock:
+            self.row_generator = self.next_row_generator or self.row_generator
+            self.next_row_generator = None
 
         # Clear all the flags and counters
         self._should_stand = False

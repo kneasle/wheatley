@@ -244,7 +244,7 @@ class Bot:
     # process is invoked a few seconds **after** 'Look To' has been called.  This does not
     # necessarily make Wheatley start late (because Bryn takes ~3 seconds to say 'Look To'), but the
     # new Wheatley instance needs to know _when_ 'Look To' was called (otherwise the new instance
-    # doesn't know when to start ringing).  To achieve this, the RR server remembers the timestamp
+    # doesn't know when to start ringing).  To achieve this, the RR server remembers the time stamp
     # of `Look To` and passes it to the new instance through the `--look-to-time` argument (defined
     # in `server_main`).  The main function then creates the `Bot` singleton and immediately calls
     # `look_to_has_been_called`, forwarding the `--look-to-time` as the argument.
@@ -355,7 +355,7 @@ class Bot:
         self._is_ringing = False
         self._rhythm.return_to_mainloop()
 
-    # Mainloop and helper methods
+    # Main-loop and helper methods
     def expect_bell(self, index: int, bell: Bell) -> None:
         """Called to let the rhythm expect a user-controlled bell at a certain time and stroke."""
         if self._user_assigned_bell(bell):
@@ -522,6 +522,8 @@ class Bot:
             self.logger.info("Stopping ringing!")
             if self._server_mode:
                 self._tower.set_is_ringing(False)  # Set text in Wheatley box to 'Wheatley will ring...'
+
+            # (start waiting again for look to)
 
     def _user_assigned_bell(self, bell: Bell) -> bool:
         """Returns `True` if this bell is not assigned to Wheatley."""

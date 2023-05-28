@@ -173,7 +173,7 @@ class RingingRoomTower:
     def _on_setting_change(self, data: JSON) -> None:
         # Log a message (to info if the setting change is used, debug otherwise)
         is_ignored = len(self.invoke_on_setting_change) == 0
-        log_message = f"RECEIVED: Settings changed: {data}" + "{' (ignoring)' if is_ignored else ''}"
+        log_message = f"RECEIVED: Settings changed: {data}{' (ignoring)' if is_ignored else ''}"
         if is_ignored:
             self.logger.debug(log_message)
         else:
@@ -186,7 +186,7 @@ class RingingRoomTower:
     def _on_row_gen_change(self, data: JSON) -> None:
         # Log a message (to info if the setting change is used, debug otherwise)
         is_ignored = len(self.invoke_on_row_gen_change) == 0
-        log_message = f"RECEIVED: Row gen changed: {data}" + "{' (ignoring)' if is_ignored else ''}"
+        log_message = f"RECEIVED: Row gen changed: {data}{' (ignoring)' if is_ignored else ''}"
         if is_ignored:
             self.logger.debug(log_message)
         else:

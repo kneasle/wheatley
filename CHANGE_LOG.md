@@ -1,3 +1,21 @@
+# 0.8.0
+
+## Technical changes
+- Updates version of SocketIo for an update to Ringing Room. This is not backwards compatible and will only work once Ringing Room is updated.
+- Drops support for Python 3.6
+
+
+# 0.7.1
+
+## Technical changes
+- Unpins the version of numpy to allow installing on Python 3.10+
+
+### What's Changed
+* Add spacing in `--help` for Grandsire calls by @kneasle in https://github.com/kneasle/wheatley/pull/211
+* Bump numpy to 1.23.4 by @kneasle in https://github.com/kneasle/wheatley/pull/213
+* Bump certifi from 2020.4.5.2 to 2022.12.7 by @dependabot in https://github.com/kneasle/wheatley/pull/215
+* Test Python 3.6, 3.8, 3.11 on CI by @kneasle in https://github.com/kneasle/wheatley/pull/214
+
 # 0.7.0
 
 ## User-facing changes

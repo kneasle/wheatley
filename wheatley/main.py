@@ -13,9 +13,9 @@ import sys
 from typing import List, Optional
 
 from wheatley.rhythm import Rhythm, RegressionRhythm, WaitForUserRhythm
-from wheatley.tower import RingingRoomTower
+from wheatley.tower import RingingRoomTower, RingingRoomTowerConnectError
 from wheatley.bot import Bot
-from wheatley.page_parser import get_load_balancing_url, TowerNotFoundError, InvalidURLError
+from wheatley.server_url import TowerNotFoundError, InvalidURLError
 from wheatley.parsing import (
     parse_peal_speed,
     PealSpeedParseError,
@@ -234,7 +234,6 @@ def server_main(override_args: Optional[List[str]], stop_on_join_tower: bool) ->
         stop_at_rounds,
         call_comps,
         rhythm,
-        user_name="Wheatley",
         server_instance_id=args.id,
     )
 
@@ -282,8 +281,9 @@ def console_main(override_args: Optional[List[str]], stop_on_join_tower: bool) -
         "--name",
         default=None,
         type=str,
-        help="If set, then Wheatley will ring bells assigned to the given name. \
-             When not set, Wheatley rings unassigned bells.",
+        help="The name to show for Wheatley in the tower's list of users (at most 24 characters). \
+             Defaults to 'Wheatley (CLI)'.  If people assign any bells to Wheatley in that list then he \
+             rings only those bells; otherwise he rings the bells that nobody has.",
     )
 
     # Row generation arguments
@@ -452,18 +452,14 @@ def console_main(override_args: Optional[List[str]], stop_on_join_tower: bool) -
     configure_logging(args.verbose, args.quiet)
 
     try:
-        tower_url = get_load_balancing_url(args.room_id, args.url)
-    except TowerNotFoundError as e:
-        sys.exit(f"Bad value for 'room_id': {e}")
-    except InvalidURLError as e:
-        sys.exit(f"Bad value for '--url': {e}")
-
-    try:
         parse_start_row(args.start_row)
     except StartRowParseError as e:
         sys.exit(f"{e}")
 
-    tower = RingingRoomTower(args.room_id, tower_url)
+    try:
+        tower = RingingRoomTower(args.room_id, args.url, args.name)
+    except InvalidURLError as e:
+        sys.exit(f"Bad value for '--url': {e}")
     row_generator = create_row_generator(args)
 
     try:
@@ -485,7 +481,6 @@ def console_main(override_args: Optional[List[str]], stop_on_join_tower: bool) -
         args.stop_at_rounds or args.handbell_style,
         not args.no_calls,
         rhythm,
-        user_name=args.name,
     )
 
     # Catch keyboard interrupts and just print 'Bye!' instead a load of guff
@@ -494,26 +489,36 @@ def console_main(override_args: Optional[List[str]], stop_on_join_tower: bool) -
             tower.wait_loaded()
             if not stop_on_join_tower:
                 bot.main_loop()
+        if tower.closed_reason is not None:
+            sys.exit(tower.closed_reason)
+        if tower.is_closed:
+            sys.exit("The connection to Ringing Room was lost.")
+    except TowerNotFoundError as e:
+        sys.exit(f"Bad value for 'room_id': {e}")
+    except InvalidURLError as e:
+        sys.exit(f"Bad value for '--url': {e}")
+    except RingingRoomTowerConnectError as e:
+        sys.exit(str(e))
     except KeyboardInterrupt:
         print("Bye!")
 
 
 def main(override_args: Optional[List[str]] = None, stop_on_join_tower: bool = False) -> None:
     """
-    The root main function for Wheatley.  If the first argument given to Wheatley is 'server-mode', then
-    this will run `server_main` (the main function for running Wheatley on RR's servers) otherwise it will
-    run `console_main` (the main function for running Wheatley from the Command Line).
+    The root main function for Wheatley: runs `console_main` (the main function for running Wheatley from
+    the Command Line), except that 'server-mode' (which used to run `server_main`) now just says it is
+    unsupported.
     """
-    # If the user adds 'server-mode' to the command, run the server-mode main function instead of this one,
-    # and remove the 'server-mode' argument
     unparsed_args = override_args or sys.argv[1:]
     if len(unparsed_args) > 1 and unparsed_args[0] == "server-mode":
-        del unparsed_args[0]
-        server_main(unparsed_args, stop_on_join_tower)
-        # The `server_main` function shouldn't return, but if it does somehow manage to do so return instead
-        # of running the standard main function as well
-    else:
-        console_main(unparsed_args, stop_on_join_tower)
+        # Server mode is for the old Ringing Room, which started a Wheatley process for each tower.  The
+        # new one rings with its own built-in simulator and speaks a protocol server mode doesn't, so
+        # `server_main` can't run against it.  It is kept, but nothing calls it.
+        sys.exit(
+            "Wheatley's 'server-mode' is not supported by this version: the Ringing Room server now "
+            "has its own built-in Wheatley."
+        )
+    console_main(unparsed_args, stop_on_join_tower)
 
 
 if __name__ == "__main__":

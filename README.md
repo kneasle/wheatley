@@ -101,6 +101,15 @@ python3 -m wheatley [ID NUMBER] --method "Plain Bob Major"
     wheatley [ID NUMBER] -H --method [METHOD TITLE]
     ```
 
+*   Choose the name that Wheatley shows in the tower's list of users (it is `Wheatley (CLI)` otherwise).  Wheatley
+    rings the bells that nobody has assigned to anyone; if people assign any bells to him in that list, he
+    rings only those:
+
+    <!--- doctest-ignore -->
+    ```bash
+    wheatley [ID NUMBER] --name "Alice's Wheatley" --method [METHOD TITLE]
+    ```
+
 *   Join a server other than `ringingroom.com`:
 
     <!--- doctest-ignore -->

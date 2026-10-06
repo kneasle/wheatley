@@ -46,7 +46,6 @@ class Bot:
         stop_at_rounds: bool,
         call_comps: bool,
         rhythm: Rhythm,
-        user_name: Optional[str] = None,
         server_instance_id: Optional[int] = None,
     ) -> None:
         """Initialise a Bot with all the parts it needs to run."""
@@ -58,7 +57,6 @@ class Bot:
         self._do_up_down_in = do_up_down_in
         self._stop_at_rounds = stop_at_rounds
         self._call_comps = call_comps
-        self._user_name = user_name
 
         self.row_generator = row_generator
         # This is the row generator that will be used after 'Look to' is called for the next time,
@@ -87,6 +85,7 @@ class Bot:
         self._tower.invoke_on_call[calls.STAND].append(self._on_stand_next)
         self._tower.invoke_on_bell_rung.append(self._on_bell_ring)
         self._tower.invoke_on_reset.append(self._on_size_change)
+        self._tower.invoke_on_close.append(self._on_connection_closed)
         if self._server_mode:
             self._tower.invoke_on_setting_change.append(self._on_setting_change)
             self._tower.invoke_on_row_gen_change.append(self._on_row_gen_change)
@@ -358,6 +357,11 @@ class Bot:
             # ever happen
             self._rhythm.on_bell_ring(bell, stroke.opposite(), time.time())
 
+    def _on_connection_closed(self) -> None:
+        """Callback called when the connection to Ringing Room has gone: there is nobody to ring with."""
+        self._is_ringing = False
+        self._rhythm.return_to_mainloop()
+
     def _on_stop_touch(self) -> None:
         self.logger.info("Got to callback for stop touch")
         self._tower.set_is_ringing(False)
@@ -420,7 +424,7 @@ class Bot:
             # calling 'Stand' will still generate a callback to `self._on_stand_next`, so we don't
             # need to handle that here)
             if not self._check_number_of_bells():
-                self._make_call("Stand")
+                self._make_call(calls.STAND)
                 self._is_ringing_rounds = True
             self.row_generator.reset()
         if self._rounds_left_before_method is not None:
@@ -498,6 +502,8 @@ class Bot:
             self._last_activity_time = time.time()
             while not self._is_ringing:
                 time.sleep(0.01)
+                if self._tower.is_closed:
+                    return
                 if self._server_mode and time.time() > self._last_activity_time + INACTIVITY_EXIT_TIME:
                     self.logger.info(f"Timed out - no activity for {INACTIVITY_EXIT_TIME}s. Exiting.")
                     return
@@ -521,7 +527,7 @@ class Bot:
                 self._tower.emit_roll_call(self._server_instance_id)
 
             # Repeatedly ring until the ringing stops
-            while self._is_ringing:
+            while self._is_ringing and not self._tower.is_closed:
                 self.tick()
                 # Add a tiny bit of extra delay between each stroke so that Wheatley doesn't DDoS
                 # Ringing Room if `self._rhythm.wait_for_bell_time()` returns immediately
@@ -539,8 +545,8 @@ class Bot:
         return not self._bot_assigned_bell(bell)
 
     def _bot_assigned_bell(self, bell: Bell) -> bool:
-        """Returns `True` if this bell **is** assigned to Wheatley."""
-        return self._tower.is_bell_assigned_to(bell, self._user_name)
+        """Returns `True` if this is a bell that Wheatley rings (see `RingingRoomTower.should_ring`)."""
+        return self._tower.should_ring(bell)
 
     def _make_calls(self, call_list: List[str]) -> None:
         """Broadcast a sequence of calls"""

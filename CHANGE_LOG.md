@@ -1,3 +1,25 @@
+# 0.9.0
+
+## User-facing changes
+- Works with Ringing Room's new real-time API ("API 2.0"), which uses plain WebSockets.  **This is not
+  backwards compatible: it only works once Ringing Room is updated, and older versions of Wheatley stop
+  working then.**
+- Wheatley joins as a 'bot': he has no account, and appears in the tower's list of users with a bot badge.
+  He rings the bells that nobody has assigned, or, if people assign any bells to him in that list, only those.
+- `--name` now sets the name Wheatley shows in the list of users (up to 24 characters; `Wheatley (CLI)` if
+  it isn't given).  It used to make him ring the bells assigned to that user name, which can't work now that
+  he has no account; assign bells to him in the list instead.
+- Wheatley stops with a clear message if he is kicked, if the tower doesn't allow bots, or if the server is
+  restarting, instead of carrying on without a connection.
+
+## Technical changes
+- Replaces `python-socketio` and `python-engineio` with `websocket-client` (already a dependency).
+- `page_parser.py` (which found the socket server's address by reading the tower's page) is now
+  `server_url.py`, which builds the WebSocket address from `--url`.
+- `server-mode` (the old integrated version) is no longer supported, and exits with a message.
+- Wheatley says "Stand next" (not "Stand") when he stands, as Ringing Room's calls are spelt.
+
+
 # 0.8.0
 
 ## Technical changes

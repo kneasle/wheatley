@@ -23,7 +23,6 @@ LOAD_TIMEOUT = 10  # seconds
 FATAL_REASONS = {
     "invalid_name",
     "bots_not_permitted",
-    "bot_host_mode",
     "invalid_token",
     "server_restarting",
 }
@@ -39,7 +38,8 @@ class RingingRoomTower:
     """
     A class representing a tower, which will handle a single ringing-room session.  Wheatley joins as a
     'bot': a connection with no login, which Ringing Room lets ring the bells that nobody has (or, if
-    people have assigned it some bells, only those) and make the calls that a touch needs.
+    people have assigned it some bells, only those) and make the calls that a touch needs.  In host mode it
+    rings only the bells that are assigned to it, as everyone else does.
     """
 
     logger_name = "TOWER"
@@ -62,6 +62,8 @@ class RingingRoomTower:
         self._user_name_map: Dict[int, str] = {}
         # Wheatley's own id in the tower, from his own `s_user_entered`, the last thing in the join burst
         self._my_user_id: Optional[int] = None
+        # Whether the tower is in host mode, where everyone rings only the bells assigned to them
+        self._host_mode = False
 
         self.invoke_on_call: Dict[str, List[Callable[[], Any]]] = collections.defaultdict(list)
         self.invoke_on_reset: List[Callable[[], Any]] = []
@@ -143,11 +145,12 @@ class RingingRoomTower:
     def should_ring(self, bell: Bell) -> bool:
         """
         Whether Wheatley should ring this bell.  If people have assigned him any bells then those are
-        the ones he rings; otherwise he rings every bell that nobody has.
+        the ones he rings; otherwise he rings every bell that nobody has.  In host mode he rings only the
+        bells assigned to him, which may be none (and the server would refuse any other).
         """
         with self._assignment_lock:
             mine = [b for b, user in self._assigned_users.items() if user == self._my_user_id]
-            if mine:
+            if mine or self._host_mode:
                 return bell in mine
             return bell not in self._assigned_users
 
@@ -266,6 +269,7 @@ class RingingRoomTower:
             "s_set_userlist": self._on_user_list,
             "s_size_change": self._on_size_change,
             "s_assign_user": self._on_assign_user,
+            "s_host_mode": self._on_host_mode,
             "s_call": self._on_call,
             "s_user_left": self._on_user_leave,
             "s_wheatley_setting": self._on_setting_change,
@@ -403,6 +407,11 @@ class RingingRoomTower:
                 }
             # The server follows every resize with the state of the bells
             self.logger.info(f"RECEIVED: New tower size '{new_size}'")
+
+    def _on_host_mode(self, data: JSON) -> None:
+        """Callback called when host mode is turned on or off, and when we join."""
+        self._host_mode = bool(data["new_mode"])
+        self.logger.info(f"RECEIVED: Host mode is {'on' if self._host_mode else 'off'}")
 
     def _on_assign_user(self, data: JSON) -> None:
         """Callback called when a bell assignment is changed."""

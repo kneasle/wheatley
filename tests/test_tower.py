@@ -134,6 +134,26 @@ class RingingTests(TestCase):
         tower._on_message(message("s_user_left", user_id=7, username="alice"))  # pylint: disable=protected-access
         self.assertTrue(tower.should_ring(Bell.from_number(1)))
 
+    def test_in_host_mode_only_our_own_bells_are_rung_even_if_we_have_none(self) -> None:
+        tower = make_tower()
+        burst(tower, assignments={1: 7})
+        self.assertTrue(tower.should_ring(Bell.from_number(2)))  # not in host mode: any bell nobody has
+        tower._on_message(message("s_host_mode", new_mode=True))  # pylint: disable=protected-access
+        self.assertEqual([tower.should_ring(Bell.from_number(n)) for n in range(1, 7)], [False] * 6)
+        tower._on_message(message("s_assign_user", bell=4, user=-2))  # pylint: disable=protected-access
+        self.assertEqual([tower.should_ring(Bell.from_number(n)) for n in range(1, 7)],
+                         [False, False, False, True, False, False])
+        tower._on_message(message("s_host_mode", new_mode=False))  # pylint: disable=protected-access
+        self.assertFalse(tower.should_ring(Bell.from_number(2)))  # we hold bell 4, so only that one
+        tower._on_message(message("s_assign_user", bell=4, user=""))  # pylint: disable=protected-access
+        self.assertTrue(tower.should_ring(Bell.from_number(2)))
+
+    def test_joining_a_host_mode_tower_starts_in_host_mode(self) -> None:
+        tower = make_tower()
+        tower._on_message(message("s_host_mode", new_mode=True))  # pylint: disable=protected-access
+        burst(tower)
+        self.assertFalse(tower.should_ring(Bell.from_number(3)))
+
     def test_ringing_sends_the_bell_and_stroke_and_no_tower_id(self) -> None:
         tower = make_tower()
         burst(tower)
@@ -205,7 +225,7 @@ class ServerMessageTests(TestCase):
         self.assertTrue(tower.should_ring(Bell.from_number(1)))
 
     def test_refusals_that_end_the_connection_are_remembered(self) -> None:
-        for reason in ["bots_not_permitted", "bot_host_mode", "server_restarting", "invalid_name"]:
+        for reason in ["bots_not_permitted", "server_restarting", "invalid_name"]:
             with self.subTest(reason):
                 tower = make_tower()
                 tower._on_message(message("s_error", command=None, reason=reason, message=reason + "!"))  # pylint: disable=protected-access

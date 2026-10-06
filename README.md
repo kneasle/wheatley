@@ -103,7 +103,7 @@ python3 -m wheatley [ID NUMBER] --method "Plain Bob Major"
 
 *   Choose the name that Wheatley shows in the tower's list of users (it is `Wheatley (CLI)` otherwise).  Wheatley
     rings the bells that nobody has assigned to anyone; if people assign any bells to him in that list, he
-    rings only those:
+    rings only those (and in a tower in host mode, only the bells assigned to him):
 
     <!--- doctest-ignore -->
     ```bash

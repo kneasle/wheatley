@@ -116,7 +116,7 @@ during start-up to turn the server address that the user gives into that URL.
 Wheatley joins as a 'bot' (`c_join` with `role: "bot"`, and the name from `--name`): Ringing Room lets a bot
 ring bells and make the calls a touch needs, and nothing else, with no account.  `Tower.should_ring` says
 which bells that means: those that people have assigned to the bot if there are any, otherwise every bell that
-nobody has.
+nobody has; and in host mode, only those that are assigned to it, as for everyone.
 
 This abstraction layer means two things:
 1. 90% of Wheatley is completely platform indepedent - supporting a new platform (other than Ringing

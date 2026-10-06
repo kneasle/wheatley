@@ -6,11 +6,12 @@
   working then.**
 - Wheatley joins as a 'bot': he has no account, and appears in the tower's list of users with a bot badge.
   He rings the bells that nobody has assigned, or, if people assign any bells to him in that list, only those.
+  In a tower in host mode he rings only the bells assigned to him, as everyone does.
 - `--name` now sets the name Wheatley shows in the list of users (up to 24 characters; `Wheatley (CLI)` if
   it isn't given).  It used to make him ring the bells assigned to that user name, which can't work now that
   he has no account; assign bells to him in the list instead.
-- Wheatley stops with a clear message if he is kicked, if the tower doesn't allow bots, or if the server is
-  restarting, instead of carrying on without a connection.
+- Wheatley stops with a clear message if he is kicked, if the tower doesn't allow bots (or stops allowing
+  them), or if the server is restarting, instead of carrying on without a connection.
 
 ## Technical changes
 - Replaces `python-socketio` and `python-engineio` with `websocket-client` (already a dependency).

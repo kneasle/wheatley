@@ -231,6 +231,14 @@ class ServerMessageTests(TestCase):
                 tower._on_message(message("s_error", command=None, reason=reason, message=reason + "!"))  # pylint: disable=protected-access
                 self.assertEqual(tower.closed_reason, reason + "!")
 
+    def test_being_closed_for_sending_too_fast_is_explained(self) -> None:
+        tower = make_tower()
+        msg = "Too many messages, too fast. The connection is being closed."
+        tower._on_message(message("s_error", command="c_bell_rung", reason="rate_limited", message=msg))  # pylint: disable=protected-access
+        self.assertIsNone(tower.closed_reason)  # still connected: only dropped
+        tower._closed.set()  # pylint: disable=protected-access
+        self.assertEqual(tower.closed_reason, msg)
+
     def test_other_refusals_do_not_end_anything(self) -> None:
         for reason in ["bot_bell_assigned", "bot_call_not_permitted", "not_permitted_for_bots"]:
             with self.subTest(reason):

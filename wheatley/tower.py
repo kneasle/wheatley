@@ -81,6 +81,8 @@ class RingingRoomTower:
         self._closed = threading.Event()
         # Why the connection ended, if the server said: (reason, message)
         self._fatal_error: Optional[Tuple[str, str]] = None
+        # What the server last said about sending too fast: if it then closes the connection, that is why
+        self._last_rate_limit_message: Optional[str] = None
 
         self.logger = logging.getLogger(self.logger_name)
 
@@ -123,7 +125,11 @@ class RingingRoomTower:
     @property
     def closed_reason(self) -> Optional[str]:
         """What Ringing Room said about why it ended the connection, if it said anything."""
-        return self._fatal_error[1] if self._fatal_error else None
+        if self._fatal_error:
+            return self._fatal_error[1]
+        if self._closed.is_set():
+            return self._last_rate_limit_message
+        return None
 
     def ring_bell(self, bell: Bell, expected_stroke: Stroke) -> bool:
         """Send a request to the the server if the bell can be rung on the given stroke."""
@@ -295,6 +301,10 @@ class RingingRoomTower:
         if reason in FATAL_REASONS:
             self.logger.error(f"RECEIVED: {message}")
             self._fatal_error = (reason, message)
+        elif reason == "rate_limited":
+            # Dropped, and if this goes on the server closes the connection and says so
+            self.logger.warning(f"RECEIVED: {message}")
+            self._last_rate_limit_message = message
         elif reason == "bot_bell_assigned":
             # Someone has been given a bell since we last heard; the assignment is on its way
             self.logger.info(f"RECEIVED: Couldn't ring: {message}")

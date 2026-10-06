@@ -205,14 +205,14 @@ class ServerMessageTests(TestCase):
         self.assertTrue(tower.should_ring(Bell.from_number(1)))
 
     def test_refusals_that_end_the_connection_are_remembered(self) -> None:
-        for reason in ["bots_not_permitted", "host_mode_active", "server_restarting", "invalid_name"]:
+        for reason in ["bots_not_permitted", "bot_host_mode", "server_restarting", "invalid_name"]:
             with self.subTest(reason):
                 tower = make_tower()
                 tower._on_message(message("s_error", command=None, reason=reason, message=reason + "!"))  # pylint: disable=protected-access
                 self.assertEqual(tower.closed_reason, reason + "!")
 
     def test_other_refusals_do_not_end_anything(self) -> None:
-        for reason in ["bell_assigned", "call_not_permitted", "not_permitted_for_bots"]:
+        for reason in ["bot_bell_assigned", "bot_call_not_permitted", "not_permitted_for_bots"]:
             with self.subTest(reason):
                 tower = make_tower()
                 tower._on_message(message("s_error", command="c_bell_rung", reason=reason, message="no"))  # pylint: disable=protected-access

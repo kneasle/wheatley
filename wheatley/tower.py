@@ -23,7 +23,7 @@ LOAD_TIMEOUT = 10  # seconds
 FATAL_REASONS = {
     "invalid_name",
     "bots_not_permitted",
-    "host_mode_active",
+    "bot_host_mode",
     "invalid_token",
     "server_restarting",
 }
@@ -291,7 +291,7 @@ class RingingRoomTower:
         if reason in FATAL_REASONS:
             self.logger.error(f"RECEIVED: {message}")
             self._fatal_error = (reason, message)
-        elif reason == "bell_assigned":
+        elif reason == "bot_bell_assigned":
             # Someone has been given a bell since we last heard; the assignment is on its way
             self.logger.info(f"RECEIVED: Couldn't ring: {message}")
         else:

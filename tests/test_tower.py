@@ -108,14 +108,18 @@ class RingingTests(TestCase):
     def test_which_bells_to_ring_with_nobody_assigned_to_us(self) -> None:
         tower = make_tower()
         burst(tower, assignments={1: 7, 2: -1})  # alice has the treble, the simulator the 2
-        self.assertEqual([tower.should_ring(Bell.from_number(n)) for n in range(1, 7)],
-                         [False, False, True, True, True, True])
+        self.assertEqual(
+            [tower.should_ring(Bell.from_number(n)) for n in range(1, 7)],
+            [False, False, True, True, True, True],
+        )
 
     def test_which_bells_to_ring_when_assigned_some(self) -> None:
         tower = make_tower()
         burst(tower, assignments={3: -2, 4: -2, 5: 7})
-        self.assertEqual([tower.should_ring(Bell.from_number(n)) for n in range(1, 7)],
-                         [False, False, True, True, False, False])
+        self.assertEqual(
+            [tower.should_ring(Bell.from_number(n)) for n in range(1, 7)],
+            [False, False, True, True, False, False],
+        )
 
     def test_assignments_change_the_answer_as_they_come_and_go(self) -> None:
         tower = make_tower()
@@ -131,7 +135,9 @@ class RingingTests(TestCase):
         tower = make_tower()
         burst(tower, assignments={1: 7})
         self.assertFalse(tower.should_ring(Bell.from_number(1)))
-        tower._on_message(message("s_user_left", user_id=7, username="alice"))  # pylint: disable=protected-access
+        tower._on_message(  # pylint: disable=protected-access
+            message("s_user_left", user_id=7, username="alice")
+        )
         self.assertTrue(tower.should_ring(Bell.from_number(1)))
 
     def test_in_host_mode_only_our_own_bells_are_rung_even_if_we_have_none(self) -> None:
@@ -141,8 +147,10 @@ class RingingTests(TestCase):
         tower._on_message(message("s_host_mode", new_mode=True))  # pylint: disable=protected-access
         self.assertEqual([tower.should_ring(Bell.from_number(n)) for n in range(1, 7)], [False] * 6)
         tower._on_message(message("s_assign_user", bell=4, user=-2))  # pylint: disable=protected-access
-        self.assertEqual([tower.should_ring(Bell.from_number(n)) for n in range(1, 7)],
-                         [False, False, False, True, False, False])
+        self.assertEqual(
+            [tower.should_ring(Bell.from_number(n)) for n in range(1, 7)],
+            [False, False, False, True, False, False],
+        )
         tower._on_message(message("s_host_mode", new_mode=False))  # pylint: disable=protected-access
         self.assertFalse(tower.should_ring(Bell.from_number(2)))  # we hold bell 4, so only that one
         tower._on_message(message("s_assign_user", bell=4, user=""))  # pylint: disable=protected-access
@@ -182,7 +190,9 @@ class RingingTests(TestCase):
     def test_the_servers_state_replaces_ours_when_it_finds_us_out_of_step(self) -> None:
         tower = make_tower()
         burst(tower, size=4)
-        tower._on_message(message("s_global_state", global_bell_state=[False, True, True, False]))  # pylint: disable=protected-access
+        tower._on_message(
+            message("s_global_state", global_bell_state=[False, True, True, False])
+        )  # pylint: disable=protected-access
         self.assertEqual(
             [tower.get_stroke(Bell.from_number(n)) for n in range(1, 5)],
             [BACKSTROKE, HANDSTROKE, HANDSTROKE, BACKSTROKE],
@@ -193,7 +203,9 @@ class RingingTests(TestCase):
         burst(tower, size=8, assignments={7: -2})
         self.assertFalse(tower.should_ring(Bell.from_number(1)))
         tower._on_message(message("s_size_change", size=6))  # pylint: disable=protected-access
-        tower._on_message(message("s_global_state", global_bell_state=[True] * 6))  # pylint: disable=protected-access
+        tower._on_message(
+            message("s_global_state", global_bell_state=[True] * 6)
+        )  # pylint: disable=protected-access
         self.assertTrue(tower.should_ring(Bell.from_number(1)))  # no bell of ours is left
 
     def test_calls_are_sent_without_a_tower_id(self) -> None:
@@ -214,13 +226,17 @@ class ServerMessageTests(TestCase):
     def test_being_kicked_ends_the_session_with_a_reason(self) -> None:
         tower = make_tower()
         burst(tower)
-        tower._on_message(message("s_user_left", user_id=-2, username="Wheatley (CLI)", kicked=True))  # pylint: disable=protected-access
+        tower._on_message(
+            message("s_user_left", user_id=-2, username="Wheatley (CLI)", kicked=True)
+        )  # pylint: disable=protected-access
         self.assertEqual(tower.closed_reason, "Wheatley was kicked from the tower.")
 
     def test_someone_else_being_kicked_does_not(self) -> None:
         tower = make_tower()
         burst(tower, assignments={1: 7})
-        tower._on_message(message("s_user_left", user_id=7, username="alice", kicked=True))  # pylint: disable=protected-access
+        tower._on_message(
+            message("s_user_left", user_id=7, username="alice", kicked=True)
+        )  # pylint: disable=protected-access
         self.assertIsNone(tower.closed_reason)
         self.assertTrue(tower.should_ring(Bell.from_number(1)))
 
@@ -228,13 +244,17 @@ class ServerMessageTests(TestCase):
         for reason in ["bots_not_permitted", "server_restarting", "invalid_name"]:
             with self.subTest(reason):
                 tower = make_tower()
-                tower._on_message(message("s_error", command=None, reason=reason, message=reason + "!"))  # pylint: disable=protected-access
+                tower._on_message(
+                    message("s_error", command=None, reason=reason, message=reason + "!")
+                )  # pylint: disable=protected-access
                 self.assertEqual(tower.closed_reason, reason + "!")
 
     def test_being_closed_for_sending_too_fast_is_explained(self) -> None:
         tower = make_tower()
         msg = "Too many messages, too fast. The connection is being closed."
-        tower._on_message(message("s_error", command="c_bell_rung", reason="rate_limited", message=msg))  # pylint: disable=protected-access
+        tower._on_message(
+            message("s_error", command="c_bell_rung", reason="rate_limited", message=msg)
+        )  # pylint: disable=protected-access
         self.assertIsNone(tower.closed_reason)  # still connected: only dropped
         tower._closed.set()  # pylint: disable=protected-access
         self.assertEqual(tower.closed_reason, msg)
@@ -243,7 +263,9 @@ class ServerMessageTests(TestCase):
         for reason in ["bot_bell_assigned", "bot_call_not_permitted", "not_permitted_for_bots"]:
             with self.subTest(reason):
                 tower = make_tower()
-                tower._on_message(message("s_error", command="c_bell_rung", reason=reason, message="no"))  # pylint: disable=protected-access
+                tower._on_message(
+                    message("s_error", command="c_bell_rung", reason=reason, message="no")
+                )  # pylint: disable=protected-access
                 self.assertIsNone(tower.closed_reason)
 
     def test_messages_that_make_no_sense_are_ignored_not_fatal(self) -> None:

@@ -1,4 +1,4 @@
-""" Contains the RowGenerator subclass for generating rows from a CompLib composition. """
+"""Contains the RowGenerator subclass for generating rows from a CompLib composition."""
 
 import json
 from typing import Dict, Optional, List, Tuple

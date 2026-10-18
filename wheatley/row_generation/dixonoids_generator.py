@@ -1,4 +1,4 @@
-""" Module to hold DixonoidsGenerator, a class for generating dixonoids. """
+"""Module to hold DixonoidsGenerator, a class for generating dixonoids."""
 
 from typing import Dict, List, Optional
 

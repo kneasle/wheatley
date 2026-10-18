@@ -1,4 +1,4 @@
-""" A module for the Rhythm class that detects peal speed by performing regression on the users' bells. """
+"""A module for the Rhythm class that detects peal speed by performing regression on the users' bells."""
 
 import logging
 import math
@@ -12,7 +12,6 @@ import numpy  # type: ignore
 from wheatley.stroke import Stroke
 from wheatley.bell import Bell
 from .abstract_rhythm import Rhythm
-
 
 WEIGHT_REJECTION_THRESHOLD = 0.001
 
@@ -154,7 +153,7 @@ class RegressionRhythm(Rhythm):
 
         # Only calculate the regression line if there are enough datapoints to gain a meaningful result
         if len(self.data_set) >= self._min_bells_in_dataset:
-            (new_start_time, new_blow_interval) = calculate_regression(self.data_set)
+            new_start_time, new_blow_interval = calculate_regression(self.data_set)
             # Lerp between the new times and the old times, according to the desired inertia
             self._start_time = lerp(new_start_time, self._start_time, inertia)
             self._blow_interval = lerp(new_blow_interval, self._blow_interval, inertia)
@@ -260,7 +259,7 @@ class RegressionRhythm(Rhythm):
         # If this bell was expected at this stroke (i.e. is being rung by someone else)
         if (bell, stroke) in self._expected_bells:
             # Figure out where the bell was expected in ringing space
-            (row_number, place) = self._expected_bells[(bell, stroke)]
+            row_number, place = self._expected_bells[(bell, stroke)]
             expected_blow_time = self.index_to_blow_time(row_number, place)
             diff = self.real_time_to_blow_time(real_time) - expected_blow_time
 

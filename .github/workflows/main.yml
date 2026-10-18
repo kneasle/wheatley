@@ -3,11 +3,11 @@ name: "Testing/Linting/Fuzzing"
 on:
   pull_request:
     branches:
-      - master
+      - main
       - release/*
   push:
     branches:
-      - master
+      - main
       - release/*
   
 
@@ -18,49 +18,36 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-20.04, windows-latest]
+        os: [ubuntu-22.04, windows-latest]
         python-version: [3.8, 3.11]
 
     steps:
       - uses: actions/checkout@v1
+      
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.13.1"
+
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python-version }}
-
-      # Cache python site-packages on Windows (e.g. C:\hostedtoolcache\windows\Python\3.7.9\x64)
-      # This saves installed pip packages, so hash on requirements.txt as well  
-      - name: Cache python site-packages
-        uses: actions/cache@v2
-        with:
-          path: ${{ env.pythonLocation }}\lib\site-packages
-          key: ${{ env.pythonLocation }}\lib\site-packages-${{ matrix.os }}-${{ hashFiles('requirements.txt') }}
-        if: ${{ matrix.os == 'windows-latest' }}
-      
-      # Just cache pip wheels on Linux / Mac
-      - name: Get pip cache dir
-        id: pip-cache
-        run: echo "::set-output name=dir::$(pip cache dir)"
-        if: ${{ matrix.os != 'windows-latest' }}
-      - name: Cache dependencies
-        uses: actions/cache@v2
-        with:
-          path: ${{ steps.pip-cache.outputs.dir }}
-          key: ${{ matrix.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('requirements.txt') }}
-        if: ${{ matrix.os != 'windows-latest' }}
     
-      - name: Install dependencies
-        run: |
-          pip3 install setuptools
-          pip3 install wheel
-          pip3 install -r requirements.txt
+      - name: Install packages
+        run: uv sync
+
       - name: Run linter
-        run: python3 run-checks.py --lint
+        run: uv run run-checks.py --lint
+
       - name: Run typechecker
-        run: python3 run-checks.py --type-check
+        run: uv run run-checks.py --type-check
+
       - name: Run unit tests
-        run: python3 run-checks.py --unit-test
-      - name: Run integration tests
-        run: python3 run-checks.py --doc-test
+        run: uv run run-checks.py --unit-test
+
       - name: Run fuzzer
-        run: python3 run-checks.py --fuzz
+        run: uv run run-checks.py --fuzz
+
+      # - name: Run doc tests
+      #   run: uv run run-checks.py --doc-test

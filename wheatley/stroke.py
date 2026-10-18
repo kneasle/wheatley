@@ -1,4 +1,4 @@
-""" A module containing a type that encapsulates a stroke. """
+"""A module containing a type that encapsulates a stroke."""
 
 from typing import Any
 

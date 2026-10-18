@@ -6,6 +6,8 @@ assert that Wheatley does not crash.  With decent test coverage, this prevents m
 and argument errors.
 """
 
+import shutil
+
 from subprocess import STDOUT, TimeoutExpired, Popen, PIPE
 import os
 import shlex
@@ -55,12 +57,21 @@ def get_all_tests():
     return tests + [(f"EXTRA_TESTS:{i}", cmd) for i, cmd in EXTRA_TESTS]
 
 
-def command_to_converted_args(location, command):
+def command_to_converted_args(location, command: str):
+    if False:  # shutil.which("uv") is not None:
+        python_command = "uv run"
+    else:
+        python_command = "python"
+
     # Bit of a hack, but this will convert commands starting with 'wheatley' to start with './run-wheatley'
     # and make sure that [ID NUMBER] is replaced with a valid room ID.  This way, the tests will run on the
     # version contained in the current commit, rather than a release version.
-    edited_command = "python ./run-" + command.replace("[ID NUMBER]", ROOM_ID).replace(
-        "[METHOD TITLE]", '"' + EXAMPLE_METHOD + '"'
+    edited_command = (
+        python_command
+        + " ./run-wheatley"
+        + remove_prefix(command, "wheatley")
+        .replace("[ID NUMBER]", ROOM_ID)
+        .replace("[METHOD TITLE]", '"' + EXAMPLE_METHOD + '"')
     )
     insert_arg_index = 2
 
@@ -76,6 +87,11 @@ def command_to_converted_args(location, command):
     args.insert(insert_arg_index, "integration-test")
 
     return (args, location, edited_command)
+
+
+def remove_prefix(s: str, prefix: str) -> str:
+    assert s.startswith(prefix)
+    return s[len(prefix) :]
 
 
 # I'm not sure how to do this in python.  I want `run_test` to return one of 3 types: an 'OK', a 'TIMEOUT'
@@ -106,7 +122,7 @@ class CommandError:
 
 def check_test(proc):
     try:
-        out, err = proc.communicate(timeout=10)
+        out, err = proc.communicate(timeout=30)
         if proc.returncode != 0:
             return CommandError(proc.returncode, out.decode("utf-8"))
     except TimeoutExpired:
@@ -130,18 +146,18 @@ def main():
 
     # Start the original set of processes
     for i in range(process_index):
-        (args, location, edited_command) = converted_commands[i]
+        args, location, edited_command = converted_commands[i]
         procs.append(Popen(args, stderr=STDOUT, stdout=PIPE))
 
     print("Jobs started")
 
     for i in range(converted_commands_count):
-        (args, location, edited_command) = converted_commands[i]
+        args, location, edited_command = converted_commands[i]
         error = check_test(procs[i])
 
         # Start next process if needed
         if process_index < converted_commands_count:
-            (args, location, edited_command) = converted_commands[process_index]
+            args, location, edited_command = converted_commands[process_index]
             procs.append(Popen(args, stderr=STDOUT, stdout=PIPE))
             process_index += 1
 

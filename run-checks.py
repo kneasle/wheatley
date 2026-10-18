@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
+from packaging.version import Version
 import argparse
 import os
 
 import mypy.api
+import pylint
 import pytest
 from io import StringIO
 from pylint.lint import Run as run_pylint
@@ -35,13 +37,11 @@ class Check:
         width = 30
         stars = "*" * width
         padding = " " * ((width - len(self.title)) // 2)
-        print(
-            f"""
+        print(f"""
     *{stars}*
     *{padding}{self.title}{padding}*
     *{stars}*
-        """
-        )
+        """)
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         if exc_type is None:
@@ -81,6 +81,8 @@ if run_all or parsed_args.lint:
     with Check("Linting"):
         print("python -m pylint wheatley")
         pylint_args = ["wheatley"]
+        if Version(pylint.__version__) >= Version("3.3.0"):
+            pylint_args.append("--max-positional-arguments=8")
         if os.name != "nt":
             pylint_args.append("--enable=unexpected-line-ending-format")
 
@@ -107,8 +109,6 @@ if run_all or parsed_args.type_check:
             exit(exit_status)
 
 
-print(
-    """
+print("""
 ====== Success ======
-    """
-)
+    """)

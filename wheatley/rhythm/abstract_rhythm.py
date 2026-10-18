@@ -1,4 +1,4 @@
-""" Module for the base Rhythm class, from which all other Rhythm classes inherit. """
+"""Module for the base Rhythm class, from which all other Rhythm classes inherit."""
 
 import time
 

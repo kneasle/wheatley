@@ -1,4 +1,4 @@
-""" Utils for the fuzzing code. """
+"""Utils for the fuzzing code."""
 
 
 class FuzzingError(ValueError):
@@ -42,9 +42,7 @@ def fuzz_for_unwrapped_errors(
                 break
 
     if len(errors_found) == 0:
-        print(
-            f"{iterations} iterations were run on {function_name}, and they all threw the right \
-error class."
-        )
+        print(f"{iterations} iterations were run on {function_name}, and they all threw the right \
+error class.")
     else:
         raise FuzzingError(function_name, errors_found)

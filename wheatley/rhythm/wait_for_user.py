@@ -1,4 +1,4 @@
-""" A module for the Rhythm decorator class that adds the ability to wait for human ringers. """
+"""A module for the Rhythm decorator class that adds the ability to wait for human ringers."""
 
 import logging
 

@@ -1,4 +1,4 @@
-""" A module to contain the abstract base class that all row generators inherit from. """
+"""A module to contain the abstract base class that all row generators inherit from."""
 
 import logging
 from typing import Dict, List, Tuple, Optional

@@ -7,7 +7,7 @@ authors = [
 description = "A program that will ring any set of bells in Ringing Room."
 readme = "README.md"
 requires-python = ">=3.8"
-license = "MIT"
+license.text = "MIT"
 classifiers = [
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
@@ -28,6 +28,11 @@ wheatley = "wheatley.main:main"
 [dependency-groups]
 dev = [
     "black>=22.8.0",
+    "mypy>=1.14.1",
+    "pylint>=3.2.7",
+    "pytest>=8.3.5",
+    "types-requests>=2.32.0.20241016",
+    "types-urllib3>=1.26.25.14",
 ]
 
 [tool.black]

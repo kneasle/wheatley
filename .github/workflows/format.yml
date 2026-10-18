@@ -13,5 +13,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.13.1"
+
       - uses: actions/setup-python@v2
-      - uses: psf/black@stable
+
+      - name: Run black to check formatting
+        run: uvx black . --check

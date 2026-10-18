@@ -1,4 +1,4 @@
-""" Helper functions for the row generation module. """
+"""Helper functions for the row generation module."""
 
 from typing import List, Optional
 

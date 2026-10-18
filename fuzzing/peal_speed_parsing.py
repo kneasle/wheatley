@@ -1,4 +1,4 @@
-""" Run a fuzzer to generate lots of random input for the peal speed parser. """
+"""Run a fuzzer to generate lots of random input for the peal speed parser."""
 
 from random import choice, randint
 

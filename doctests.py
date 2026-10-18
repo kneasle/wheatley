@@ -146,18 +146,18 @@ def main():
 
     # Start the original set of processes
     for i in range(process_index):
-        (args, location, edited_command) = converted_commands[i]
+        args, location, edited_command = converted_commands[i]
         procs.append(Popen(args, stderr=STDOUT, stdout=PIPE))
 
     print("Jobs started")
 
     for i in range(converted_commands_count):
-        (args, location, edited_command) = converted_commands[i]
+        args, location, edited_command = converted_commands[i]
         error = check_test(procs[i])
 
         # Start next process if needed
         if process_index < converted_commands_count:
-            (args, location, edited_command) = converted_commands[process_index]
+            args, location, edited_command = converted_commands[process_index]
             procs.append(Popen(args, stderr=STDOUT, stdout=PIPE))
             process_index += 1
 

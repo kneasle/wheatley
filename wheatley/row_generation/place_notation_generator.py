@@ -1,4 +1,4 @@
-""" A module to hold the row generator that generates rows given some place notations. """
+"""A module to hold the row generator that generates rows given some place notations."""
 
 from typing import ClassVar, List, Dict, Optional
 

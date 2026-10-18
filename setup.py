@@ -1,4 +1,4 @@
-""" Setup script to install the Ringing Room Bot. """
+"""Setup script to install the Ringing Room Bot."""
 
 import setuptools
 

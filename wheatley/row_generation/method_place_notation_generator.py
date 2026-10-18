@@ -1,4 +1,4 @@
-""" Module to hold a RowGenerator to generate rows from a method title. """
+"""Module to hold a RowGenerator to generate rows from a method title."""
 
 import xml.etree.ElementTree as ET
 from typing import Optional, Tuple

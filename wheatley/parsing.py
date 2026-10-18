@@ -216,10 +216,8 @@ def parse_call(input_string: str) -> CallDef:
 
         # Insert the new call definition into the dictionary
         if location in parsed_calls:
-            exit_with_message(
-                f"Location {location} has two conflicting calls: \
-'{parsed_calls[location]}' and '{place_notation_str}'."
-            )
+            exit_with_message(f"Location {location} has two conflicting calls: \
+'{parsed_calls[location]}' and '{place_notation_str}'.")
 
         parsed_calls[location] = place_notation_str
 

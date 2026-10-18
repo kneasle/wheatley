@@ -18,7 +18,6 @@ from wheatley.tower import RingingRoomTower
 from wheatley.parsing import to_bool, json_to_row_generator, RowGenParseError
 from wheatley.row_generation import RowGenerator
 
-
 # Number of seconds that Wheatley is not ringing before Wheatley will return from the mainloop
 # Only applies when Wheatley is running in server mode
 INACTIVITY_EXIT_TIME = 300

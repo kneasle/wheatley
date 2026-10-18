@@ -1,4 +1,4 @@
-""" A module to hold a row generator that produces plain hunt on any (even) stage. """
+"""A module to hold a row generator that produces plain hunt on any (even) stage."""
 
 from wheatley.aliases import Places, Row
 from wheatley.stroke import Stroke

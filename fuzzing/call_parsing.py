@@ -1,4 +1,4 @@
-""" Run a fuzzer to generate lots of random input for the call parser. """
+"""Run a fuzzer to generate lots of random input for the call parser."""
 
 from random import choice, randint
 

@@ -37,13 +37,11 @@ class Check:
         width = 30
         stars = "*" * width
         padding = " " * ((width - len(self.title)) // 2)
-        print(
-            f"""
+        print(f"""
     *{stars}*
     *{padding}{self.title}{padding}*
     *{stars}*
-        """
-        )
+        """)
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         if exc_type is None:
@@ -111,8 +109,6 @@ if run_all or parsed_args.type_check:
             exit(exit_status)
 
 
-print(
-    """
+print("""
 ====== Success ======
-    """
-)
+    """)

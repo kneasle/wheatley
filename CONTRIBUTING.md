@@ -10,13 +10,10 @@ in [ARCHITECTURE.md](https://github.com/kneasle/wheatley/blob/main/ARCHITECTURE.
 
 ## Getting Started
 
+- Download [uv](https://docs.astral.sh/uv/getting-started/installation/) to manage the project
+  dependencies.
 - Fork the [kneasle/wheatley](https://github.com/kneasle/wheatley/pull/) repository and use `git
-  clone` to create a local 'cloned' copy on your machine
-- (optional) Create and activate a
-  [virtual environment](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/)
-  to keep Wheatley's dependencies separate system-wide packages.
-- Install python dependencies with `pip install -r requirements.txt`.  This will also install the
-  dependencies required to run the Pull Request checks locally.
+  clone` to create a local 'cloned' copy on your machine.
 - Do your magic and make the changes you want to your local code.
 
 ## Running Your Modified Code
@@ -24,24 +21,17 @@ in [ARCHITECTURE.md](https://github.com/kneasle/wheatley/blob/main/ARCHITECTURE.
 To run Wheatley **from source code**, `cd` to the repository root and run:
 
 ```bash
-python run-wheatley [ARGS]
-# or possibly
-python3 run-wheatley [ARGS]
+uv run ./run-wheatley [ARGS]
 ```
-
-Or, on Unix you can run `./run-wheatley [ARGS]`.  Basically, replacing `wheatley` with
-`python run-wheatley` or `./run-wheatley` will have exactly the same effect but will use your
-updated source code rather than the version installed by `pip`.
 
 ## Formatting
 
 In order to enforce styling consistency, all code is formatted with the
 [Black](https://black.readthedocs.io/en/stable/) autoformatter (and this is checked for incoming
-PRs).  Black is listed as a dependency in `requirements.txt`, so will be installed along with the
-other dependencies.  I would strongly recommend enabling format-on-save in your editor of choice
+PRs).  I would strongly recommend enabling format-on-save in your editor of choice
 because that way you'll never have to worry about formatting again - Black has some help
 [here](https://github.com/psf/black/blob/main/docs/editor_integration.md).  Alternatively, running
-`black .` in the project root before a PR will reformat everything and satisfy the PR checks.
+`uvx black .` in the project root before a PR will reformat everything and satisfy the PR checks.
 
 ## PR checks
 
@@ -49,7 +39,7 @@ In order to make the code more reliable, all incoming PRs are passed through sev
 automatically look out for and catch mistakes.  All of these can be run with the following:
 
 ```bash
-python ./run-checks.py
+uv run ./run-checks.py
 ```
 
 ### Typechecker
@@ -62,7 +52,7 @@ The typechecker can be run locally with the following command and will produce r
 messages if anything is wrong:
 
 ```bash
-python ./run-checks.py --type-check
+uv run ./run-checks.py --type-check
 ```
 
 ### Linting
@@ -71,7 +61,7 @@ All PRs are also checked by the linter `pylint`, which checks the code automatic
 issues.  It can be run locally with:
 
 ```bash
-python ./run-checks.py --lint
+uv run ./run-checks.py --lint
 ```
 
 ### Unit Tests, Doctests and Fuzzing
@@ -92,7 +82,7 @@ These last checks are tests that are built into the source code, and fall into t
 All three of these can be run with:
 
 ```bash
-python ./run-checks.py --unit-tests
-python ./run-checks.py --doc-tests
-python ./run-checks.py --fuzz
+uv run ./run-checks.py --unit-tests
+uv run ./run-checks.py --doc-tests
+uv run ./run-checks.py --fuzz
 ```

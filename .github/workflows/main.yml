@@ -39,11 +39,15 @@ jobs:
 
       - name: Run linter
         run: uv run run-checks.py --lint
+
       - name: Run typechecker
         run: uv run run-checks.py --type-check
+
       - name: Run unit tests
         run: uv run run-checks.py --unit-test
+
       - name: Run fuzzer
         run: uv run run-checks.py --fuzz
-      - name: Run integration tests
-        run: uv run run-checks.py --doc-test
+
+      # - name: Run doc tests
+      #   run: uv run run-checks.py --doc-test

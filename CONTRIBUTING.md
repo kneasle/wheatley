@@ -6,7 +6,7 @@ you'll be politely asked to change something.  We appreciate any sort of contrib
 want a wall of rules to get in the way of that.
 
 If you're new to the code, a high-level description of Wheatley's internal architecture can be found
-in [ARCHITECTURE.md](https://github.com/kneasle/wheatley/blob/master/ARCHITECTURE.md).
+in [ARCHITECTURE.md](https://github.com/kneasle/wheatley/blob/main/ARCHITECTURE.md).
 
 ## Getting Started
 
@@ -40,7 +40,7 @@ In order to enforce styling consistency, all code is formatted with the
 PRs).  Black is listed as a dependency in `requirements.txt`, so will be installed along with the
 other dependencies.  I would strongly recommend enabling format-on-save in your editor of choice
 because that way you'll never have to worry about formatting again - Black has some help
-[here](https://github.com/psf/black/blob/master/docs/editor_integration.md).  Alternatively, running
+[here](https://github.com/psf/black/blob/main/docs/editor_integration.md).  Alternatively, running
 `black .` in the project root before a PR will reformat everything and satisfy the PR checks.
 
 ## PR checks

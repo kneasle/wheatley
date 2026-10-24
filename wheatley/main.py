@@ -483,6 +483,14 @@ def console_main(override_args: Optional[List[str]], stop_on_join_tower: bool) -
         rhythm,
     )
 
+    run_bot(tower, bot, stop_on_join_tower)
+
+
+def run_bot(tower: RingingRoomTower, bot: Bot, stop_on_join_tower: bool) -> None:
+    """
+    Connects to the tower and runs Wheatley's mainloop until the connection closes, exiting with the
+    reason if the server closed it.
+    """
     # Catch keyboard interrupts and just print 'Bye!' instead a load of guff
     try:
         with tower:

@@ -87,28 +87,36 @@ This is the start-up code for Wheatley.  It gets called once and is tasked with 
 input and then using this to generate `Rhythm`, `RowGenerator`, `Tower` and `Bot` singletons.
 Finally, it enters the `Bot`'s mainloop, which never returns.
 
-`parsing.py` also contains some code for interpreting the SocketIO signals which change the controls
-in the integrated version, but this will likely be moved somewhere else.
+`parsing.py` also contains some code for interpreting the messages which change the controls in the
+integrated version (which Ringing Room's server no longer sends to a Wheatley process: see below).
 
 Wheatley has 3 main functions:
-- `server_main`: The integrated Ringing Room version's main function
+- `server_main`: The integrated Ringing Room version's main function.  This is for the old Ringing
+  Room, which started a Wheatley process for each tower; the new one has a simulator of its own and
+  speaks a protocol this can't, so nothing calls it any more and `main` refuses 'server-mode'.  It is kept
+  for reference.
 - `console_main`: The CLI version's main function
-- `main`:  The root main function, which delegates to one of the other two main functions depending
-  on whether or not Wheatley is running on a Ringing Room server
+- `main`:  The root main function, which runs `console_main`
 
 **Architectural Invariant**:  This is the only place where different code is executed between the
 CLI and integrated versions.  90% of the differences between versions are implemented by
 disconnecting callbacks during initialisation.
 
-### `wheatley/{tower.py, page_parsing.py}`
+### `wheatley/{tower.py, server_url.py}`
 
 **NOTE: This code is soon going to be replaced with
 [belltower](https://github.com/kneasle/belltower), which can be used for other projects.**
 
 These files handle all the direct contact with Ringing Room, and provide an abstraction barrier
 between the rest of the code and the internal workings of Ringing Room.  The `Tower` class in
-`tower.py` handles run-time connections to Ringing Room, whereas `page_parsing.py` is used during
-start-up to parse information out of the HTML source of the Ringing Room pages.
+`tower.py` handles run-time connections to Ringing Room, which are plain WebSockets
+(`wss://<server>/ws/<tower id>`) carrying JSON `{"event", "payload"}` messages, whereas `server_url.py` is used
+during start-up to turn the server address that the user gives into that URL.
+
+Wheatley joins as a 'bot' (`c_join` with `role: "bot"`, and the name from `--name`): Ringing Room lets a bot
+ring bells and make the calls a touch needs, and nothing else, with no account.  `Tower.should_ring` says
+which bells that means: those that people have assigned to the bot if there are any, otherwise every bell that
+nobody has; and in host mode, only those that are assigned to it, as for everyone.
 
 This abstraction layer means two things:
 1. 90% of Wheatley is completely platform indepedent - supporting a new platform (other than Ringing
